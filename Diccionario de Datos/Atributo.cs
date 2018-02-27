@@ -26,7 +26,6 @@ namespace Diccionario_de_Datos
     		TI = 0;
     		DI = -1;
     		DSIG = -1;
-
     	}
     }
 }
