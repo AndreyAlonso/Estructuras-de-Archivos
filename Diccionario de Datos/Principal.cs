@@ -22,6 +22,9 @@ namespace Diccionario_de_Datos
     	//Declaraciones de variables
     	private int posx;
     	private int posy;
+    	private Entidad entidad;
+        private string _nombre;
+        private char[] aux = new char[20];
 
     	//Constructor de la clase principal
         public Principal()
@@ -29,6 +32,7 @@ namespace Diccionario_de_Datos
             InitializeComponent();
             posx = 0;
             posy = 0;
+            entidad = new Entidad();
         } 
         #region Configuracion Formulario
         //Metodo que permite mover la ventana con el mouse dando clic
@@ -55,10 +59,21 @@ namespace Diccionario_de_Datos
         }
         #endregion
 
-       
+        private void creaEntidad(object sender, EventArgs e)
+        {
+            
+            entidad.nombrate(_nombre);
+            entidad.direccionate(70);
+            entidad.ponteDireccionAtributo(-1);
+            entidad.ponteDireccionRegistro(-1);
+            entidad.ponteDireccionSig(-1);
+           
+            dataGridView1.Rows.Add(Convert.ToString(entidad.dameNombre()),entidad.dameDE(),entidad.dameDA(),entidad.dameDD(),entidad.dameDSIG() );
+        }
 
-
-
-
+        private void nombraEntidad(object sender, EventArgs e)
+        {
+            _nombre = textBox1.Text;
+        }
     }
 }
