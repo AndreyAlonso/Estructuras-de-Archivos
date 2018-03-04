@@ -16,7 +16,13 @@
 2. para poder asignarle a la cadena el string del textbox se usa:
 	nombre = TextBox1.Text.ToCharArray();
 
-	
+## Pendientes 
+
+1. Inserción ordenada de las Entidades (usar la clase List o un arreglo de Entidades)
 
 
+## Código
 
+ * Creaçión de una lista de la clase Entidad
+ 	List<Entidad> entidad = new List<Entidad>();
+	 		

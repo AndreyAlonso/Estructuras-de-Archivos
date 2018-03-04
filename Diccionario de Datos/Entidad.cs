@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 /**********************************************************************************************
  * Clase Entidad
- *
+ * Constructor: Se inicializan los metadatos con valor   -1 
  *
  *********************************************************************************************/
 
@@ -47,11 +47,15 @@ namespace Diccionario_de_Datos
         public void ponteDireccionSig(long dir){
             this.DSIG = dir;
         }
-        public string dameNombre() { string _nombre = this.nombre.ToString(); return _nombre; }
-        public long dameDE() { return DE; }
-        public long dameDA(){ return DA;}
-        public long dameDD(){ return DD;}
-        public long dameDSIG() { return DSIG; }
+        public string dameNombre() {
+            // Se convierte la candena nombre a tipo string
+            string _nombre = new string(this.nombre);
+            return _nombre; 
+        }
+        public long dameDE() { return this.DE; }
+        public long dameDA(){ return this.DA;}
+        public long dameDD(){ return this.DD;}
+        public long dameDSIG() { return this.DSIG; }
 
     }
 }
