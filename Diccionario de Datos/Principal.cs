@@ -29,6 +29,13 @@ namespace Diccionario_de_Datos
         private long Cab, dir;
         private List<int> letras; // Lista de nombre de entidad
 
+        //Variables para la clase Atributo
+        private Atributo atri;
+        private List<Atributo> atributo;
+        private string nombreAtri;
+
+        private bool band, band2;
+
     	//Constructor de la clase principal
         public Principal()
         {
@@ -39,6 +46,10 @@ namespace Diccionario_de_Datos
             entidad = new List<Entidad>();
             letras = new List<int>();
             Cab = 8;
+            atri = new Atributo();
+            atributo = new List<Atributo>();
+            band = false;
+            band2 = false;
         } 
         #region Configuracion Formulario
         //Metodo que permite mover la ventana con el mouse dando clic
@@ -76,6 +87,7 @@ namespace Diccionario_de_Datos
              * 
              ***********************************************/
             enti.nombrate(_nombre);
+            comboBox1.Items.Add(enti.dameNombre()); //Agrega las entidades al comboBox de atributo
             if (entidad.Count == 0)
             {
                 enti.direccionate(Cab);
@@ -84,20 +96,19 @@ namespace Diccionario_de_Datos
                 enti.ponteDireccionSig(-1);
                 dir = Cab + 62;
                 entidad.Add(enti);
-                
+               
             }
             else
             {
-              //  entidad[entidad.Count - 1].ponteDireccionSig(dir);
-                
+                entidad[entidad.Count - 1].ponteDireccionSig(dir);
                 enti.direccionate(dir);
                 enti.ponteDireccionAtributo(-1);
                 enti.ponteDireccionRegistro(-1);
-                enti.ponteDireccionSig(-1); 
-                entidad.Add(enti);
+                enti.ponteDireccionSig(-1);
                 dir = dir + 62;
-                entidad = ordenate(entidad, dir, letras);
-                
+       //         entidad = ordenate(entidad, dir, letras);
+                entidad.Add(enti);
+   
             }
            
             
@@ -124,21 +135,22 @@ namespace Diccionario_de_Datos
         {
             int j, i;
             j = 0;
+            int tam = e.Count;
             Entidad aux = new Entidad();
             //Algoritmo de Ordenación
             letras = ordenaNombre(e, letras);
 
-            for (i = 0; i < e.Count; i++ )
+            for (i = 0; i < tam; i++ )
             {
-                for (j = 0; j < i; j++)
-                {
+                //for (j = 0; j < i; j++ )
+                //{
                     if (letras[j] > letras[i])
                     {
-                        aux.direccionate(e[j].dameDE());
-                        e[j].direccionate(e[i].dameDE());
-                       e[i].direccionate(aux.dameDE());
+                      e[i].ponteDireccionSig(e[j].dameDE());
+                  
                     }
-                }
+              //  }
+
 
             }
             return e;
@@ -157,5 +169,84 @@ namespace Diccionario_de_Datos
             return c;
 
         }
+        // Metodos para los atributos ******************************************************************
+        private void nombraAtributo(object sender, EventArgs e)
+        {
+            nombreAtri = textBox2.Text;
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+           
+        }
+        /*********************************************************************************
+         *      Boton Crear Atributo
+         *********************************************************************************/
+        private void creaAtributo(object sender, EventArgs e)
+        {
+            imprimeLista(entidad);
+            atri = new Atributo();
+            long diraux;
+            if (!band2){
+                atri.direccionate(enti.dameDE() + 62);
+                diraux = atri.dameDireccion();
+                band2 = true;
+            }
+            atri.nombrate(nombreAtri);
+            if(band){
+                
+                atri.ponteDirSig(-1);
+                band = false;
+            }
+            else
+            {
+                atri.direccionate(atributo[atributo.Count - 1].dameDireccion() + 63);
+                atributo[atributo.Count - 1].ponteDirSig(atri.dameDireccion());
+            }
+            if(atributo.Count > 1)
+                atri.direccionate(atributo[atributo.Count - 1].dameDireccion() + 63);
+            atri.ponteTipo(char.Parse(comboBox2.Text));
+            atri.ponteLongitud(Convert.ToInt32(textBox3.Text));
+            atri.ponteTipoIndice(Convert.ToInt32(comboBox3.Text));
+            atri.ponteDirIndice(-1);
+            atributo.Add(atri);
+            imprimeAtributo(atributo);
+            
+        }
+        /*************************************************************************************************
+         *              Seleccion de entidad para el atributo
+         *************************************************************************************************/
+        private void seleccionaEntidad(object sender, EventArgs e)
+        {
+            string nEntidad;
+            int i;
+            nEntidad = comboBox1.Text;
+            for (i = 0; i < entidad.Count; i++)
+            {
+                if (nEntidad == entidad[i].dameNombre())
+                {
+
+                    if (!band2)
+                        entidad[i].ponteDireccionAtributo(entidad[entidad.Count - 1].dameDE() + 62);
+                    else
+                        entidad[i].ponteDireccionAtributo(atri.dameDireccion()+63);
+                    imprimeLista(entidad);
+                    
+                }
+            }
+            
+            band = true;
+           
+            
+        }
+        private void imprimeAtributo(List<Atributo> atri)
+        {
+            dataGridView2.Rows.Clear();
+            foreach (Atributo a in atri){
+                dataGridView2.Rows.Add(a.dameNombre(), a.dameTipo(), a.dameLongitud(), a.dameDireccion(), a.dameTI(), a.dameDirIndice(), a.dameDirSig());
+            }
+        }
+
+   
     }
 }

@@ -6,3 +6,4 @@ C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras d
 C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras de Archivos\Diccionario de Datos\Diccionario de Datos\bin\Debug\Diccionario de Datos.pdb
 C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras de Archivos\Diccionario de Datos\Diccionario de Datos\obj\Debug\Diccionario de Datos.exe
 C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras de Archivos\Diccionario de Datos\Diccionario de Datos\obj\Debug\Diccionario de Datos.pdb
+C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras de Archivos\Diccionario de Datos\Diccionario de Datos\obj\Debug\Diccionario de Datos.csprojResolveAssemblyReference.cache
