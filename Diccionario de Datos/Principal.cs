@@ -246,6 +246,47 @@ namespace Diccionario_de_Datos
                 dataGridView2.Rows.Add(a.dameNombre(), a.dameTipo(), a.dameLongitud(), a.dameDireccion(), a.dameTI(), a.dameDirIndice(), a.dameDirSig());
             }
         }
+        //Metodo que elimina la entidad
+        private void eliminaEntidad(object sender, EventArgs e)
+        {
+            _nombre = textBox1.Text;
+            int i;
+            for (i = 0; i < entidad.Count; i++ )
+            {
+
+                if (entidad[i].dameNombre() == _nombre)
+                {
+                    entidad[i - 1].ponteDireccionSig(entidad[i].dameDSIG());
+                    entidad[i].direccionate(-1);
+                    entidad[i].ponteDireccionSig(-1);
+                    break;
+                }
+                
+            }
+            dataGridView1.Rows.RemoveAt(i);
+            imprimeLista(entidad);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string nn = textBox2.Text;
+            int i;
+            for (i = 0; i < atributo.Count; i++)
+            {
+                if (atributo[i].dameNombre() == nn)
+                {
+                    atributo[i - 1].ponteDirSig(atributo[i].dameDirSig());
+                    atributo[i].direccionate(-1);
+                    atributo[i].ponteDirSig(-1);
+                    break;
+
+                }
+            }
+            dataGridView2.Rows.RemoveAt(i);
+            imprimeAtributo(atributo);
+        }
+        
+      
 
    
     }

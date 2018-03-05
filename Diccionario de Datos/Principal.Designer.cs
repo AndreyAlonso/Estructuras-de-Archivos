@@ -132,6 +132,7 @@
             this.button3.ForeColor = System.Drawing.Color.White;
             this.button3.Name = "button3";
             this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.eliminaEntidad);
             // 
             // button2
             // 
@@ -286,6 +287,7 @@
             this.button4.ForeColor = System.Drawing.Color.White;
             this.button4.Name = "button4";
             this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button5
             // 
