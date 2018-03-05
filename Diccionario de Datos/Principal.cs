@@ -36,6 +36,9 @@ namespace Diccionario_de_Datos
 
         private bool band, band2;
 
+        // Variable de la clase Archivo
+        private Archivo archivo;
+
     	//Constructor de la clase principal
         public Principal()
         {
@@ -50,7 +53,10 @@ namespace Diccionario_de_Datos
             atributo = new List<Atributo>();
             band = false;
             band2 = false;
+            archivo = new Archivo();
+            
         } 
+
         #region Configuracion Formulario
         //Metodo que permite mover la ventana con el mouse dando clic
         private void panel1_MouseMove(object sender, MouseEventArgs e)
@@ -284,6 +290,19 @@ namespace Diccionario_de_Datos
             }
             dataGridView2.Rows.RemoveAt(i);
             imprimeAtributo(atributo);
+        }
+
+        private void guardarArchivo(object sender, EventArgs e)
+        {
+            
+            archivo.guardaEntidad(entidad);
+            MessageBox.Show("Entidades Guardadas Correctamente");
+        }
+
+        private void abreArchivo(object sender, EventArgs e)
+        {
+            archivo.leeArchivo();
+            
         }
         
       
