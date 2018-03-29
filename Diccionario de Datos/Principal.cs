@@ -42,6 +42,7 @@ namespace Diccionario_de_Datos
 
         // Variables para uso del archivo
         BinaryWriter bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Create));
+        BinaryReader br; 
 
         
 
@@ -108,7 +109,8 @@ namespace Diccionario_de_Datos
                 enti.ponteDireccionRegistro(-1);
                 enti.ponteDireccionSig(-1);
 
-
+                bw.Seek(0, SeekOrigin.Begin);
+                bw.Write(enti.dameDE());
                 bw.Write(enti.dameNombre());
                 bw.Write(enti.dameDE());
                 bw.Write(enti.dameDA());
@@ -265,6 +267,33 @@ namespace Diccionario_de_Datos
                 dataGridView2.Rows.Add(a.dameNombre(), a.dameTipo(), a.dameLongitud(), a.dameDireccion(), a.dameTI(), a.dameDirIndice(), a.dameDirSig());
             }
         }
+        /*****************************************************************************
+         * 
+         * Metodo que permite abrir el archivo y lo envia a uno nuevo
+         * 
+         *****************************************************************************/
+        private void abreArchivo(object sender, EventArgs e)
+        {
+            long tam;
+            bw.Close();
+            br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
+            
+            tam = 0;
+            MessageBox.Show(br.ReadInt64().ToString());
+            while (tam < br.BaseStream.Length)
+            {
+                MessageBox.Show(br.ReadString());
+                MessageBox.Show(br.ReadInt64().ToString());
+                MessageBox.Show(br.ReadInt64().ToString());
+                MessageBox.Show(br.ReadInt64().ToString());
+                MessageBox.Show(br.ReadInt64().ToString());
+                tam += br.BaseStream.Position;
+            }
+
+
+
+        }
+
         //Metodo que elimina la entidad
         private void eliminaEntidad(object sender, EventArgs e)
         {
