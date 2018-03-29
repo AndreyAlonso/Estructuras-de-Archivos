@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 /**********************************************************************************************************************
  * Proyecto:	Diccionario de Datos 
  * Autor:		Héctor Andrey Hernández Alonso	 
@@ -19,15 +20,18 @@ namespace Diccionario_de_Datos
 {
     public partial class Principal : Form
     {
-    	//Declaraciones de variables
+    	//Declaraciones de variables para mover la pantalla
     	private int posx;
     	private int posy;
-    	private Entidad enti; // Instancia de objeto de la clase entidad
+
+        // Declaracion de variables para el uso de la Entidad
+    	private Entidad enti; 
         private string _nombre;
         private char[] aux = new char[20];
         private List<Entidad> entidad; // Lista de Entidades
         private long Cab, dir;
         private List<int> letras; // Lista de nombre de entidad
+
 
         //Variables para la clase Atributo
         private Atributo atri;
@@ -36,8 +40,10 @@ namespace Diccionario_de_Datos
 
         private bool band, band2;
 
-        // Variable de la clase Archivo
-        private Archivo archivo;
+        // Variables para uso del archivo
+        BinaryWriter bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Create));
+
+        
 
     	//Constructor de la clase principal
         public Principal()
@@ -48,12 +54,13 @@ namespace Diccionario_de_Datos
            // enti = new Entidad();
             entidad = new List<Entidad>();
             letras = new List<int>();
-            Cab = 8;
+            Cab = -1;
             atri = new Atributo();
             atributo = new List<Atributo>();
             band = false;
             band2 = false;
-            archivo = new Archivo();
+            bw.Write(Cab);
+            
             
         } 
 
@@ -85,45 +92,51 @@ namespace Diccionario_de_Datos
         private void creaEntidad(object sender, EventArgs e)
         {
             enti = new Entidad();
-            
-            /***********************************************
-             * 
-             * Condicional donde  si la lista está vacia se toman los valores por default y si no está 
-             * vacia se hace un algoritmo de ordenación
-             * 
-             ***********************************************/
-            enti.nombrate(_nombre);
-            comboBox1.Items.Add(enti.dameNombre()); //Agrega las entidades al comboBox de atributo
-            if (entidad.Count == 0)
+            int cont;
+            _nombre = textBox1.Text;
+            comboBox1.Items.Add(_nombre); //Agrega las entidades al comboBox de atributo
+            cont = _nombre.Length;
+            for(;cont < 29; cont++)
             {
-                enti.direccionate(Cab);
+                _nombre += " ";
+            }
+            if(entidad.Count == 0)
+            {
+                enti.nombrate(_nombre);
+                enti.direccionate(bw.BaseStream.Length);
                 enti.ponteDireccionAtributo(-1);
                 enti.ponteDireccionRegistro(-1);
                 enti.ponteDireccionSig(-1);
-                dir = Cab + 62;
-                entidad.Add(enti);
-               
+
+
+                bw.Write(enti.dameNombre());
+                bw.Write(enti.dameDE());
+                bw.Write(enti.dameDA());
+                bw.Write(enti.dameDD());
+                bw.Write(enti.dameDSIG());
+
+
             }
             else
             {
-                entidad[entidad.Count - 1].ponteDireccionSig(dir);
-                enti.direccionate(dir);
+                enti.nombrate(_nombre);
+                enti.direccionate(bw.BaseStream.Length);
                 enti.ponteDireccionAtributo(-1);
                 enti.ponteDireccionRegistro(-1);
                 enti.ponteDireccionSig(-1);
-                dir = dir + 62;
-       //         entidad = ordenate(entidad, dir, letras);
-                entidad.Add(enti);
-   
-            }
-           
-            
-            imprimeLista(entidad);
-        }
+                entidad[entidad.Count - 1].ponteDireccionSig(enti.dameDE());
+                bw.Seek((int)bw.BaseStream.Length-8, SeekOrigin.Begin);
 
-        private void nombraEntidad(object sender, EventArgs e)
-        {
-            _nombre = textBox1.Text;
+                bw.Write(enti.dameDE());
+                bw.Write(enti.dameNombre());
+                bw.Write(enti.dameDE());
+                bw.Write(enti.dameDA());
+                bw.Write(enti.dameDD());
+                bw.Write(enti.dameDSIG());
+            }
+            entidad.Add(enti);
+           
+            imprimeLista(entidad);
         }
 
         // Metodo que muestra la lista en el datagrid
@@ -290,23 +303,6 @@ namespace Diccionario_de_Datos
             }
             dataGridView2.Rows.RemoveAt(i);
             imprimeAtributo(atributo);
-        }
-
-        private void guardarArchivo(object sender, EventArgs e)
-        {
-            
-            archivo.guardaEntidad(entidad);
-            MessageBox.Show("Entidades Guardadas Correctamente");
-        }
-
-        private void abreArchivo(object sender, EventArgs e)
-        {
-            archivo.leeArchivo();
-            
-        }
-        
-      
-
-   
+        }   
     }
 }

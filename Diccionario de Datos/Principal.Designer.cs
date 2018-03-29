@@ -69,8 +69,6 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.guardar = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -118,8 +116,6 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.tabPage1.Controls.Add(this.button7);
-            this.tabPage1.Controls.Add(this.guardar);
             this.tabPage1.Controls.Add(this.button3);
             this.tabPage1.Controls.Add(this.button2);
             this.tabPage1.Controls.Add(this.button1);
@@ -204,7 +200,6 @@
             // 
             resources.ApplyResources(this.textBox1, "textBox1");
             this.textBox1.Name = "textBox1";
-            this.textBox1.TextChanged += new System.EventHandler(this.nombraEntidad);
             // 
             // label1
             // 
@@ -393,24 +388,6 @@
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
             // 
-            // guardar
-            // 
-            resources.ApplyResources(this.guardar, "guardar");
-            this.guardar.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.guardar.ForeColor = System.Drawing.Color.White;
-            this.guardar.Name = "guardar";
-            this.guardar.UseVisualStyleBackColor = false;
-            this.guardar.Click += new System.EventHandler(this.guardarArchivo);
-            // 
-            // button7
-            // 
-            resources.ApplyResources(this.button7, "button7");
-            this.button7.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.button7.ForeColor = System.Drawing.Color.White;
-            this.button7.Name = "button7";
-            this.button7.UseVisualStyleBackColor = false;
-            this.button7.Click += new System.EventHandler(this.abreArchivo);
-            // 
             // Principal
             // 
             resources.ApplyResources(this, "$this");
@@ -477,8 +454,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn TI;
         private System.Windows.Forms.DataGridViewTextBoxColumn DI;
         private System.Windows.Forms.DataGridViewTextBoxColumn DirSig;
-        private System.Windows.Forms.Button guardar;
-        private System.Windows.Forms.Button button7;
     }
 }
 

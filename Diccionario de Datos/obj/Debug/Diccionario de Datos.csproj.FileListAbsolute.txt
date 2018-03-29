@@ -7,3 +7,12 @@ C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras d
 C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras de Archivos\Diccionario de Datos\Diccionario de Datos\obj\Debug\Diccionario de Datos.exe
 C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras de Archivos\Diccionario de Datos\Diccionario de Datos\obj\Debug\Diccionario de Datos.pdb
 C:\Users\Andrey Hernández\Documents\1. Ingenieria en Informática\Estructuras de Archivos\Diccionario de Datos\Diccionario de Datos\obj\Debug\Diccionario de Datos.csprojResolveAssemblyReference.cache
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\bin\Debug\Diccionario de Datos.exe.config
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario de Datos.exe
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario de Datos.pdb
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\bin\Debug\Diccionario de Datos.exe
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\bin\Debug\Diccionario de Datos.pdb
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario de Datos.csprojResolveAssemblyReference.cache
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario_de_Datos.Principal.resources
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario_de_Datos.Properties.Resources.resources
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario de Datos.csproj.GenerateResource.Cache
