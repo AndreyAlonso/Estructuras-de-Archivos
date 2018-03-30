@@ -39,9 +39,10 @@ namespace Diccionario_de_Datos
         private string nombreAtri;
 
         private bool band, band2;
+        private bool nuevo, abierto;
 
         // Variables para uso del archivo
-        BinaryWriter bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Create));
+        BinaryWriter bw;
         BinaryReader br; 
 
         
@@ -60,7 +61,9 @@ namespace Diccionario_de_Datos
             atributo = new List<Atributo>();
             band = false;
             band2 = false;
-            bw.Write(Cab);
+            // bw.Write(Cab);
+            nuevo = false;
+            abierto = false;
             
             
         } 
@@ -275,22 +278,42 @@ namespace Diccionario_de_Datos
         private void abreArchivo(object sender, EventArgs e)
         {
             long tam;
-            bw.Close();
+            if(nuevo)
+                bw.Close();
             br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
+            button7.Hide();
+           
             
             tam = 0;
-            MessageBox.Show(br.ReadInt64().ToString());
+            cabecera.Text = br.ReadInt64().ToString();
             while (tam < br.BaseStream.Length)
             {
-                MessageBox.Show(br.ReadString());
-                MessageBox.Show(br.ReadInt64().ToString());
-                MessageBox.Show(br.ReadInt64().ToString());
-                MessageBox.Show(br.ReadInt64().ToString());
-                MessageBox.Show(br.ReadInt64().ToString());
-                tam += br.BaseStream.Position;
+                enti = new Entidad();
+
+                enti.nombrate( br.ReadString());
+                enti.direccionate(br.ReadInt64());
+                enti.ponteDireccionAtributo(br.ReadInt64());
+                enti.ponteDireccionRegistro(br.ReadInt64());
+                enti.ponteDireccionSig(br.ReadInt64());
+                entidad.Add(enti);
+                imprimeLista(entidad);
+                tam = br.BaseStream.Position;
             }
 
+            br.Close();
+            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
 
+
+
+        }
+
+        private void nuevoProyecto(object sender, EventArgs e)
+        {
+            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Create));
+            bw.Write(Cab);
+            nuevo = true;
+            button7.Hide();
+            
 
         }
 
