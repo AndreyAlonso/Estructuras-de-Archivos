@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 /**********************************************************************************************************************
@@ -43,11 +38,19 @@ namespace Diccionario_de_Datos
 
         // Variables para uso del archivo
         BinaryWriter bw;
-        BinaryReader br; 
+        BinaryReader br;
 
-        
+        // Variable que dice el tamaño del archivo
+        BinaryWriter aBw;
+        BinaryReader aBr;
 
-    	//Constructor de la clase principal
+
+        DataGridView grid;
+        List<DataGridView> tablas = new List<DataGridView>();
+        List<BinaryWriter> registro;
+
+        private int renglon = 0;
+        //Constructor de la clase principal
         public Principal()
         {
             InitializeComponent();
@@ -64,8 +67,9 @@ namespace Diccionario_de_Datos
             // bw.Write(Cab);
             nuevo = false;
             abierto = false;
-            
-            
+            registro = new List<BinaryWriter>();
+
+
         } 
 
         #region Configuracion Formulario
@@ -142,6 +146,8 @@ namespace Diccionario_de_Datos
             entidad.Add(enti);
            
             imprimeLista(entidad);
+
+
         }
 
         // Metodo que muestra la lista en el datagrid
@@ -208,6 +214,67 @@ namespace Diccionario_de_Datos
          *********************************************************************************/
         private void creaAtributo(object sender, EventArgs e)
         {
+            
+
+            atri = new Atributo();
+            int cont;
+            _nombre = textBox2.Text;
+            cont = _nombre.Length;
+            for(; cont < 29; cont++)
+            {
+                _nombre += " ";
+            }
+            if(atributo.Count == 0 )
+            {
+                atri.nombrate(_nombre);
+                atri.ponteTipo(Convert.ToChar(comboTipo.SelectedItem));
+                atri.ponteLongitud(Convert.ToInt32(textBox3.Text));
+                atri.direccionate(bw.BaseStream.Length);
+                atri.ponteTipoIndice(Convert.ToInt32(comboIndice.SelectedItem));
+                atri.ponteDirIndice(-1);
+                atri.ponteDirSig(-1);
+                
+              //  bw.Seek((int)bw.BaseStream.Length, SeekOrigin.Begin);
+                bw.Write(atri.dameNombre());
+                bw.Write(atri.dameTipo());
+                bw.Write(atri.dameLongitud());
+                bw.Write(atri.dameDireccion());
+                bw.Write(atri.dameTI());
+                bw.Write(atri.dameDirIndice());
+                bw.Write(atri.dameDirSig());
+                
+            }
+            else
+            {
+                atri.nombrate(_nombre);
+                atri.ponteTipo(Convert.ToChar(comboTipo.SelectedItem));
+                atri.ponteLongitud(Convert.ToInt32(textBox3.Text));
+                atri.direccionate(bw.BaseStream.Length);
+                atri.ponteTipoIndice(Convert.ToInt32(comboIndice.SelectedItem));
+                atri.ponteDirIndice(-1);
+
+                atributo[atributo.Count - 1].ponteDirSig(atri.dameDireccion());
+                bw.Seek((int)bw.BaseStream.Length-8, SeekOrigin.Begin);
+                bw.Write(atri.dameDireccion());
+                bw.Write(atri.dameNombre());
+                bw.Write(atri.dameTipo());
+                bw.Write(atri.dameLongitud());
+                bw.Write(atri.dameDireccion());
+                bw.Write(atri.dameTI());
+                bw.Write(atri.dameDirIndice());
+                bw.Write(atri.dameDirSig());
+
+            }
+            atributo.Add(atri);
+            imprimeAtributo(atributo);
+           
+            dataGridView3.Columns.Add(enti.dameNombre(), atri.dameNombre());
+            dataGridView4.Columns.Add(enti.dameNombre(), atri.dameNombre());
+
+            //tabControl1.TabPages[tablas.Count+1].Controls.Add(tablas[tablas.Count-1]);
+            //registro[registro.Count - 1].Write(dataGridView3.Rows.ToString());
+
+            /*
             imprimeLista(entidad);
             atri = new Atributo();
             long diraux;
@@ -235,33 +302,70 @@ namespace Diccionario_de_Datos
             atri.ponteDirIndice(-1);
             atributo.Add(atri);
             imprimeAtributo(atributo);
-            
+            */
+
         }
         /*************************************************************************************************
          *              Seleccion de entidad para el atributo
          *************************************************************************************************/
+        
+
         private void seleccionaEntidad(object sender, EventArgs e)
         {
             string nEntidad;
-            int i;
             nEntidad = comboBox1.Text;
-            for (i = 0; i < entidad.Count; i++)
-            {
-                if (nEntidad == entidad[i].dameNombre())
-                {
+            nEntidad += ".dat";
 
-                    if (!band2)
-                        entidad[i].ponteDireccionAtributo(entidad[entidad.Count - 1].dameDE() + 62);
-                    else
-                        entidad[i].ponteDireccionAtributo(atri.dameDireccion()+63);
-                    imprimeLista(entidad);
-                    
-                }
-            }
+            // Ciclo while que limpia el datagrid de los atributos
+            while (dataGridView2.RowCount > 0)
+                dataGridView2.Rows.Remove(dataGridView2.CurrentRow);
+
+         
+            registro.Add(new BinaryWriter(File.Open(nEntidad,FileMode.Create)));
             
-            band = true;
+            /*
+            tabControl1.TabPages.Add(comboBox1.Text);
+            tabControl1.TabIndex = entidad.Count;
+            grid = new DataGridView();
+            grid.Width = 8000;
+            tablas.Add(grid);
+            */
            
-            
+
+
+
+
+            /*
+            bw.Close();
+            long tam;
+            br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
+           
+
+   
+            tam = 0;
+            cabecera.Text = br.ReadInt64().ToString();
+            while (tam < br.BaseStream.Length && br.ReadString() != "ALTO")
+            {
+                enti = new Entidad();
+
+                enti.nombrate(br.ReadString());
+                comboBox1.Items.Add(enti.dameNombre());
+                enti.direccionate(br.ReadInt64());
+                enti.ponteDireccionAtributo(br.ReadInt64());
+                enti.ponteDireccionRegistro(br.ReadInt64());
+                enti.ponteDireccionSig(br.ReadInt64());
+                entidad.Add(enti);
+                imprimeLista(entidad);
+                tam = br.BaseStream.Position;
+            }
+
+            br.Close();
+            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
+            */
+
+
+
+
         }
         private void imprimeAtributo(List<Atributo> atri)
         {
@@ -277,12 +381,14 @@ namespace Diccionario_de_Datos
          *****************************************************************************/
         private void abreArchivo(object sender, EventArgs e)
         {
+            button8.Hide();
             long tam;
+            long sig;
             if(nuevo)
                 bw.Close();
             br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
             button7.Hide();
-           
+            string swap;
             
             tam = 0;
             cabecera.Text = br.ReadInt64().ToString();
@@ -290,14 +396,33 @@ namespace Diccionario_de_Datos
             {
                 enti = new Entidad();
 
-                enti.nombrate( br.ReadString());
+                //swap = enti.dameDA
+                 
+                enti.nombrate(br.ReadString());
+                comboBox1.Items.Add(enti.dameNombre());
                 enti.direccionate(br.ReadInt64());
                 enti.ponteDireccionAtributo(br.ReadInt64());
                 enti.ponteDireccionRegistro(br.ReadInt64());
-                enti.ponteDireccionSig(br.ReadInt64());
-                entidad.Add(enti);
-                imprimeLista(entidad);
+                sig = br.ReadInt64();
+                
+                if (sig == -1 && tam < br.BaseStream.Length)
+                {
+                    enti.ponteDireccionSig(sig);
+                    entidad.Add(enti);
+                    imprimeLista(entidad);
+                    abreAtributos(br, tam);
+                    break;
+                    
+                }
+                else
+                {
+                    enti.ponteDireccionSig(sig);
+                    entidad.Add(enti);
+                    imprimeLista(entidad);
+                }
                 tam = br.BaseStream.Position;
+
+
             }
 
             br.Close();
@@ -306,14 +431,84 @@ namespace Diccionario_de_Datos
 
 
         }
+        private void abreAtributos(BinaryReader br, long tam)
+        {
+            //tam = br.BaseStream.Position;
+            while (tam < br.BaseStream.Length)
+            {
+                atri = new Atributo();
+                atri.nombrate(br.ReadString());
+                atri.ponteTipo(br.ReadChar());
+                atri.ponteLongitud(br.ReadInt32());
+                atri.direccionate(br.ReadInt64());
+                atri.ponteTipoIndice(br.ReadInt32());
+                atri.ponteDirIndice(br.ReadInt64());
+                atri.ponteDirSig(br.ReadInt64());
+                atributo.Add(atri);
+                
+                tam = br.BaseStream.Position;
+            }
+            imprimeAtributo(atributo);
+        }
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
 
+        }
+        /***********************************************************************************
+         * 
+         *  Metodo que adquiere el renglon del datagrid y lo manda a uno nuevo ademas de 
+         *  guardarlo en un archivo
+         * 
+         * 
+         * *********************************************************************************/
+        private void insertarRegistro_Click(object sender, EventArgs e)
+        {
+            int j;
+            long dir;
+            dir = -1;
+            string _nombre;
+            
+            dataGridView4.Rows.Add();
+            for (j = 0; j <= dataGridView3.Columns.Count; j++)
+            {
+                if(renglon == 0)
+                {
+                    dataGridView4.Columns.Add("Direccion Siguiente Registro", "Direccion Siguiente Registro");
+                }
+                if(j == 0)
+                {
+                    registro[registro.Count-1].Write(registro[registro.Count - 1].BaseStream.Length);
+                    dataGridView4.Rows[renglon].Cells[j].Value = registro[registro.Count-1].BaseStream.Length;
+                    
+                }
+                else if(j >= 1)
+                {
+                    dataGridView4.Rows[renglon].Cells[j].Value = dataGridView3.Rows[0].Cells[j-1].Value.ToString();
+                    registro[registro.Count - 1].Write(dataGridView4.Rows[renglon].Cells[j].Value.ToString());
+                    
+                }
+                
+            }
+            dataGridView4.Rows[renglon].Cells[j].Value = registro[registro.Count-1].BaseStream.Length;
+            renglon++;
+            
+
+
+        }
+        
+        private void comboBox2_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            registro[registro.Count - 1].Close();
+        }
+
+ 
         private void nuevoProyecto(object sender, EventArgs e)
         {
             bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Create));
             bw.Write(Cab);
             nuevo = true;
             button7.Hide();
-            
+            button8.Hide();
 
         }
 
@@ -321,20 +516,41 @@ namespace Diccionario_de_Datos
         private void eliminaEntidad(object sender, EventArgs e)
         {
             _nombre = textBox1.Text;
+            int z = _nombre.Length;
+            for(;z< 29; z++)
+            {
+                _nombre += " ";
+            }
+
+            string nombre2;
+
             int i;
             for (i = 0; i < entidad.Count; i++ )
             {
-
-                if (entidad[i].dameNombre() == _nombre)
+                nombre2 = entidad[i].dameNombre();
+                if(i == 0 && nombre2 == _nombre)
                 {
+                    entidad[i].ponteDireccionSig(-1);
+                    entidad[i].direccionate(-1);
+                    entidad[i].nombrate("Eliminado");
+                    dataGridView1.Rows.RemoveAt(i);
+                    break;
+                }
+                if (nombre2 == _nombre)
+                {
+                   // MessageBox.Show("Encontrado");
                     entidad[i - 1].ponteDireccionSig(entidad[i].dameDSIG());
+                    entidad[i].nombrate("Eliminado");
                     entidad[i].direccionate(-1);
                     entidad[i].ponteDireccionSig(-1);
+                    dataGridView1.Rows.RemoveAt(i-1);
                     break;
+
+                    
                 }
                 
             }
-            dataGridView1.Rows.RemoveAt(i);
+            
             imprimeLista(entidad);
         }
 

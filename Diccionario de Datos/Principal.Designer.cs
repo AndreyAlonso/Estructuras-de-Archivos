@@ -34,6 +34,9 @@
             this.Cerrar = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.cabecera = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -59,20 +62,24 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.comboIndice = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.comboTipo = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dataGridView4 = new System.Windows.Forms.DataGridView();
+            this.DR = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.insertarRegistro = new System.Windows.Forms.Button();
+            this.dataGridView3 = new System.Windows.Forms.DataGridView();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.button8 = new System.Windows.Forms.Button();
-            this.label8 = new System.Windows.Forms.Label();
-            this.cabecera = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -80,6 +87,9 @@
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -113,6 +123,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             resources.ApplyResources(this.tabControl1, "tabControl1");
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -132,6 +143,26 @@
             this.tabPage1.Controls.Add(this.label1);
             resources.ApplyResources(this.tabPage1, "tabPage1");
             this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
+            // 
+            // cabecera
+            // 
+            resources.ApplyResources(this.cabecera, "cabecera");
+            this.cabecera.Name = "cabecera";
+            // 
+            // label8
+            // 
+            resources.ApplyResources(this.label8, "label8");
+            this.label8.Name = "label8";
+            // 
+            // button8
+            // 
+            resources.ApplyResources(this.button8, "button8");
+            this.button8.BackColor = System.Drawing.Color.Green;
+            this.button8.ForeColor = System.Drawing.Color.White;
+            this.button8.Name = "button8";
+            this.button8.UseVisualStyleBackColor = false;
+            this.button8.Click += new System.EventHandler(this.nuevoProyecto);
             // 
             // button7
             // 
@@ -324,11 +355,11 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.comboBox3);
+            this.groupBox1.Controls.Add(this.comboIndice);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.textBox3);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.comboBox2);
+            this.groupBox1.Controls.Add(this.comboTipo);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.textBox2);
             this.groupBox1.Controls.Add(this.label4);
@@ -336,16 +367,16 @@
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.TabStop = false;
             // 
-            // comboBox3
+            // comboIndice
             // 
-            resources.ApplyResources(this.comboBox3, "comboBox3");
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Items.AddRange(new object[] {
-            resources.GetString("comboBox3.Items"),
-            resources.GetString("comboBox3.Items1"),
-            resources.GetString("comboBox3.Items2"),
-            resources.GetString("comboBox3.Items3")});
-            this.comboBox3.Name = "comboBox3";
+            resources.ApplyResources(this.comboIndice, "comboIndice");
+            this.comboIndice.FormattingEnabled = true;
+            this.comboIndice.Items.AddRange(new object[] {
+            resources.GetString("comboIndice.Items"),
+            resources.GetString("comboIndice.Items1"),
+            resources.GetString("comboIndice.Items2"),
+            resources.GetString("comboIndice.Items3")});
+            this.comboIndice.Name = "comboIndice";
             // 
             // label7
             // 
@@ -362,15 +393,15 @@
             resources.ApplyResources(this.label6, "label6");
             this.label6.Name = "label6";
             // 
-            // comboBox2
+            // comboTipo
             // 
-            resources.ApplyResources(this.comboBox2, "comboBox2");
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            resources.GetString("comboBox2.Items"),
-            resources.GetString("comboBox2.Items1")});
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            resources.ApplyResources(this.comboTipo, "comboTipo");
+            this.comboTipo.FormattingEnabled = true;
+            this.comboTipo.Items.AddRange(new object[] {
+            resources.GetString("comboTipo.Items"),
+            resources.GetString("comboTipo.Items1")});
+            this.comboTipo.Name = "comboTipo";
+            this.comboTipo.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -400,29 +431,61 @@
             resources.ApplyResources(this.label3, "label3");
             this.label3.Name = "label3";
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.dataGridView4);
+            this.tabPage3.Controls.Add(this.insertarRegistro);
+            this.tabPage3.Controls.Add(this.dataGridView3);
+            this.tabPage3.Controls.Add(this.comboBox2);
+            this.tabPage3.Controls.Add(this.label9);
+            resources.ApplyResources(this.tabPage3, "tabPage3");
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView4
+            // 
+            this.dataGridView4.AllowUserToDeleteRows = false;
+            this.dataGridView4.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView4.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.DR});
+            resources.ApplyResources(this.dataGridView4, "dataGridView4");
+            this.dataGridView4.Name = "dataGridView4";
+            // 
+            // DR
+            // 
+            resources.ApplyResources(this.DR, "DR");
+            this.DR.Name = "DR";
+            // 
+            // insertarRegistro
+            // 
+            resources.ApplyResources(this.insertarRegistro, "insertarRegistro");
+            this.insertarRegistro.Name = "insertarRegistro";
+            this.insertarRegistro.UseVisualStyleBackColor = true;
+            this.insertarRegistro.Click += new System.EventHandler(this.insertarRegistro_Click);
+            // 
+            // dataGridView3
+            // 
+            this.dataGridView3.AllowUserToDeleteRows = false;
+            this.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            resources.ApplyResources(this.dataGridView3, "dataGridView3");
+            this.dataGridView3.Name = "dataGridView3";
+            // 
+            // comboBox2
+            // 
+            resources.ApplyResources(this.comboBox2, "comboBox2");
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged_1);
+            // 
+            // label9
+            // 
+            resources.ApplyResources(this.label9, "label9");
+            this.label9.Name = "label9";
+            // 
             // label2
             // 
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
-            // 
-            // button8
-            // 
-            resources.ApplyResources(this.button8, "button8");
-            this.button8.BackColor = System.Drawing.Color.Green;
-            this.button8.ForeColor = System.Drawing.Color.White;
-            this.button8.Name = "button8";
-            this.button8.UseVisualStyleBackColor = false;
-            this.button8.Click += new System.EventHandler(this.nuevoProyecto);
-            // 
-            // label8
-            // 
-            resources.ApplyResources(this.label8, "label8");
-            this.label8.Name = "label8";
-            // 
-            // cabecera
-            // 
-            resources.ApplyResources(this.cabecera, "cabecera");
-            this.cabecera.Name = "cabecera";
             // 
             // Principal
             // 
@@ -443,6 +506,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -471,11 +538,11 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox comboTipo;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.ComboBox comboIndice;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label6;
@@ -494,6 +561,13 @@
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.TextBox cabecera;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.DataGridView dataGridView3;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button insertarRegistro;
+        private System.Windows.Forms.DataGridView dataGridView4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DR;
     }
 }
 
