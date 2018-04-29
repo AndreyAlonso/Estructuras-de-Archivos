@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections;
 /**********************************************************************************************************************
- * Proyecto:	Diccionario de Datos 
- * Autor:		Héctor Andrey Hernández Alonso	 
- * Creación:	27/Febrero/2018
- * 
- *
- **********************************************************************************************************************/
+* Proyecto:	Diccionario de Datos 
+* Autor:		Héctor Andrey Hernández Alonso	 
+* Creación:	27/Febrero/2018
+* 
+*
+**********************************************************************************************************************/
 
 namespace Diccionario_de_Datos
 {
@@ -32,6 +33,7 @@ namespace Diccionario_de_Datos
         private Atributo atri;
         private List<Atributo> atributo;
         private string nombreAtri;
+        private int longi;
 
         private bool band, band2;
         private bool nuevo, abierto;
@@ -50,6 +52,7 @@ namespace Diccionario_de_Datos
         List<BinaryWriter> registro;
 
         private int renglon = 0;
+        private int contador;
         //Constructor de la clase principal
         public Principal()
         {
@@ -68,6 +71,8 @@ namespace Diccionario_de_Datos
             nuevo = false;
             abierto = false;
             registro = new List<BinaryWriter>();
+            longi = 0;
+            contador = 0;
 
 
         } 
@@ -99,6 +104,7 @@ namespace Diccionario_de_Datos
 
         private void creaEntidad(object sender, EventArgs e)
         {
+            int[] nombres = new int[30];
             enti = new Entidad();
             int cont;
             _nombre = textBox1.Text;
@@ -133,7 +139,10 @@ namespace Diccionario_de_Datos
                 enti.ponteDireccionAtributo(-1);
                 enti.ponteDireccionRegistro(-1);
                 enti.ponteDireccionSig(-1);
+
+                
                 entidad[entidad.Count - 1].ponteDireccionSig(enti.dameDE());
+                
                 bw.Seek((int)bw.BaseStream.Length-8, SeekOrigin.Begin);
 
                 bw.Write(enti.dameDE());
@@ -144,12 +153,11 @@ namespace Diccionario_de_Datos
                 bw.Write(enti.dameDSIG());
             }
             entidad.Add(enti);
-           
             imprimeLista(entidad);
-
-
+           
         }
 
+        
         // Metodo que muestra la lista en el datagrid
         private void imprimeLista(List<Entidad> enti)
         {
@@ -160,45 +168,9 @@ namespace Diccionario_de_Datos
                 dataGridView1.Rows.Add(i.dameNombre(),i.dameDE(),i.dameDA(),i.dameDD(),i.dameDSIG());
             }
         }
-        //Metodo que ordena la lista
-        private List<Entidad> ordenate(List<Entidad> e, long dir, List<int> letras)
-        {
-            int j, i;
-            j = 0;
-            int tam = e.Count;
-            Entidad aux = new Entidad();
-            //Algoritmo de Ordenación
-            letras = ordenaNombre(e, letras);
+        
 
-            for (i = 0; i < tam; i++ )
-            {
-                //for (j = 0; j < i; j++ )
-                //{
-                    if (letras[j] > letras[i])
-                    {
-                      e[i].ponteDireccionSig(e[j].dameDE());
-                  
-                    }
-              //  }
-
-
-            }
-            return e;
-        }
-
-        //Metodo que hace una lista con el valor numerico de la primer letra de cada entidad
-        private List<int> ordenaNombre(List<Entidad> e, List<int> c)
-        {
-            
-            int nombre;
-            foreach (Entidad i in e)
-            {
-                nombre = Encoding.ASCII.GetBytes(i.dameNombre())[0];
-                c.Add(nombre);
-            }
-            return c;
-
-        }
+       
         // Metodos para los atributos ******************************************************************
         private void nombraAtributo(object sender, EventArgs e)
         {
@@ -211,19 +183,30 @@ namespace Diccionario_de_Datos
         }
         /*********************************************************************************
          *      Boton Crear Atributo
+         *      Cuando se añade un atributo al archivo, se agrega de igual forma
+         *      a un datagrid que permitirá agregar los registros.
+         *      
          *********************************************************************************/
         private void creaAtributo(object sender, EventArgs e)
         {
             
-
-            atri = new Atributo();
-            int cont;
-            _nombre = textBox2.Text;
+            atri = new Atributo();              // Objeto de la clase atributo
+            int cont;                           // Variable contador      
+            _nombre = textBox2.Text;            // Se asigna a la variable nombre, el nombre del atributo dada por el textBox2
+            
+            /**********************************************
+             * ciclo for que sucede mientras el nombre
+             * del atributo tenga una longitud menor a 30
+             **********************************************/
             cont = _nombre.Length;
             for(; cont < 29; cont++)
             {
                 _nombre += " ";
             }
+            /**********************************************************************************
+             * Si no hay ningun atributo, entonces se agrega con valores principales en -1
+             * SI NO entonces, se añade al final y se acomodan los apuntadores
+             **********************************************************************************/
             if(atributo.Count == 0 )
             {
                 atri.nombrate(_nombre);
@@ -233,7 +216,6 @@ namespace Diccionario_de_Datos
                 atri.ponteTipoIndice(Convert.ToInt32(comboIndice.SelectedItem));
                 atri.ponteDirIndice(-1);
                 atri.ponteDirSig(-1);
-                
               //  bw.Seek((int)bw.BaseStream.Length, SeekOrigin.Begin);
                 bw.Write(atri.dameNombre());
                 bw.Write(atri.dameTipo());
@@ -265,9 +247,13 @@ namespace Diccionario_de_Datos
                 bw.Write(atri.dameDirSig());
 
             }
-            atributo.Add(atri);
-            imprimeAtributo(atributo);
-           
+            atributo.Add(atri);     //Se añanade el atributo a la lista de atributos
+            imprimeAtributo(atributo);// Se accede al metodo que muestra en el datagrid la lista de atributos
+
+            /**************************************************************************************
+             * Métodos que agregan en el datagrid para la creación de registros, usar los atributos
+             **************************************************************************************/
+       
             dataGridView3.Columns.Add(enti.dameNombre(), atri.dameNombre());
             dataGridView4.Columns.Add(enti.dameNombre(), atri.dameNombre());
 
@@ -315,12 +301,16 @@ namespace Diccionario_de_Datos
             string nEntidad;
             nEntidad = comboBox1.Text;
             nEntidad += ".dat";
-
+            contador = 0;
             // Ciclo while que limpia el datagrid de los atributos
             while (dataGridView2.RowCount > 0)
+            {
                 dataGridView2.Rows.Remove(dataGridView2.CurrentRow);
-
-         
+            }
+            /******************************************************************
+             * Se añade a la lista de registros, el nombre del regristro y se
+             * crea el archivo del registro para su utilización.
+             ******************************************************************/
             registro.Add(new BinaryWriter(File.Open(nEntidad,FileMode.Create)));
             
             /*
@@ -362,11 +352,10 @@ namespace Diccionario_de_Datos
             br.Close();
             bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
             */
-
-
-
-
         }
+        /***********************************************************************************************
+         * Método encargado de mostrar en el datagrid los atributos
+         ***********************************************************************************************/
         private void imprimeAtributo(List<Atributo> atri)
         {
             dataGridView2.Rows.Clear();
@@ -452,7 +441,7 @@ namespace Diccionario_de_Datos
         }
         private void tabPage1_Click(object sender, EventArgs e)
         {
-
+    
         }
         /***********************************************************************************
          * 
@@ -463,38 +452,88 @@ namespace Diccionario_de_Datos
          * *********************************************************************************/
         private void insertarRegistro_Click(object sender, EventArgs e)
         {
-            int j;
-            long dir;
-            dir = -1;
+            // Declaración de variables
+            //int j;
+            long cabRegistro;
+            cabRegistro = 0;
             string _nombre;
-            
+            int nombre2;
+
+            long anterior = -1;
+
+            // Se usa la lista de registros 
+      
             dataGridView4.Rows.Add();
-            for (j = 0; j <= dataGridView3.Columns.Count; j++)
+            /*******************************************************************************
+             * Ciclo for que permite insertar los registros 
+             ******************************************************************************/
+            for (contador = 0; contador <= dataGridView3.Columns.Count; contador++)
             {
-                if(renglon == 0)
+                if (renglon == 0)
                 {
                     dataGridView4.Columns.Add("Direccion Siguiente Registro", "Direccion Siguiente Registro");
                 }
-                if(j == 0)
+
+                if (contador == 0)
                 {
-                    registro[registro.Count-1].Write(registro[registro.Count - 1].BaseStream.Length);
-                    dataGridView4.Rows[renglon].Cells[j].Value = registro[registro.Count-1].BaseStream.Length;
-                    
+                     cabRegistro = registro[registro.Count - 1].BaseStream.Length; // obtiene el tamaño del archivo
+                    // Guarda como dirección el tamaño del archivo
+                    registro[registro.Count - 1].Write(cabRegistro);//registro[registro.Count - 1].BaseStream.Length);
+                    // Muestra en el datagrid la dirección del registro
+                    dataGridView4.Rows[renglon].Cells[contador].Value = cabRegistro;// registro[registro.Count-1].BaseStream.Length;
+                    //anterior = Convert.ToInt64(dataGridView4.Rows[renglon].Cells[contador].Value);
                 }
-                else if(j >= 1)
+                else if(contador >= 1)
                 {
-                    dataGridView4.Rows[renglon].Cells[j].Value = dataGridView3.Rows[0].Cells[j-1].Value.ToString();
-                    registro[registro.Count - 1].Write(dataGridView4.Rows[renglon].Cells[j].Value.ToString());
                     
+                   
+                    
+
+                    int tam;
+                    
+                    if(atributo[contador-1].dameTipo() == 'C')
+                    {
+                        _nombre = dataGridView3.Rows[0].Cells[contador - 1].Value.ToString();
+                        tam = _nombre.Length;
+                        while (tam < atributo[contador - 1].dameLongitud()-1)
+                        {
+                            _nombre += " ";
+                            tam++;
+                        }
+                        dataGridView4.Rows[renglon].Cells[contador].Value = _nombre;
+                        registro[registro.Count - 1].Write(_nombre);
+                    }
+                    else if(atributo[contador - 1].dameTipo() == 'E')
+                    {
+                        nombre2 = Convert.ToInt32(dataGridView3.Rows[0].Cells[contador - 1].Value);
+                        dataGridView4.Rows[renglon].Cells[contador].Value = nombre2;
+                        registro[registro.Count - 1].Write(nombre2);
+                    }
+                    
+                    
+                    
+
+
+                 //   cabRegistro = registro[registro.Count-1].BaseStream.Length;
+                //    registro[registro.Count - 1].Write(cabRegistro);
+                //    dataGridView4.Rows[renglon].Cells[contador].Value = cabRegistro;
+                 
                 }
                 
             }
-            dataGridView4.Rows[renglon].Cells[j].Value = registro[registro.Count-1].BaseStream.Length;
-            renglon++;
+
+            //dataGridView4.Rows[renglon].Cells[contador].Value = registro[registro.Count-1].BaseStream.Length;
+            registro[registro.Count - 1].Write((long)-1);
             
+            registro[registro.Count - 1].BaseStream.Seek(registro[registro.Count - 1].BaseStream.Length-8,SeekOrigin.Begin);
+            cabRegistro = registro[registro.Count - 1].BaseStream.Length;
+            registro[registro.Count - 1].Write(cabRegistro);
+            dataGridView4.Rows[renglon].Cells[contador].Value = cabRegistro;
+            renglon++;
+           
 
 
-        }
+       }
         
         private void comboBox2_SelectedIndexChanged_1(object sender, EventArgs e)
         {

@@ -56,6 +56,6 @@ namespace Diccionario_de_Datos
         public long dameDA(){ return this.DA;}
         public long dameDD(){ return this.DD;}
         public long dameDSIG() { return this.DSIG; }
-
+            
     }
 }
