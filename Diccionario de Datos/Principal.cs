@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
+using System.Linq;
 /**********************************************************************************************************************
 * Proyecto:	Diccionario de Datos 
 * Autor:		Héctor Andrey Hernández Alonso	 
@@ -50,10 +51,23 @@ namespace Diccionario_de_Datos
         DataGridView grid;
         List<DataGridView> tablas = new List<DataGridView>();
         List<BinaryWriter> registro;
+        List<BinaryWriter> indice;
 
         private int renglon = 0;
         private int contador;
         //Constructor de la clase principal
+
+        // Lista de claves para enviar a los indices
+        List<indicep> claves;
+        string nombre_indice;
+
+        // Estructura de tipo indice primario
+        public struct indicep
+        {
+            public int clave;
+            public long dir;
+        }
+        private indicep temp;
         public Principal()
         {
             InitializeComponent();
@@ -73,6 +87,8 @@ namespace Diccionario_de_Datos
             registro = new List<BinaryWriter>();
             longi = 0;
             contador = 0;
+
+            indice = new List<BinaryWriter>();
 
 
         } 
@@ -257,6 +273,11 @@ namespace Diccionario_de_Datos
             dataGridView3.Columns.Add(enti.dameNombre(), atri.dameNombre());
             dataGridView4.Columns.Add(enti.dameNombre(), atri.dameNombre());
 
+            if(atri.dameTI() == 2)
+            {
+                claves = new List<indicep>();
+                nombre_indice = atri.dameNombre();
+            }
             //tabControl1.TabPages[tablas.Count+1].Controls.Add(tablas[tablas.Count-1]);
             //registro[registro.Count - 1].Write(dataGridView3.Rows.ToString());
 
@@ -298,20 +319,40 @@ namespace Diccionario_de_Datos
 
         private void seleccionaEntidad(object sender, EventArgs e)
         {
-            string nEntidad;
+            
+            string nEntidad, nIndice;
             nEntidad = comboBox1.Text;
+            nIndice = comboBox1.Text;
             nEntidad += ".dat";
+            nIndice += ".idx";
             contador = 0;
+            dataGridView3.Rows.Clear();
+            dataGridView3.Columns.Clear();
+            dataGridView4.Columns.Clear();
+            renglon = 0;
+            dataGridView4.Columns.Add("Dirección del Registro", "Dirección del Registro");
+
             // Ciclo while que limpia el datagrid de los atributos
             while (dataGridView2.RowCount > 0)
             {
                 dataGridView2.Rows.Remove(dataGridView2.CurrentRow);
             }
+         //   while (dataGridView3.RowCount > 0)
+           // {
+            //    dataGridView3.Rows.Remove(dataGridView3.CurrentRow);
+            
+           // }
+        //    while (dataGridView4.RowCount > 0)
+        ///    {
+           //     dataGridView4.Rows.Remove(dataGridView4.CurrentRow);
+
+           // }
             /******************************************************************
              * Se añade a la lista de registros, el nombre del regristro y se
              * crea el archivo del registro para su utilización.
              ******************************************************************/
             registro.Add(new BinaryWriter(File.Open(nEntidad,FileMode.Create)));
+            indice.Add(new BinaryWriter(File.Open(nIndice, FileMode.Create)));
             
             /*
             tabControl1.TabPages.Add(comboBox1.Text);
@@ -320,7 +361,7 @@ namespace Diccionario_de_Datos
             grid.Width = 8000;
             tablas.Add(grid);
             */
-           
+
 
 
 
@@ -457,7 +498,7 @@ namespace Diccionario_de_Datos
             long cabRegistro;
             cabRegistro = 0;
             string _nombre;
-            int nombre2;
+            int nombre2 = 0;
 
             long anterior = -1;
 
@@ -467,13 +508,14 @@ namespace Diccionario_de_Datos
             /*******************************************************************************
              * Ciclo for que permite insertar los registros 
              ******************************************************************************/
+            if (renglon == 0)
+            {
+                dataGridView4.Columns.Add("Direccion Siguiente Registro", "Direccion Siguiente Registro");
+            }
+
             for (contador = 0; contador <= dataGridView3.Columns.Count; contador++)
             {
-                if (renglon == 0)
-                {
-                    dataGridView4.Columns.Add("Direccion Siguiente Registro", "Direccion Siguiente Registro");
-                }
-
+                
                 if (contador == 0)
                 {
                      cabRegistro = registro[registro.Count - 1].BaseStream.Length; // obtiene el tamaño del archivo
@@ -508,7 +550,26 @@ namespace Diccionario_de_Datos
                         nombre2 = Convert.ToInt32(dataGridView3.Rows[0].Cells[contador - 1].Value);
                         dataGridView4.Rows[renglon].Cells[contador].Value = nombre2;
                         registro[registro.Count - 1].Write(nombre2);
+                        if (atributo[contador - 1].dameNombre() == nombre_indice && atributo[contador - 1].dameTI() == 2)
+                        {
+                            temp = new indicep();
+                            List<indicep> nuevo = new List<indicep>();
+                            temp.clave = nombre2;
+                            temp.dir = cabRegistro;
+                            claves.Add(temp);
+                            nuevo = claves.OrderBy(temp => temp.clave).ToList();
+                            indicePrimario.Rows.Clear();
+                            ordenaIndice(nuevo);
+                            
+                            indice[indice.Count - 1].Write(nuevo[nuevo.Count-1].clave);
+                            indice[indice.Count - 1].Write(nuevo[nuevo.Count-1].dir);
+                            
+
+                        
+                    
+                        }
                     }
+                    
                     
                     
                     
@@ -521,6 +582,7 @@ namespace Diccionario_de_Datos
                 }
                 
             }
+            
 
             //dataGridView4.Rows[renglon].Cells[contador].Value = registro[registro.Count-1].BaseStream.Length;
             registro[registro.Count - 1].Write((long)-1);
@@ -530,17 +592,37 @@ namespace Diccionario_de_Datos
             registro[registro.Count - 1].Write(cabRegistro);
             dataGridView4.Rows[renglon].Cells[contador].Value = cabRegistro;
             renglon++;
+            //ordenaIndice(claves);
            
 
 
        }
-        
+        public void ordenaIndice(List<indicep> claves)
+        {
+
+
+           // claves = claves.OrderBy(indicep => indicep.clave);
+            foreach(indicep n in claves)
+            {
+                
+                indicePrimario.Rows.Add(n.clave, n.dir);
+            }
+            
+        }
+
         private void comboBox2_SelectedIndexChanged_1(object sender, EventArgs e)
         {
             registro[registro.Count - 1].Close();
         }
 
- 
+        private void Cerrar_Click(object sender, EventArgs e)
+        {
+            foreach(BinaryWriter arch in indice)
+            {
+                arch.Close();
+            }
+        }
+
         private void nuevoProyecto(object sender, EventArgs e)
         {
             bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Create));

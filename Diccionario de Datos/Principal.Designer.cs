@@ -79,6 +79,11 @@
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.indicePrimario = new System.Windows.Forms.DataGridView();
+            this.cve_busqueda = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cve_dir = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label10 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -90,6 +95,8 @@
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
+            this.tabPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.indicePrimario)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -117,6 +124,7 @@
             this.Cerrar.ForeColor = System.Drawing.Color.White;
             this.Cerrar.Name = "Cerrar";
             this.Cerrar.UseVisualStyleBackColor = false;
+            this.Cerrar.Click += new System.EventHandler(this.Cerrar_Click);
             this.Cerrar.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Cierrate);
             // 
             // tabControl1
@@ -124,9 +132,11 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             resources.ApplyResources(this.tabControl1, "tabControl1");
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Tag = "";
             // 
             // tabPage1
             // 
@@ -482,6 +492,42 @@
             resources.ApplyResources(this.label9, "label9");
             this.label9.Name = "label9";
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.indicePrimario);
+            this.tabPage4.Controls.Add(this.label10);
+            resources.ApplyResources(this.tabPage4, "tabPage4");
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // indicePrimario
+            // 
+            this.indicePrimario.AllowUserToAddRows = false;
+            this.indicePrimario.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.indicePrimario.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cve_busqueda,
+            this.cve_dir});
+            resources.ApplyResources(this.indicePrimario, "indicePrimario");
+            this.indicePrimario.Name = "indicePrimario";
+            this.indicePrimario.ReadOnly = true;
+            // 
+            // cve_busqueda
+            // 
+            resources.ApplyResources(this.cve_busqueda, "cve_busqueda");
+            this.cve_busqueda.Name = "cve_busqueda";
+            this.cve_busqueda.ReadOnly = true;
+            // 
+            // cve_dir
+            // 
+            resources.ApplyResources(this.cve_dir, "cve_dir");
+            this.cve_dir.Name = "cve_dir";
+            this.cve_dir.ReadOnly = true;
+            // 
+            // label10
+            // 
+            resources.ApplyResources(this.label10, "label10");
+            this.label10.Name = "label10";
+            // 
             // label2
             // 
             resources.ApplyResources(this.label2, "label2");
@@ -510,6 +556,9 @@
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.indicePrimario)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -568,6 +617,11 @@
         private System.Windows.Forms.Button insertarRegistro;
         private System.Windows.Forms.DataGridView dataGridView4;
         private System.Windows.Forms.DataGridViewTextBoxColumn DR;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.DataGridView indicePrimario;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cve_busqueda;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cve_dir;
     }
 }
 
