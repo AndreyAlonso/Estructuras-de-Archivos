@@ -5,13 +5,12 @@ using System.Windows.Forms;
 using System.IO;
 using System.Collections;
 using System.Linq;
-/**********************************************************************************************************************
-* Proyecto:	Diccionario de Datos 
-* Autor:		Héctor Andrey Hernández Alonso	 
-* Creación:	27/Febrero/2018
-* 
-*
-**********************************************************************************************************************/
+/****************************************************************************************************************
+* Proyecto:	    Diccionario de Datos                                                                            *
+* Autor:		Héctor Andrey Hernández Alonso	                                                                *
+* Creación:	    27/Febrero/2018                                                                                 *
+* Clases:       Principal, Entidad, Atributo.                                                                   *
+*****************************************************************************************************************/
 
 namespace Diccionario_de_Datos
 {
@@ -122,6 +121,8 @@ namespace Diccionario_de_Datos
         {
             int[] nombres = new int[30];
             enti = new Entidad();
+            List<string> nombresOrdenados = new List<string>();
+
             int cont;
             _nombre = textBox1.Text;
             comboBox1.Items.Add(_nombre); //Agrega las entidades al comboBox de atributo
@@ -151,17 +152,21 @@ namespace Diccionario_de_Datos
             else
             {
                 enti.nombrate(_nombre);
+                nombresOrdenados.Add(enti.dameNombre());
+                
                 enti.direccionate(bw.BaseStream.Length);
                 enti.ponteDireccionAtributo(-1);
                 enti.ponteDireccionRegistro(-1);
                 enti.ponteDireccionSig(-1);
+                
 
                 
                 entidad[entidad.Count - 1].ponteDireccionSig(enti.dameDE());
-                
+               // entidad  = ordenaEntidad(entidad, nombresOrdenados);
+
                 bw.Seek((int)bw.BaseStream.Length-8, SeekOrigin.Begin);
 
-                bw.Write(enti.dameDE());
+                bw.Write(enti.dameDE());    
                 bw.Write(enti.dameNombre());
                 bw.Write(enti.dameDE());
                 bw.Write(enti.dameDA());
@@ -169,8 +174,31 @@ namespace Diccionario_de_Datos
                 bw.Write(enti.dameDSIG());
             }
             entidad.Add(enti);
+            
             imprimeLista(entidad);
            
+        }
+
+        // Algoritmo de ordenación de Entidad
+        private List<Entidad> ordenaEntidad(List<Entidad> enti,List<string> nombres)
+        {
+            nombres.Sort();
+            int i = 0;
+            foreach(Entidad e in enti)
+            {
+                if (e.dameNombre() == nombres[i])
+                {
+                    foreach(Entidad e2 in enti)
+                    {
+                        if(e2.dameNombre() == nombres[i + 1] && i <= nombres.Count)
+                        {
+                            e.ponteDireccionSig(e2.dameDE());
+                        }
+                    }
+                }
+
+            }
+            return enti;
         }
 
         
@@ -181,7 +209,19 @@ namespace Diccionario_de_Datos
             dataGridView1.Rows.Clear(); 
             //Ciclo que inserta las entidades en el datagrid
             foreach(Entidad i in enti){
-                dataGridView1.Rows.Add(i.dameNombre(),i.dameDE(),i.dameDA(),i.dameDD(),i.dameDSIG());
+                if(i.dameNombre() == "ELIMINADO")
+                {
+                    continue;
+                }
+                else if(i.dameNombre() == "ELIMINADO                    ")
+                {
+                    continue;
+                }
+                else
+                {
+                    dataGridView1.Rows.Add(i.dameNombre(), i.dameDE(), i.dameDA(), i.dameDD(), i.dameDSIG());
+                }
+                
             }
         }
         
@@ -424,10 +464,8 @@ namespace Diccionario_de_Datos
             cabecera.Text = br.ReadInt64().ToString();
             while (tam < br.BaseStream.Length)
             {
+               // MessageBox.Show("apunntador : " + tam);
                 enti = new Entidad();
-
-                //swap = enti.dameDA
-                 
                 enti.nombrate(br.ReadString());
                 comboBox1.Items.Add(enti.dameNombre());
                 enti.direccionate(br.ReadInt64());
@@ -435,21 +473,21 @@ namespace Diccionario_de_Datos
                 enti.ponteDireccionRegistro(br.ReadInt64());
                 sig = br.ReadInt64();
                 
-                if (sig == -1 && tam < br.BaseStream.Length)
-                {
-                    enti.ponteDireccionSig(sig);
-                    entidad.Add(enti);
-                    imprimeLista(entidad);
-                    abreAtributos(br, tam);
-                    break;
+               // if (sig == -1 && tam < br.BaseStream.Length)
+               // {
+                 //   enti.ponteDireccionSig(sig);
+                //    entidad.Add(enti);
+               //     imprimeLista(entidad);
+               //     abreAtributos(br, tam);
+                //    break;
                     
-                }
-                else
-                {
+               // }
+              //  else
+              //  {
                     enti.ponteDireccionSig(sig);
                     entidad.Add(enti);
                     imprimeLista(entidad);
-                }
+              //  }
                 tam = br.BaseStream.Position;
 
 
@@ -457,7 +495,7 @@ namespace Diccionario_de_Datos
 
             br.Close();
             bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
-
+            nuevo = true;
 
 
         }
@@ -633,11 +671,118 @@ namespace Diccionario_de_Datos
 
         }
 
-        //Metodo que elimina la entidad
+        /**************************************************************************************************************************
+         * Metodo encargado de eliminar la entidad
+         * sus apuntadores los hace null
+         * el nombre cambia a eliminado
+         * la entidad anterior apunta al siguiente de la entidad eliminada
+         *************************************************************************************************************************/
         private void eliminaEntidad(object sender, EventArgs e)
         {
+
+           
+            // Para la eliminación se requiere:
+            // 1 variable auxiliar para el apuntador
+            // 1 variable auxiliar para el apuntador siguiente
+            // 1 variable para obtener el nombre del registro
+            
+            string _nombre;
+            int tam;
+            long ap;
+            ap = 0;
+            int renglon = 0;
+            _nombre = textBox1.Text;
+            tam = _nombre.Length;
+
+            string n= "";
+            long de, da, dd, ds;
+            de = da = dd = ds = 0;
+           
+            while(tam < 29)
+            {
+                _nombre += " ";
+                tam++;
+            }
+
+            int i;
+            for(i = 0; i < entidad.Count; i++)
+            {
+                if(_nombre == entidad[i].dameNombre())
+                {
+                    if( i == 0)
+                    {
+                        entidad[i].ponteDireccionSig(-1);
+                        entidad[i].nombrate("ELIMINADO");
+                    }
+                    else
+                    {
+                        entidad[i].ponteDireccionSig(-1);
+                        entidad[i].nombrate("ELIMINADO");
+                        entidad[i - 1].ponteDireccionSig(entidad[i + 1].dameDE());
+                    }
+                    
+             
+
+                }
+            }
+            imprimeLista(entidad);
+
+
+            
+            // Se manda llamar al objeto encargado de la apertura del archivo
+            if (nuevo)
+                bw.Close();
+            br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
+            cabecera.Text = br.ReadInt64().ToString();
+            while (ap < br.BaseStream.Length)
+            {
+                n  = br.ReadString();   //Nombre
+               // MessageBox.Show("Nombre: " + n);
+                de = br.ReadInt64();    //Dirección
+                da = br.ReadInt64();    //DireccionAtributo
+                dd = br.ReadInt64();    //Direccion de Datos
+                ds = br.ReadInt64();    //Direccion Siguiente
+                renglon++;
+                if (_nombre == n)
+                {
+                    break;
+                }
+
+        
+                ap = br.BaseStream.Position;
+            //    MessageBox.Show("El apuntador del archivo está en: " + ap);
+            }
+        //    MessageBox.Show("Entidad eliminanda\n" + n + " " +   de + " " + da + " " + dd + " " +  ds);
+            MessageBox.Show("El apuntador del archivo está en: " + ap);
+            //Cierra el archivo para lectura y abre para la modificación 
+            br.Close();
+            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
+            bw.Seek((int)ap-8, SeekOrigin.Begin);
+            bw.Write(ds);
+            string eliminado;
+            eliminado = "ELIMINADO";
+            int cont;
+            for(cont = eliminado.Length; cont < 29; cont++)
+            {
+                eliminado += " ";
+
+            }
+            bw.Write(eliminado);
+            bw.Write(-1);
+            bw.Write(-1);
+            bw.Write(-1);
+            bw.Write(-1);
+            
+            //dataGridView1.Rows.Remove();
+        //    MessageBox.Show("Direccion de la siguiente entidad " + ds);
+
+            bw.Close();
+            
+
+            /*
             _nombre = textBox1.Text;
             int z = _nombre.Length;
+
             for(;z< 29; z++)
             {
                 _nombre += " ";
@@ -673,6 +818,7 @@ namespace Diccionario_de_Datos
             }
             
             imprimeLista(entidad);
+            */
         }
 
         private void button4_Click(object sender, EventArgs e)
