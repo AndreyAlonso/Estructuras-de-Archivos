@@ -58,7 +58,7 @@
             this.TI = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DI = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DirSig = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button4 = new System.Windows.Forms.Button();
+            this.eliminaAtributo = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -84,7 +84,14 @@
             this.cve_busqueda = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cve_dir = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label10 = new System.Windows.Forms.Label();
+            this.Índice = new System.Windows.Forms.TabPage();
+            this.textoIndice = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.comboBox5 = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.cEntidadRegistro = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -97,6 +104,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.indicePrimario)).BeginInit();
+            this.Índice.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -133,6 +141,7 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.Índice);
             resources.ApplyResources(this.tabControl1, "tabControl1");
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -268,7 +277,7 @@
             // 
             this.tabPage2.BackColor = System.Drawing.Color.WhiteSmoke;
             this.tabPage2.Controls.Add(this.dataGridView2);
-            this.tabPage2.Controls.Add(this.button4);
+            this.tabPage2.Controls.Add(this.eliminaAtributo);
             this.tabPage2.Controls.Add(this.button5);
             this.tabPage2.Controls.Add(this.button6);
             this.tabPage2.Controls.Add(this.groupBox1);
@@ -337,14 +346,14 @@
             this.DirSig.Name = "DirSig";
             this.DirSig.ReadOnly = true;
             // 
-            // button4
+            // eliminaAtributo
             // 
-            resources.ApplyResources(this.button4, "button4");
-            this.button4.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Name = "button4";
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            resources.ApplyResources(this.eliminaAtributo, "eliminaAtributo");
+            this.eliminaAtributo.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.eliminaAtributo.ForeColor = System.Drawing.Color.White;
+            this.eliminaAtributo.Name = "eliminaAtributo";
+            this.eliminaAtributo.UseVisualStyleBackColor = false;
+            this.eliminaAtributo.Click += new System.EventHandler(this.button4_Click);
             // 
             // button5
             // 
@@ -385,8 +394,11 @@
             resources.GetString("comboIndice.Items"),
             resources.GetString("comboIndice.Items1"),
             resources.GetString("comboIndice.Items2"),
-            resources.GetString("comboIndice.Items3")});
+            resources.GetString("comboIndice.Items3"),
+            resources.GetString("comboIndice.Items4"),
+            resources.GetString("comboIndice.Items5")});
             this.comboIndice.Name = "comboIndice";
+            this.comboIndice.SelectedIndexChanged += new System.EventHandler(this.comboIndice_SelectedIndexChanged);
             // 
             // label7
             // 
@@ -468,9 +480,11 @@
             // 
             // insertarRegistro
             // 
+            this.insertarRegistro.BackColor = System.Drawing.SystemColors.HotTrack;
             resources.ApplyResources(this.insertarRegistro, "insertarRegistro");
+            this.insertarRegistro.ForeColor = System.Drawing.Color.White;
             this.insertarRegistro.Name = "insertarRegistro";
-            this.insertarRegistro.UseVisualStyleBackColor = true;
+            this.insertarRegistro.UseVisualStyleBackColor = false;
             this.insertarRegistro.Click += new System.EventHandler(this.insertarRegistro_Click);
             // 
             // dataGridView3
@@ -528,10 +542,57 @@
             resources.ApplyResources(this.label10, "label10");
             this.label10.Name = "label10";
             // 
+            // Índice
+            // 
+            this.Índice.Controls.Add(this.cEntidadRegistro);
+            this.Índice.Controls.Add(this.label12);
+            this.Índice.Controls.Add(this.textoIndice);
+            this.Índice.Controls.Add(this.label11);
+            this.Índice.Controls.Add(this.comboBox5);
+            this.Índice.Controls.Add(this.label13);
+            resources.ApplyResources(this.Índice, "Índice");
+            this.Índice.Name = "Índice";
+            this.Índice.UseVisualStyleBackColor = true;
+            // 
+            // textoIndice
+            // 
+            resources.ApplyResources(this.textoIndice, "textoIndice");
+            this.textoIndice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.textoIndice.Name = "textoIndice";
+            // 
+            // label11
+            // 
+            resources.ApplyResources(this.label11, "label11");
+            this.label11.Name = "label11";
+            // 
+            // comboBox5
+            // 
+            resources.ApplyResources(this.comboBox5, "comboBox5");
+            this.comboBox5.FormattingEnabled = true;
+            this.comboBox5.Name = "comboBox5";
+            this.comboBox5.SelectedIndexChanged += new System.EventHandler(this.comboBox5_SelectedIndexChanged);
+            // 
+            // label13
+            // 
+            resources.ApplyResources(this.label13, "label13");
+            this.label13.Name = "label13";
+            // 
             // label2
             // 
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
+            // 
+            // label12
+            // 
+            resources.ApplyResources(this.label12, "label12");
+            this.label12.Name = "label12";
+            // 
+            // cEntidadRegistro
+            // 
+            resources.ApplyResources(this.cEntidadRegistro, "cEntidadRegistro");
+            this.cEntidadRegistro.FormattingEnabled = true;
+            this.cEntidadRegistro.Name = "cEntidadRegistro";
+            this.cEntidadRegistro.SelectedIndexChanged += new System.EventHandler(this.cEntidadRegistro_SelectedIndexChanged);
             // 
             // Principal
             // 
@@ -559,6 +620,8 @@
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.indicePrimario)).EndInit();
+            this.Índice.ResumeLayout(false);
+            this.Índice.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -595,7 +658,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button eliminaAtributo;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.DataGridView dataGridView2;
@@ -622,6 +685,13 @@
         private System.Windows.Forms.DataGridView indicePrimario;
         private System.Windows.Forms.DataGridViewTextBoxColumn cve_busqueda;
         private System.Windows.Forms.DataGridViewTextBoxColumn cve_dir;
+        private System.Windows.Forms.TabPage Índice;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox comboBox5;
+        private System.Windows.Forms.Label textoIndice;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox cEntidadRegistro;
+        private System.Windows.Forms.Label label12;
     }
 }
 

@@ -19,7 +19,7 @@ namespace Diccionario_de_Datos
 
     	//Constructor
     	public Atributo(){
-    		nombre = new char[20];
+    		nombre = new char[30];
     		tipo = ' ';
     		longitud = 0;
     		DA = -1;
