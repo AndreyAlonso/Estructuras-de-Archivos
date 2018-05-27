@@ -73,25 +73,25 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.comboBox6 = new System.Windows.Forms.ComboBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.dataGridView4 = new System.Windows.Forms.DataGridView();
             this.DR = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.insertarRegistro = new System.Windows.Forms.Button();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.indicePrimario = new System.Windows.Forms.DataGridView();
             this.cve_busqueda = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cve_dir = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label10 = new System.Windows.Forms.Label();
             this.Índice = new System.Windows.Forms.TabPage();
+            this.cEntidadRegistro = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.textoIndice = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.cEntidadRegistro = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -455,14 +455,26 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.comboBox6);
+            this.tabPage3.Controls.Add(this.label14);
             this.tabPage3.Controls.Add(this.dataGridView4);
             this.tabPage3.Controls.Add(this.insertarRegistro);
             this.tabPage3.Controls.Add(this.dataGridView3);
-            this.tabPage3.Controls.Add(this.comboBox2);
-            this.tabPage3.Controls.Add(this.label9);
             resources.ApplyResources(this.tabPage3, "tabPage3");
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // comboBox6
+            // 
+            resources.ApplyResources(this.comboBox6, "comboBox6");
+            this.comboBox6.FormattingEnabled = true;
+            this.comboBox6.Name = "comboBox6";
+            this.comboBox6.SelectedIndexChanged += new System.EventHandler(this.comboBox6_SelectedIndexChanged);
+            // 
+            // label14
+            // 
+            resources.ApplyResources(this.label14, "label14");
+            this.label14.Name = "label14";
             // 
             // dataGridView4
             // 
@@ -493,18 +505,6 @@
             this.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             resources.ApplyResources(this.dataGridView3, "dataGridView3");
             this.dataGridView3.Name = "dataGridView3";
-            // 
-            // comboBox2
-            // 
-            resources.ApplyResources(this.comboBox2, "comboBox2");
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged_1);
-            // 
-            // label9
-            // 
-            resources.ApplyResources(this.label9, "label9");
-            this.label9.Name = "label9";
             // 
             // tabPage4
             // 
@@ -554,6 +554,18 @@
             this.Índice.Name = "Índice";
             this.Índice.UseVisualStyleBackColor = true;
             // 
+            // cEntidadRegistro
+            // 
+            resources.ApplyResources(this.cEntidadRegistro, "cEntidadRegistro");
+            this.cEntidadRegistro.FormattingEnabled = true;
+            this.cEntidadRegistro.Name = "cEntidadRegistro";
+            this.cEntidadRegistro.SelectedIndexChanged += new System.EventHandler(this.cEntidadRegistro_SelectedIndexChanged);
+            // 
+            // label12
+            // 
+            resources.ApplyResources(this.label12, "label12");
+            this.label12.Name = "label12";
+            // 
             // textoIndice
             // 
             resources.ApplyResources(this.textoIndice, "textoIndice");
@@ -581,18 +593,6 @@
             // 
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
-            // 
-            // label12
-            // 
-            resources.ApplyResources(this.label12, "label12");
-            this.label12.Name = "label12";
-            // 
-            // cEntidadRegistro
-            // 
-            resources.ApplyResources(this.cEntidadRegistro, "cEntidadRegistro");
-            this.cEntidadRegistro.FormattingEnabled = true;
-            this.cEntidadRegistro.Name = "cEntidadRegistro";
-            this.cEntidadRegistro.SelectedIndexChanged += new System.EventHandler(this.cEntidadRegistro_SelectedIndexChanged);
             // 
             // Principal
             // 
@@ -675,8 +675,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dataGridView3;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button insertarRegistro;
         private System.Windows.Forms.DataGridView dataGridView4;
         private System.Windows.Forms.DataGridViewTextBoxColumn DR;
@@ -692,6 +690,8 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cEntidadRegistro;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ComboBox comboBox6;
+        private System.Windows.Forms.Label label14;
     }
 }
 

@@ -16,12 +16,17 @@ namespace Diccionario_de_Datos
 {
     public partial class Principal : Form
     {
+
+        private int Col;
+        private int Ren;
+
+
     	//Declaraciones de variables para mover la pantalla
-    	private int posx;
-    	private int posy;
+        private int posx;
+        private int posy;
 
         // Declaracion de variables para el uso de la Entidad
-    	private Entidad enti; 
+        private Entidad enti; 
         private string _nombre;
         private char[] aux = new char[20];
         private List<Entidad> entidad; // Lista de Entidades
@@ -58,11 +63,17 @@ namespace Diccionario_de_Datos
 
         // variable para detectar los tipos de indices
         private int tipoIndice;
-
+        List<string> reg = new List<string>();
+        List<string> registros = new List<string>(); 
+        List<indices> listaIndices = new List<indices>();
         // Lista de claves para enviar a los indices
         List<indicep> claves;
         string nombre_indice;
-
+        public struct indices
+        {
+            public int val;
+            public int tipo;
+        }
 
         // VARIABLES PARA ENLAZAR ATRIBUTOS CON SU ENTIDAD
         bool nuevoAtributo;
@@ -144,6 +155,7 @@ namespace Diccionario_de_Datos
                 _nombre += " ";
             }
             cEntidadRegistro.Items.Add(_nombre);
+            comboBox6.Items.Add(_nombre);
             if (entidad.Count == 0)
             {
                 enti.nombrate(_nombre);
@@ -248,7 +260,7 @@ namespace Diccionario_de_Datos
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-         
+           
         }
         /*********************************************************************************
          *      Boton Crear Atributo
@@ -325,18 +337,18 @@ namespace Diccionario_de_Datos
              * Métodos que agregan en el datagrid para la creación de registros, usar los atributos
              **************************************************************************************/
              
-             dataGridView3.Columns.Add(enti.dameNombre(), atri.dameNombre());
-             dataGridView4.Columns.Add(enti.dameNombre(), atri.dameNombre());
+          //   dataGridView3.Columns.Add(enti.dameNombre(), atri.dameNombre());
+            // dataGridView4.Columns.Add(enti.dameNombre(), atri.dameNombre());
 
-             if(atri.dameTI() == 2)
-             {
-                claves = new List<indicep>();
-                nombre_indice = atri.dameNombre();
-            }
-            if(atri.dameTI() == 3)
-            {
-                nombre_indice = atri.dameNombre();
-            }
+      //       if(atri.dameTI() == 2)
+        //     {
+          //      claves = new List<indicep>();
+            //    nombre_indice = atri.dameNombre();
+           // }
+           // if(atri.dameTI() == 3)
+           // {
+             //   nombre_indice = atri.dameNombre();
+           // }
             //tabControl1.TabPages[tablas.Count+1].Controls.Add(tablas[tablas.Count-1]);
             //registro[registro.Count - 1].Write(dataGridView3.Rows.ToString());
 
@@ -386,7 +398,8 @@ namespace Diccionario_de_Datos
             if(nuevo)
                 bw.Close(); // Se cierra el archivo de modificación para poder usarlo de lectura 
             br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));  //Objeto de lectura del archivo
-            MessageBox.Show("Cabecera ->" + br.ReadInt64()); // Se lee la cabecera del diccionario de datos
+            //MessageBox.Show("Cabecera ->" + br.ReadInt64()); // Se lee la cabecera del diccionario de datos
+            br.ReadInt64();
             long apuntador = 8; // se inicia desde la posición de la cabecera 
             string n;
             int tam;
@@ -420,7 +433,7 @@ namespace Diccionario_de_Datos
                 // Se iguala el apuntador a la posición actual en el archivo
                 if (n == tempNombre)
                 {
-                    MessageBox.Show("Apuntador del archivo\n" + apuntador);
+                   // MessageBox.Show("Apuntador del archivo\n" + apuntador);
                     break;
                 }
                 apuntador = br.BaseStream.Position;   
@@ -626,20 +639,51 @@ namespace Diccionario_de_Datos
          *  guardarlo en un archivo
          *  
          *  
-         *  contador   --> variable que cuenta las columnas de una entidad para  los registros
+         *  contador      ---> variable que cuenta las columnas de una entidad para  los registros
          *  datagridView3 ---> Tabla de inserción de registros
          *  datagridView4 ---> Tabla de índice primario
          * 
          * *********************************************************************************/
-        private void insertarRegistro_Click(object sender, EventArgs e)
+         private void insertarRegistro_Click(object sender, EventArgs e)
          {
-            // DECLARACIÓN DE VARIABLES PARA MANIPULAR EL DATAGRID 
+            string sVal;
+            long ap;
+            int auxCol;
+            reg = new List<string>();
+            //Se asigna el apuntador del archivo 
+            dataGridView4.Rows.Add();
+            if (Ren == 0){
+                foreach (Atributo i in atributo){
+                    dataGridView4.Columns.Add(i.dameNombre(), i.dameNombre());
+                }
+                dataGridView4.Columns.Add("Direccion siguiente", "Direccion siguiente");
+            }
+            for (auxCol = 0; auxCol <= dataGridView3.Columns.Count; auxCol++){
+               if(auxCol == 0){
+                  dataGridView4.Rows[Ren].Cells[auxCol].Value = "direccion ";
+              }
+              else{
+                reg.Add(dataGridView3.Rows[0].Cells[auxCol-1].Value.ToString());
+                dataGridView4.Rows[Ren].Cells[auxCol].Value =  reg[auxCol-1];
+              }
+            }
+            dataGridView4.Rows[Ren].Cells[auxCol].Value = -1;
+            Ren++;
+        
 
+            //dataGridView4.Rows.Add(reg[0],reg[1]);
+            //Se obtiene el primer campo del tagrid de registros
+
+            /*
+            // DECLARACIÓN DE VARIABLES PARA MANIPULAR EL DATAGRID 
+            string _nombre = "";
+            int nombre2 = 0;
             int posicion  = 1;
-            long cabRegistro = 0; 
+            long cabRegistro = 0;
+            
             int i;
             List<string> nColumna = new List<string>();
-           
+            
             dataGridView4.Rows.Add();
             if(renglon == 0)
             {
@@ -653,12 +697,75 @@ namespace Diccionario_de_Datos
                     //Se obtiene el tamaño del archivo de registro
                     // Se usa [registro.Count-1] para saber con que atributo estamos trabajando
                     cabRegistro = registro[registro.Count - 1].BaseStream.Length;
-                    registro[registro.Count - 1].Write(cabRegistro);  
-                } 
-            }  
-         }
-         public void ordenaIndice(List<indicep> claves)
-         {
+                    registro[registro.Count - 1].Write(cabRegistro);
+                    dataGridView4.Rows[renglon].Cells[contador].Value = cabRegistro;
+                }
+                else if( contador >= 1)
+                {
+                    int tam;
+                    if(atributo[contador-1].dameTipo() == 'C')
+                    {
+                        _nombre = dataGridView3.Rows[0].Cells[contador - 1].Value.ToString();
+                        tam = _nombre.Length;
+                        while (tam < atributo[contador - 1].dameLongitud() - 1)
+                        {
+                            _nombre += " ";
+                            tam++;
+                        }
+                        dataGridView4.Rows[renglon].Cells[contador].Value = _nombre;
+                        registro[registro.Count - 1].Write(_nombre);
+
+                    }
+                    else if(atributo[contador - 1].dameTipo() == 'E')
+                    {
+                        nombre2 = Convert.ToInt32(dataGridView3.Rows[0].Cells[contador - 1].Value);
+                        dataGridView4.Rows[renglon].Cells[contador].Value = nombre2;
+                        registro[registro.Count - 1].Write(nombre2);
+                    }
+                    buscaRegistros();
+                    //agregaIndices();
+                    MessageBox.Show("Insertando registro");
+                }
+            }
+            registro[registro.Count - 1].Write((long)-1);
+            registro[registro.Count - 1].BaseStream.Seek(registro[registro.Count - 1].BaseStream.Length - 8, SeekOrigin.Begin);
+            cabRegistro = registro[registro.Count - 1].BaseStream.Length;
+            registro[registro.Count - 1].Write(cabRegistro);
+            dataGridView4.Rows[renglon].Cells[contador].Value = cabRegistro;
+            renglon++;
+            */
+        }
+        public void buscaRegistros()
+        {
+            List<string> nomb = new List<string>();
+            int i = 0;
+            
+            while(i < registros.Count)
+            {
+                foreach (Atributo a in atributo)
+                {
+                    if (registros[i] == a.dameNombre())
+                    {
+                        indices ax;
+                        ax.val = i;
+                        ax.tipo = a.dameTI();
+                        listaIndices.Add(ax);
+                        break;
+                    }
+                }
+                i++;
+            }
+        }
+        public void agregaIndices()
+        {
+            int tam;
+            
+
+
+            
+        }
+        public void ordenaIndice(List<indicep> claves)
+        {
 
 
            // claves = claves.OrderBy(indicep => indicep.clave);
@@ -817,13 +924,73 @@ namespace Diccionario_de_Datos
             }
 
         }
+        
+        private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            string nombre;
+            string n;
+            long apuntador;
+            long final = 0;
+            nombre = comboBox6.Text;
+            string xx;
+            Col = 0;
+            Ren = 0;
+            bw.Close();
+            // Se manda llamar a la apertura del archivo
+            br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
+            apuntador = br.ReadInt64();
+            while (apuntador < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();//direccion entidad
+                br.ReadInt64(); // direccion atributo  
+                br.ReadInt64(); // direccion del registro
+                br.ReadInt64(); // direccion siguiente
+                if (nombre == n)
+                {
+                   // MessageBox.Show("Nombre Entidad ->" + n);
+                    apuntador = br.BaseStream.Position;
+                    //MessageBox.Show("Apuntador a atributo ->" + apuntador);
+                    while (final != -3)
+                    {
+                        // br.ReadString(); // nombre atributo
+                        xx = br.ReadString();
+                        dataGridView3.Columns.Add(enti.dameNombre(), xx);
+                        registros.Add(xx);
+                        br.ReadChar();//tipo
+                        br.ReadInt32();// longitud
+                        br.ReadInt64(); // direccion atributo
+                        br.ReadInt32(); // tipo de indice
+                        br.ReadInt64(); // direccion indice
+                        final = br.ReadInt64(); // direccion siguiente
+
+                    }
+
+                    break;
+                }
+                apuntador = br.BaseStream.Position;
+            }
+            br.Close();
+            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
+            foreach (Entidad i in entidad)
+            {
+                if (i.dameDA() == apuntador)
+                {
+
+                }
+            }
+        }
+
+        
+        
 
 
 
         /**************************************************************************************************************************
          *  Se crea un nuevo diccionario de datos 
          **************************************************************************************************************************/
-        private void nuevoProyecto(object sender, EventArgs e)
+         private void nuevoProyecto(object sender, EventArgs e)
          {
             bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Create));
             bw.Write(Cab);
