@@ -77,9 +77,6 @@ namespace Diccionario_de_Datos
             public int tipo;
         }
 
-        BinaryWriter fRegistro;
-        BinaryWriter fIndice;
-
         // VARIABLES PARA ENLAZAR ATRIBUTOS CON SU ENTIDAD
         bool nuevoAtributo;
         bool botonAtributo;
@@ -104,8 +101,8 @@ namespace Diccionario_de_Datos
         /***********************************************************************************************************
          *  CONSTRUCTOR DE LA CLASE PRINCIPAL   
          ***********************************************************************************************************/
-         public Principal()
-         {
+        public Principal()
+        {
             InitializeComponent();
             posx = 0;
             posy = 0;
@@ -278,7 +275,7 @@ namespace Diccionario_de_Datos
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+           
         }
         /*********************************************************************************
          *      Boton Crear Atributo
@@ -288,7 +285,7 @@ namespace Diccionario_de_Datos
          *********************************************************************************/
          private void creaAtributo(object sender, EventArgs e)
          {
-
+            
             atri = new Atributo();              // Objeto de la clase atributo
             int cont;                           // Variable contador      
             _nombre = textBox2.Text;            // Se asigna a la variable nombre, el nombre del atributo dada por el textBox2
@@ -473,8 +470,8 @@ namespace Diccionario_de_Datos
 
          private void seleccionaEntidad(object sender, EventArgs e)
          {
-
-
+            
+           
             contador = 0;
             dataGridView3.Rows.Clear();
             dataGridView3.Columns.Clear();
@@ -498,8 +495,8 @@ namespace Diccionario_de_Datos
            //     dataGridView4.Rows.Remove(dataGridView4.CurrentRow);
 
            // }
-            
-            
+           
+             
             /*
             tabControl1.TabPages.Add(comboBox1.Text);
             tabControl1.TabIndex = entidad.Count;
@@ -560,7 +557,6 @@ namespace Diccionario_de_Datos
             button8.Hide();
             long tam;
             long sig;
-            
             if(nuevo)
             bw.Close();
             br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
@@ -581,7 +577,7 @@ namespace Diccionario_de_Datos
                 sig = br.ReadInt64();
                 if (sig == -2)
                 {
-
+                    
                     enti.ponteDireccionSig(-2);
                     entidad.Add(enti);
                     break;
@@ -641,7 +637,7 @@ namespace Diccionario_de_Datos
         }
         private void tabPage1_Click(object sender, EventArgs e)
         {
-
+            
         }
         /***********************************************************************************
          * 
@@ -659,72 +655,26 @@ namespace Diccionario_de_Datos
             string sVal;
             long ap;
             int auxCol;
-            int longitud;
-            long direccion;
-            int long1;
-            string long2;
-            int iTam = 0;
-            char dato = ' ';
             reg = new List<string>();
             //Se asigna el apuntador del archivo 
             dataGridView4.Rows.Add();
-            // INSERCIÓN EN LA TABLA DE REGISTROS
             if (Ren == 0){
                 foreach (Atributo i in atributo){
                     dataGridView4.Columns.Add(i.dameNombre(), i.dameNombre());
-                    
+                 
                 }
                 dataGridView4.Columns.Add("Direccion siguiente", "Direccion siguiente");
             }
-            for (auxCol = 0; auxCol <= dataGridView3.Columns.Count; auxCol++)
-            {
-                if (auxCol == 0)
-                {
-                  // SE OBTIENE LA DIRECCIÓN DEL REGISTRO
-                  dataGridView4.Rows[Ren].Cells[auxCol].Value = fRegistro.BaseStream.Length;
-                  direccion = Convert.ToInt64(dataGridView4.Rows[Ren].Cells[auxCol].Value);
-                  fRegistro.Write(fRegistro.BaseStream.Length);
+            for (auxCol = 0; auxCol <= dataGridView3.Columns.Count; auxCol++){
+               if(auxCol == 0){
+                  dataGridView4.Rows[Ren].Cells[auxCol].Value = "direccion ";
               }
-              else
-              {
-                dato = buscaTipoDato(dataGridView3.Columns[Col].HeaderText);
-                iTam = buscaLongitud(dataGridView3.Columns[Col].HeaderText);
-                if (dato == 'E')
-                {
-                    long1 = Convert.ToInt32(dataGridView3.Rows[0].Cells[auxCol - 1].Value); // valor de la tabla
-                    dataGridView4.Rows[Ren].Cells[auxCol].Value = long1;
-                    fRegistro.Write(long1);
-                        reg.Add(long1.ToString());
-                }
-                else if(dato == 'C')
-                {
-                   long2 = dataGridView3.Rows[0].Cells[auxCol - 1].Value.ToString();
-                   for(int c = long2.Length; c < iTam-1; c++){
-                    long2 += " ";
-                }
-                fRegistro.Write(long2);
-                reg.Add(long2);
-                dataGridView4.Rows[Ren].Cells[auxCol].Value = reg[auxCol - 1];
+              else{
+                reg.Add(dataGridView3.Rows[0].Cells[auxCol-1].Value.ToString());
+                dataGridView4.Rows[Ren].Cells[auxCol].Value =  reg[auxCol-1];
+              }
             }
-
-
-        }
-    }
-    MessageBox.Show("HASTA AQUI ESTA BIEN");
-    if(Ren > 0)
-    {
-                dataGridView4.Rows[Ren-1].Cells[auxCol].Value = dataGridView4.Rows[Ren].Cells[0].Value;// fRegistro.BaseStream.Length;
-                dataGridView4.Rows[Ren].Cells[auxCol].Value = -1;
-                fRegistro.Write(Convert.ToInt64(-1));
-              //  MessageBox.Show("tamaño del archivo " + fRegistro.BaseStream.Length);
-            }
-            else
-            {
-                dataGridView4.Rows[Ren].Cells[auxCol].Value = -1;
-                fRegistro.Write(Convert.ToInt64(-1));
-            }
-
-
+            dataGridView4.Rows[Ren].Cells[auxCol].Value = -1;
             Ren++;
             // METODO ENCARGADO PARA ENVIAR A SUS RESPECTIVOS ARCHIVOS
             // buscaRegistros();
@@ -733,7 +683,6 @@ namespace Diccionario_de_Datos
             int val;
             for(int i = 0; i < dataGridView3.Columns.Count; i++)
             {
-                tipo = 0;
                 tipo = buscaTipoIndice(dataGridView3.Columns[i].HeaderText);
              //   MessageBox.Show("Atributo " + dataGridView3.Rows[0].Cells[i].Value + "\nTipo" + tipo);
                 //Switch que controla el tipo de cada  atributo para saber a cual indice mandar
@@ -741,30 +690,25 @@ namespace Diccionario_de_Datos
                 switch(tipo) 
                 {
                     case 0:
-                        MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo );
                     break;
                     case 1:
-                        MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
                         break;
                     case 2:
-                        MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
                         break;
                     case 3:
-                        MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
                         break;
                     case 4:
-                        MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
                         //MessageBox.Show("Dentro de arbol b+");
-                        ////val = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
-                        // insertaClave(8, val , tam);
+                        val = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
+                        insertaClave(8, val , tam);
                         break;
                     case 5:
-                    break;
+                        break;
 
                 }
 
             }
-            
+           
         }
         private Arbol creaNodo(long ap, int cb)
         {
@@ -774,7 +718,7 @@ namespace Diccionario_de_Datos
             nodo.apuntador[0] = ap;
             nodo.clave[0] = cb;
             return nodo;
-            
+           
         }
         public void insertaClave(long ap, int cb, int i)
         {
@@ -787,10 +731,10 @@ namespace Diccionario_de_Datos
             else if(i < 4)
             {
                 insertaOrdenado(cb, ap);
-                
+               
 
             }
-            else  if( i == 4)
+            else if( i == 4)
             {
                 MessageBox.Show("Nodo lleno");
                 tam = 0;
@@ -826,58 +770,6 @@ namespace Diccionario_de_Datos
             }
         }
 
-        public int buscaLongitud(string nombre)
-        {
-            int tipo = 0;
-            long final = 0;
-            string nombreEntidad = comboBox6.SelectedItem.ToString();
-            bw.Close();
-            br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
-            long apuntador;
-            apuntador = br.ReadInt64();
-            string n;
-            long pAtributo = 0;
-            string nApuntador;
-            while (apuntador < br.BaseStream.Length)
-            {
-                n = br.ReadString();
-                br.ReadInt64();//direccion entidad
-                pAtributo = br.ReadInt64(); // direccion atributo  
-                br.ReadInt64(); // direccion del registro
-                br.ReadInt64(); // direccion siguiente
-                if (nombreEntidad == n)
-                {
-                    br.BaseStream.Position = pAtributo;
-                    apuntador = br.BaseStream.Position;
-                    
-
-                    while (final != -3)
-                    {
-
-                        nApuntador = br.ReadString();
-                        br.ReadChar();//tipo   
-                        if (nombre == nApuntador)
-                        {
-                            tipo = br.ReadInt32(); // Longitud
-                        }
-                        else
-                        {
-                            br.ReadInt32();
-                        }
-                        br.ReadInt64(); // direccion atributo
-                        br.ReadInt32(); // TIPO DE INDICE
-                        br.ReadInt64(); // direccion indice
-                        final = br.ReadInt64(); // direccion siguiente
-                        //MessageBox.Show("final ->" + final);
-                    }
-
-                }
-                apuntador = br.BaseStream.Position;
-            }
-            br.Close();
-            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
-            return tipo;
-        }
         public int buscaTipoIndice(string nombre)
         {
             int tipo = 0;
@@ -888,34 +780,27 @@ namespace Diccionario_de_Datos
             long apuntador;
             apuntador = br.ReadInt64();
             string n;
-            string nAtributo = "";
-            long pAtributo;
-            while (apuntador < br.BaseStream.Length)
+            while(apuntador < br.BaseStream.Length)
             {
                 n = br.ReadString();
                 br.ReadInt64();//direccion entidad
-                pAtributo = br.ReadInt64(); // direccion atributo  
+                br.ReadInt64(); // direccion atributo  
                 br.ReadInt64(); // direccion del registro
                 br.ReadInt64(); // direccion siguiente
-                if (nombreEntidad == n)
+                if(nombreEntidad == n)
                 {
-                    //apuntador = br.BaseStream.Position;
-                    apuntador = pAtributo;
-                    MessageBox.Show("Dirección atributo : " + pAtributo);
-                    br.BaseStream.Position = pAtributo;
+                    apuntador = br.BaseStream.Position;
                     while (final != -3)
                     {
-
-                        nAtributo = br.ReadString(); // nombre
+                        
+                        n = br.ReadString();
                         br.ReadChar();//tipo
                         br.ReadInt32();// longitud
                         br.ReadInt64(); // direccion atributo
-                        if (nombre == nAtributo)
-                        {
+                        if(nombre == n){
                             tipo = br.ReadInt32(); // TIPO DE INDICE
                         }
-                        else
-                        {
+                        else{
                             br.ReadInt32();
                         }
                         br.ReadInt64(); // direccion indice
@@ -931,63 +816,6 @@ namespace Diccionario_de_Datos
             return tipo;
 
         }
-        /**************************************************************************************************************************************
-         * METODO BUSCA TIPO DE DATO
-         * PARAMETRO : Recibe el nombre del atributo para obtener su tipo  
-         **************************************************************************************************************************************/
-         public  char buscaTipoDato(string nombre)
-         {
-            char tipo = ' ';
-            long final = 0;
-            string nombreEntidad = comboBox6.SelectedItem.ToString();
-            bw.Close();
-            br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
-            long apuntador;
-            apuntador = br.ReadInt64();
-            string n;
-            string nAtributo = "";
-            long pAtributo;
-            while (apuntador < br.BaseStream.Length)
-            {
-                n = br.ReadString();
-                br.ReadInt64();//direccion entidad
-                pAtributo = br.ReadInt64(); // direccion atributo  
-                br.ReadInt64(); // direccion del registro
-                br.ReadInt64(); // direccion siguiente
-                if (nombreEntidad == n)
-                {
-                    //apuntador = br.BaseStream.Position;
-                    apuntador = pAtributo;
-                    MessageBox.Show("Dirección atributo : " + pAtributo);
-                    br.BaseStream.Position = pAtributo;
-                    while (final != -3)
-                    {
-
-                        nAtributo = br.ReadString(); // nombre
-                        if (nombre == nAtributo)
-                        {
-                           tipo = br.ReadChar(); // TIPO
-                       }
-                       else
-                       {
-                            br.ReadChar();//tipo
-                        }
-                        br.ReadInt32();// longitud
-                        br.ReadInt64(); // direccion atributo
-                        br.ReadInt32();
-                        br.ReadInt64(); // direccion indice
-                        final = br.ReadInt64(); // direccion siguiente
-                        //MessageBox.Show("final ->" + final);
-                    }
-
-                }
-                apuntador = br.BaseStream.Position;
-            }
-            br.Close();
-            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
-            return tipo;
-        }
-
         public void busca()
         {
             List<string> nomb = new List<string>();
@@ -1049,7 +877,7 @@ namespace Diccionario_de_Datos
          ************************************************************************************/
          private void comboIndice_SelectedIndexChanged(object sender, EventArgs e)
          {
-
+            
             switch(comboIndice.SelectedItem.ToString())
             {
                 case "Sin tipo":
@@ -1169,33 +997,13 @@ namespace Diccionario_de_Datos
             }
 
         }
-        /****************************************************************************************
-         * CONTROL DE ARCHIVOS .IDX Y .DAT
-         ****************************************************************************************/
-         public BinaryWriter cargaRegistro(string nRegistro)
-         {
-            BinaryWriter arch;
-            if (File.Exists(nRegistro))
-            {
-                arch = new BinaryWriter(File.Open(nRegistro, FileMode.Create));
-
-            }
-            else
-            {
-                //MessageBox.Show("Se creo " + nRegistro);
-                arch = new BinaryWriter(File.Open(nRegistro, FileMode.Create));
-            }
-            return arch;
-        }
         
         private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
-
-            string archivo;
+            
             string nombre;
             string n;
             long apuntador;
-            long pAtributo = 0;
             long final = 0;
             nombre = comboBox6.Text;
             string xx;
@@ -1207,14 +1015,12 @@ namespace Diccionario_de_Datos
             nIndice = comboBox6.Text;
             nEntidad += ".dat";
             nIndice += ".idx";
-            fRegistro = cargaRegistro(nEntidad);
-            fIndice = cargaRegistro(nIndice);
             /******************************************************************
             * Se añade a la lista de registros, el nombre del regristro y se
             * crea el archivo del registro para su utilización.
             ******************************************************************/
-         //   registro.Add(new BinaryWriter(File.Open(nEntidad, FileMode.Create)));
-          //  indice.Add(new BinaryWriter(File.Open(nIndice, FileMode.Create)));
+            registro.Add(new BinaryWriter(File.Open(nEntidad, FileMode.Create)));
+            indice.Add(new BinaryWriter(File.Open(nIndice, FileMode.Create)));
 
             // Se manda llamar a la apertura del archivo
             br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
@@ -1223,21 +1029,18 @@ namespace Diccionario_de_Datos
             {
                 n = br.ReadString();
                 br.ReadInt64();//direccion entidad
-                pAtributo = br.ReadInt64(); // direccion atributo  
+                br.ReadInt64(); // direccion atributo  
                 br.ReadInt64(); // direccion del registro
                 br.ReadInt64(); // direccion siguiente
                 if (nombre == n)
                 {
                    // MessageBox.Show("Nombre Entidad ->" + n);
-                    apuntador = pAtributo;
-                    br.BaseStream.Position = pAtributo;
-                    MessageBox.Show("Dirección atributo ->" + pAtributo);
-                   // MessageBox.Show("Apuntador a atributo ->" + apuntador);
+                    apuntador = br.BaseStream.Position;
+                    //MessageBox.Show("Apuntador a atributo ->" + apuntador);
                     while (final != -3)
                     {
                         // br.ReadString(); // nombre atributo
                         xx = br.ReadString();
-                        MessageBox.Show("Atributo ==> " + xx);
                         dataGridView3.Columns.Add(enti.dameNombre(), xx);
                         registros.Add(xx);
                         br.ReadChar();//tipo
@@ -1293,7 +1096,7 @@ namespace Diccionario_de_Datos
             // 1 variable auxiliar para el apuntador
             // 1 variable auxiliar para el apuntador siguiente
             // 1 variable para obtener el nombre del registro
-
+            
             string _nombre;
             int tam;
             long ap;
