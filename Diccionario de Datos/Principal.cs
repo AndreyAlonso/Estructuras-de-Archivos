@@ -16,6 +16,16 @@ namespace Diccionario_de_Datos
 {
     public partial class Principal : Form
     {
+        /****************************************************************************************************
+         *                                                                                  INDICE SECUNDARIO
+         ****************************************************************************************************/
+        long[,] indiceSecundario;
+        int topeClave;
+        int[] tope;
+        bool primero;
+        int pos;
+        int cont;
+        /*****************************************************************************************************/
 
         private int Col;
         private int Ren;
@@ -99,6 +109,13 @@ namespace Diccionario_de_Datos
         private List<Arbol> Arbol = new List<Arbol>();
         private int tam;
 
+
+        //
+        int[] claveSecundario;
+       // long[,] indiceSecundario;
+        int iRen;
+        int iCol;
+        int iCol2;
         /*******************************************************************************************************/
 
         /***********************************************************************************************************
@@ -557,12 +574,85 @@ namespace Diccionario_de_Datos
          *****************************************************************************/
          private void abreArchivo(object sender, EventArgs e)
          {
+        
+            string nombre = " ";
+            //variables a utilizar para el archivo
+            long apuntadorEntidad = 0;
+            long apuntadorAtributo = 0;
+            long pos = 0;
+            Archivo archivo = new Archivo(nombre);
+            if (nuevo)
+                bw.Close();
+         
+            if (archivo.ShowDialog() == DialogResult.Cancel)
+            {
+                nombre = archivo.nombre + ".bin";
+                if (File.Exists(nombre)) 
+                {
+                    br = new BinaryReader(File.Open(nombre, FileMode.Open));
+                    nuevo = true;
+                    button7.Hide();
+                    button8.Hide();
+                    MessageBox.Show("Abriendo archivo...");
+                    /********************************************/
+                    pos = br.ReadInt64(); // cabecera
+                    while(pos < br.BaseStream.Length)
+                    {
+                        enti = new Entidad();
+                        enti.nombrate(br.ReadString());
+                        enti.direccionate(br.ReadInt64());
+                        enti.ponteDireccionAtributo(br.ReadInt64());
+                        enti.ponteDireccionRegistro(br.ReadInt64());
+                        enti.ponteDireccionSig(br.ReadInt64());
+                        entidad.Add(enti);
+                       
+                        if (enti.dameDSIG() == -2)
+                        {
+                     
+                            while(apuntadorAtributo != -3)
+                            {
+                                atri = new Atributo();
+                                atri.nombrate(br.ReadString());
+                                atri.ponteTipo(br.ReadChar());
+                                atri.ponteLongitud(br.ReadInt32());
+                                atri.direccionate(br.ReadInt64());
+                                atri.ponteTipoIndice(br.ReadInt32());
+                                atri.ponteDirIndice(br.ReadInt64());
+                                atri.ponteDirSig(br.ReadInt64());
+                                apuntadorAtributo = atri.dameDirSig();
+                                atributo.Add(atri);                               
+
+                            }
+                      
+                        }
+                        pos = br.BaseStream.Position;
+
+
+
+
+
+                    }
+                    /********************************************/
+                    imprimeLista(entidad);
+                    imprimeAtributo(atributo);
+                    br.Close();
+                    bw = new BinaryWriter(File.Open(nombre, FileMode.Open));
+                }
+                else
+                {
+                    MessageBox.Show("El proyecto no existe!");
+                }
+                
+            }
+
+
+            /*
+
             button8.Hide();
             long tam;
             long sig;
             
-            if(nuevo)
-            bw.Close();
+            
             br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
             button7.Hide();
             string swap;
@@ -585,6 +675,7 @@ namespace Diccionario_de_Datos
                     enti.ponteDireccionSig(-2);
                     entidad.Add(enti);
                     break;
+                  
                 }
                 else
                 {
@@ -617,7 +708,7 @@ namespace Diccionario_de_Datos
             br.Close();
             bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
             nuevo = true;
-
+            */
 
         }
         private void abreAtributos(BinaryReader br, long tam)
@@ -665,6 +756,7 @@ namespace Diccionario_de_Datos
             string long2;
             int iTam = 0;
             char dato = ' ';
+            
             reg = new List<string>();
             //Se asigna el apuntador del archivo 
             dataGridView4.Rows.Add();
@@ -741,16 +833,123 @@ namespace Diccionario_de_Datos
                 switch(tipo) 
                 {
                     case 0:
-                        MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo );
+                      //  MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo );
                     break;
                     case 1:
                         MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
                         break;
                     case 2:
-                        MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
+                        MessageBox.Show("CASE 2\natributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
+                        // Se envia al indice primario el valor 
+                        indicep ip;
+                        ip.clave = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
+                        ip.dir = Convert.ToInt64(dataGridView4.Rows[Ren-1].Cells[0].Value);
+                        claves.Add(ip);
+                        ordenaIndicePrimario(claves);
+                        
                         break;
                     case 3:
+                        if(primero == false)
+                        {
+                            for(int f = 0; f < 10; f++)
+                            {
+                                tope[f] = 1;
+                            }
+                            tablaSecundario.Rows.Add();
+                            indiceSecundario[0,0] = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
+                            indiceSecundario[0,1] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
+                            MessageBox.Show("[" + topeClave + "," + tope[pos] + "]");
+                            tablaSecundario.Rows[0].Cells[0].Value = indiceSecundario[0,0];
+                            tablaSecundario.Rows[0].Cells[1].Value = indiceSecundario[0,1];
+                            
+                            //  tope[0]++;
+                            primero = true;
+                            //topeClave++;
+                        }
+                        else
+                        {
+                            int tempClave = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
+                            bool existe = false;
+                            cont = 0;
+                            while(cont < 10)
+                            {
+                                if(indiceSecundario[cont,0] == tempClave) // solo dice en que clave esta pero no la posicion de direccion
+                                {
+                                    existe = true;
+                                    pos = cont;
+                                    topeClave = pos;
+                                }
+                                cont++;
+                            }
+                       
+                            if (existe)
+                            {
+                                tope[pos]++;
+                                
+                                MessageBox.Show("[" + topeClave + "," + tope[pos]+ "]");
+                                indiceSecundario[topeClave, tope[pos]] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
+                                tablaSecundario.Rows[topeClave].Cells[tope[pos]].Value = indiceSecundario[topeClave, tope[pos]];
+                                
+                            }
+                            else
+                            {
+                                topeClave = pos;
+                                pos++;
+                                tope[pos] = 1;
+                                topeClave++;
+                                tablaSecundario.Rows.Add();
+                                MessageBox.Show("[" + topeClave + "," + tope[pos] + "]");
+                                indiceSecundario[topeClave,0] = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
+                                indiceSecundario[1, tope[pos]] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
+                                MessageBox.Show("Edad " + indiceSecundario[topeClave, 0] + "  dirección " + indiceSecundario[1, tope[pos]]);
+
+                                tablaSecundario.Rows[topeClave].Cells[0].Value = indiceSecundario[topeClave,0];
+                                tablaSecundario.Rows[topeClave].Cells[1].Value = indiceSecundario[1, tope[pos]];
+                               
+                            }
+                        }
+
+                        /*
                         MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
+                        if(iRen == 0)
+                        {
+                            claveSecundario[iRen] = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
+                            indiceSecundario[iRen,iCol] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
+                        }
+                        else
+                        {
+                            int temp = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
+                            bool existe = false;
+                            for(int h = 0; h < iRen; h++)
+                            {
+                                if(temp == claveSecundario[h])
+                                {
+                                    existe = true;
+                                    break;
+                                }
+
+                            }
+                            if(existe == true)
+                            {
+                                indiceSecundario[iRen, iCol] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
+                                iCol++; 
+                            }
+                            else{
+                                iRen++;
+                                iCol2 = 0;
+                                claveSecundario[iRen] = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
+                                indiceSecundario[iRen, iCol2] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
+
+                            }
+
+
+                        }
+                        
+
+            */
+
+
+
                         break;
                     case 4:
                         MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
@@ -764,6 +963,22 @@ namespace Diccionario_de_Datos
                 }
 
             }
+            
+        }
+        public void ordenaIndicePrimario(List<indicep> claves)
+        {
+            indicePrimario.Rows.Clear();
+            claves = claves.OrderBy(indicep => indicep.clave).ToList();
+
+            foreach(indicep c in claves)
+            {
+                indicePrimario.Rows.Add(c.clave, c.dir);
+                fIndice.Write(c.clave);
+                fIndice.Write(c.dir);
+              
+
+            }
+           
             
         }
         private Arbol creaNodo(long ap, int cb)
@@ -1010,17 +1225,7 @@ namespace Diccionario_de_Datos
             }
         }
         
-        public void ordenaIndice(List<indicep> claves)
-        {
 
-
-           // claves = claves.OrderBy(indicep => indicep.clave);
-            foreach(indicep n in claves)
-            {
-                indicePrimario.Rows.Add(n.clave, n.dir);
-            }
-            
-        }
 
         private void comboBox2_SelectedIndexChanged_1(object sender, EventArgs e)
         {
@@ -1198,9 +1403,21 @@ namespace Diccionario_de_Datos
             long pAtributo = 0;
             long final = 0;
             nombre = comboBox6.Text;
+            claves = new List<indicep>();
+            claveSecundario = new int[10];
+            indiceSecundario = new long[10, 10];
+            topeClave = 0;
+            tope = new int[10];
+            tope[0] = 1;
+            primero = false;
+            pos = 0;
+            cont = 0;
+            iRen = 0;
+            iCol = 0;
             string xx;
             Col = 0;
             Ren = 0;
+            iCol2 = 0;
             bw.Close();
             string nEntidad, nIndice;
             nEntidad = comboBox6.Text;
@@ -1264,21 +1481,46 @@ namespace Diccionario_de_Datos
             }
         }
 
-        
-        
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+
 
 
 
         /**************************************************************************************************************************
          *  Se crea un nuevo diccionario de datos 
          **************************************************************************************************************************/
-         private void nuevoProyecto(object sender, EventArgs e)
+        private void nuevoProyecto(object sender, EventArgs e)
          {
-            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Create));
-            bw.Write(Cab);
-            nuevo = true;
-            button7.Hide();
-            button8.Hide();
+
+            string nombre = " ";
+            Archivo archivo = new Archivo(nombre);
+
+            AddOwnedForm(archivo);
+    
+           if (archivo.ShowDialog() == DialogResult.Cancel )
+            {
+                nombre = archivo.nombre + ".bin";
+                MessageBox.Show("Nombre de archivo " + nombre);
+                bw = new BinaryWriter(File.Open(nombre, FileMode.Create));
+                bw.Write(Cab);
+                nuevo = true;
+                button7.Hide();
+                button8.Hide();
+            }
+          
+
+                
+
+            
+
+
+
+
         }
 
         /**************************************************************************************************************************

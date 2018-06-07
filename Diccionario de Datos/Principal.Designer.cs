@@ -92,6 +92,14 @@
             this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.tablaSecundario = new System.Windows.Forms.DataGridView();
+            this.cb = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -105,6 +113,7 @@
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.indicePrimario)).BeginInit();
             this.Índice.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaSecundario)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -146,6 +155,7 @@
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Tag = "";
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tabPage1
             // 
@@ -508,6 +518,8 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.tablaSecundario);
+            this.tabPage4.Controls.Add(this.label9);
             this.tabPage4.Controls.Add(this.indicePrimario);
             this.tabPage4.Controls.Add(this.label10);
             resources.ApplyResources(this.tabPage4, "tabPage4");
@@ -594,6 +606,54 @@
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
             // 
+            // label9
+            // 
+            resources.ApplyResources(this.label9, "label9");
+            this.label9.Name = "label9";
+            // 
+            // tablaSecundario
+            // 
+            this.tablaSecundario.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.tablaSecundario.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cb,
+            this.Column1,
+            this.Column2,
+            this.Column3,
+            this.Column4,
+            this.Column5});
+            resources.ApplyResources(this.tablaSecundario, "tablaSecundario");
+            this.tablaSecundario.Name = "tablaSecundario";
+            // 
+            // cb
+            // 
+            resources.ApplyResources(this.cb, "cb");
+            this.cb.Name = "cb";
+            // 
+            // Column1
+            // 
+            resources.ApplyResources(this.Column1, "Column1");
+            this.Column1.Name = "Column1";
+            // 
+            // Column2
+            // 
+            resources.ApplyResources(this.Column2, "Column2");
+            this.Column2.Name = "Column2";
+            // 
+            // Column3
+            // 
+            resources.ApplyResources(this.Column3, "Column3");
+            this.Column3.Name = "Column3";
+            // 
+            // Column4
+            // 
+            resources.ApplyResources(this.Column4, "Column4");
+            this.Column4.Name = "Column4";
+            // 
+            // Column5
+            // 
+            resources.ApplyResources(this.Column5, "Column5");
+            this.Column5.Name = "Column5";
+            // 
             // Principal
             // 
             resources.ApplyResources(this, "$this");
@@ -622,6 +682,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.indicePrimario)).EndInit();
             this.Índice.ResumeLayout(false);
             this.Índice.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaSecundario)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -692,6 +753,14 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox comboBox6;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.DataGridView tablaSecundario;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cb;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.Label label9;
     }
 }
 

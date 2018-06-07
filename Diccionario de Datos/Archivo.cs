@@ -14,18 +14,24 @@ namespace Diccionario_de_Datos
     {
         public string nombre { get; set; }
         public Boolean ACEPTAR { get; set; }
-        public Archivo()
+        public Archivo(string nombre)
         {
             ACEPTAR = false;
+            this.nombre = nombre;
             InitializeComponent();
         }
         
-        private void  creaArchivo(object sender, EventArgs e)
+        public void  creaArchivo(object sender, EventArgs e)
         {
             nombre = textBox1.Text;
             ACEPTAR = true;
+
             this.Close();
            
+        }
+        public string dameNombre()
+        {
+            return nombre;
         }
 
         private void button2_Click(object sender, EventArgs e)
