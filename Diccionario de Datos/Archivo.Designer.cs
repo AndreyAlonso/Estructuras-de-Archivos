@@ -54,12 +54,13 @@
             // button1
             // 
             this.button1.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(211, 123);
+            this.button1.Location = new System.Drawing.Point(196, 123);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 31);
+            this.button1.Size = new System.Drawing.Size(90, 31);
             this.button1.TabIndex = 2;
             this.button1.Text = "Crear";
             this.button1.UseVisualStyleBackColor = false;
@@ -79,11 +80,11 @@
             // 
             this.button2.BackColor = System.Drawing.SystemColors.HotTrack;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button2.ForeColor = System.Drawing.Color.White;
             this.button2.Location = new System.Drawing.Point(12, 123);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(77, 31);
+            this.button2.Size = new System.Drawing.Size(87, 31);
             this.button2.TabIndex = 4;
             this.button2.Text = "Cancelar";
             this.button2.UseVisualStyleBackColor = false;
@@ -103,7 +104,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Archivo";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Archivo";
+            this.Text = "\\";
             this.ResumeLayout(false);
             this.PerformLayout();
 

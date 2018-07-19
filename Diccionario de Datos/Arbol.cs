@@ -9,11 +9,13 @@ namespace Diccionario_de_Datos
     class Arbol
     {
         public long direccion { get; set; }
+        public int renglon { get; set; }
         public char tipo { get; set; }
         public long[] apuntador { get; set; }
         
         public int[]  clave { get; set; }
         public int tam { get; set; }
+        public int valor { get; set; }
 
         public Arbol()
         {
@@ -22,6 +24,8 @@ namespace Diccionario_de_Datos
             apuntador = new long[4];
             clave = new int[4];
             tam = 0;
+            renglon = 0;
+            valor = 0;
 
         }
         
