@@ -298,11 +298,17 @@ namespace Diccionario_de_Datos
                         switch(compara)
                         {
                             case -1:
+                                
                                // MessageBox.Show(entidad + " es antes que " + nEntidad);
                                 br.Close();
                                 bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                                bw.BaseStream.Position = antA + 54;
-                                bw.Write(bw.BaseStream.Length);
+                                if(antA > 0)
+                                {
+                                    bw.BaseStream.Position = antA + 54;
+                                    bw.Write(bw.BaseStream.Length);
+                                }
+
+                                
                                 bw.Close();
                                // br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
                                 bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
@@ -845,8 +851,10 @@ namespace Diccionario_de_Datos
         private void abreArchivo(object sender, EventArgs e)
         {
             string nombre = " ";
+            int totalEntidad = 0;
             long apuntadorAtributo = 0;
             long pos = 0;
+            long DSIG = 0;
             Archivo archivo = new Archivo(nombre);
             if (nuevo)
             {
@@ -860,12 +868,31 @@ namespace Diccionario_de_Datos
                 {
                     br = new BinaryReader(File.Open(nombre, FileMode.Open));
                     nuevo = true;
-                    button7.Hide();
-                    button8.Hide();
+                    button7.Hide(); // Se oculta boton Nuevo
+                    button8.Hide(); // Se oculta boton Abrir
                     /********************************************/
-                    pos = br.ReadInt64(); // cabecera
-                    cabecera.Text = pos.ToString();
-                    while (pos < br.BaseStream.Length)
+
+                    // 1. Se lee la cabecera del Archivo
+                    pos = br.ReadInt64();
+                    cabecera.Text = pos.ToString(); // Se muestra en el textbox
+
+                    // 2. Se posiciona el apuntador 
+                    br.BaseStream.Position = pos;
+                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        br.ReadString();
+                        br.ReadInt64();
+                        br.ReadInt64();
+                        br.ReadInt64();
+                        DSIG = br.ReadInt64();
+                        totalEntidad++;
+                        if (DSIG == -1){
+                            break;
+                        }
+                        br.BaseStream.Position = DSIG;
+                    }
+                    br.BaseStream.Seek((int)8, SeekOrigin.Begin);
+                    for(int i=0; i < totalEntidad; i++)
                     {
                         enti = new Entidad();
                         enti.nombrate(br.ReadString());
@@ -876,38 +903,8 @@ namespace Diccionario_de_Datos
                         enti.ponteDireccionRegistro(br.ReadInt64());
                         enti.ponteDireccionSig(br.ReadInt64());
                         entidad.Add(enti);
-
-                        if (enti.dameDSIG() == -2)
-                        {
-                            if (br.BaseStream.Position < br.BaseStream.Length)
-                            {
-                                while (apuntadorAtributo != -3)
-                                {
-                                    atri = new Atributo();
-                                    atri.nombrate(br.ReadString());
-                                    atri.ponteTipo(br.ReadChar());
-                                    atri.ponteLongitud(br.ReadInt32());
-                                    atri.direccionate(br.ReadInt64());
-                                    atri.ponteTipoIndice(br.ReadInt32());
-                                    atri.ponteDirIndice(br.ReadInt64());
-                                    atri.ponteDirSig(br.ReadInt64());
-                                    apuntadorAtributo = atri.dameDirSig();
-
-                                    atributo.Add(atri);
-
-                                }
-
-                            }
-
-
-                        }
-                        pos = br.BaseStream.Position;
-
-
-
-
-
                     }
+ 
                     /********************************************/
                     imprimeLista(entidad);
                     imprimeAtributo(atributo);
