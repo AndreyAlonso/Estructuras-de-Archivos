@@ -381,94 +381,56 @@ namespace Diccionario_de_Datos
 
             return -1;
         }
-        public void ordenaAnterior(long antA, long sigA, string entidad)
+
+
+        // Metodo que muestra la lista en el datagrid
+        private void imprimeLista(List<Entidad> entidad)
         {
-            long aux;
-            br.Close();
-            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
-            aux = br.ReadInt64();
-
-
-        }
-            /*
-            string n;
-            long DE = -1;
-            string nombre = "";
-            long apuntador, sig = 0;
-            long principio;
-            int compara = 0;
-            long dir = -1;
-            long apFinal = -1;
+            long pos = -1;
+            long DSIG = 0;
+            int totalEntidad = 0;
+            // Limpia el datagrid para una nueva inserción
+            dataGridView1.Rows.Clear();
+            entidad.Clear();
             bw.Close();
-            br = new BinaryReader(File.Open(nArchivo, FileMode.Open)); //Lectura del archivo
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            // 1. Se lee la cabecera del Archivo
+            pos = br.ReadInt64();
+            cabecera.Text = pos.ToString(); // Se muestra en el textbox
 
-            apuntador = br.ReadInt64(); // Lee la cabecera del Archivo
-            principio = apuntador;
-            DE = apuntador; //Cabecera
-            while (apuntador < br.BaseStream.Length) // ciclo mientras que apuntador sea menor al tamaño del archivo
+            // 2. Se posiciona el apuntador 
+            br.BaseStream.Position = pos;
+            while (br.BaseStream.Position < br.BaseStream.Length)
             {
-                if (sig != -2) // Condicional si aun existen entidades en el archivo
+                br.ReadString();
+                br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                totalEntidad++;
+                if (DSIG == -1)
                 {
-                    n = br.ReadString(); // nombre entidad
-                    compara = entidad.CompareTo(n);
-                    dir = br.
-                        ();//direccion entidad
-                    br.ReadInt64(); // direccion atributo  
-                    br.ReadInt64(); // direccion del registro
-                    sig = br.ReadInt64(); // direccion siguiente
-                    apFinal = br.BaseStream.Position; 
-                    if (DE == dir)
-                    {
-                        MessageBox.Show("DE: " + DE + "\ndir: " + dir);
-
-                        switch (compara)
-                        {
-                            case -1: // Este es el caso importante
-                                MessageBox.Show(entidad + " es antes que " + n);
-                                br.Close();
-                                bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                                if (apuntador == principio)
-                                {
-                                    posicion = 1;
-                                }
-                                else
-                                {
-                                    posicion = -2;
-                                }
-                                return dir;
-
-                                break;
-                            case 0:
-                                MessageBox.Show(entidad + " es igual que " + n);
-                             //   sig = -2;
-                               // posicion = -2;
-                                break;
-                            case 1:
-                                MessageBox.Show(entidad + " es despues que " + n);
-                            //    posicion = -2;
-
-
-                                break;
-                        }
-
-                    }
-
+                    break;
                 }
-                apuntador = br.BaseStream.Position;
+                br.BaseStream.Position = DSIG;
+            }
+            br.BaseStream.Seek((int)8, SeekOrigin.Begin);
+            for (int i = 0; i < totalEntidad; i++)
+            {
+                enti = new Entidad();
+                enti.nombrate(br.ReadString());
+                comboBox1.Items.Add(enti.dameNombre());
+                comboBox6.Items.Add(enti.dameNombre());
+                enti.direccionate(br.ReadInt64());
+                enti.ponteDireccionAtributo(br.ReadInt64());
+                enti.ponteDireccionRegistro(br.ReadInt64());
+                enti.ponteDireccionSig(br.ReadInt64());
+                entidad.Add(enti);
             }
             br.Close();
             bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-            return -2;
-            */
-       
-
-        // Metodo que muestra la lista en el datagrid
-        private void imprimeLista(List<Entidad> enti)
-        {
-            // Limpia el datagrid para una nueva inserción
-            dataGridView1.Rows.Clear();
             //Ciclo que inserta las entidades en el datagrid
-            foreach (Entidad i in enti)
+            foreach (Entidad i in entidad)
             {
                 if (i.dameNombre() == "ELIMINADO")
                 {
