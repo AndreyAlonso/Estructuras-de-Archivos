@@ -327,7 +327,7 @@ namespace Diccionario_de_Datos
                                 aux = sigEntidad;
                                 break;
                             case 1:
-                                MessageBox.Show(entidad + " es despues que " + nEntidad);
+                               // MessageBox.Show(entidad + " es despues que " + nEntidad);
                               
                                // br.Close();
                                 antA = dirEntidad;
@@ -335,7 +335,7 @@ namespace Diccionario_de_Datos
                                
                                 if (sigEntidad == -1)
                                 {
-                                    MessageBox.Show("Dentro de if");
+                                    //MessageBox.Show("Dentro de if");
                                     
                                     br.Close();
                                     bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
@@ -358,7 +358,7 @@ namespace Diccionario_de_Datos
                                     
                                     //Se llamara a la función ordenaAnterior
                                    // ordenaAnterior(antA, sigA, entidad);
-                                    MessageBox.Show("Direccion: " + antA + "\nSiguiente: " + sigA);
+                                   // MessageBox.Show("Direccion: " + antA + "\nSiguiente: " + sigA);
                                 }
                                
 
@@ -370,7 +370,7 @@ namespace Diccionario_de_Datos
                     {
                         br.BaseStream.Position = sigEntidad;
                         aux = sigEntidad;
-                        MessageBox.Show("Siguiente Entidad: "  + sigEntidad );
+                       // MessageBox.Show("Siguiente Entidad: "  + sigEntidad );
                       //  br.BaseStream.Seek(aux, SeekOrigin.Begin);
                     }
 
@@ -393,6 +393,7 @@ namespace Diccionario_de_Datos
             // Limpia el datagrid para una nueva inserción
             dataGridView1.Rows.Clear();
             entidad.Clear();
+           
             bw.Close();
             br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
             // 1. Se lee la cabecera del Archivo
@@ -406,7 +407,7 @@ namespace Diccionario_de_Datos
                 n = br.ReadString();
                 if(n == "NULL                          ")
                 {
-                    MessageBox.Show("Dentro de if ");
+                   // MessageBox.Show("Dentro de if ");
                     br.BaseStream.Position -= 30;
                     br.BaseStream.Position += 63;
                     br.ReadString(); 
@@ -423,7 +424,7 @@ namespace Diccionario_de_Datos
                 br.BaseStream.Position = DSIG;
             }
             br.BaseStream.Seek((int)8, SeekOrigin.Begin);
-            MessageBox.Show("Total Entidades: " + totalEntidad);
+           // MessageBox.Show("Total Entidades: " + totalEntidad);
             for (int i = 0; i < totalEntidad; i++)
             {
                 enti = new Entidad();
@@ -1866,24 +1867,26 @@ namespace Diccionario_de_Datos
          *************************************************************************************************************************/
         private void eliminaEntidad(object sender, EventArgs e)
         {
-            string borrar = textBox1.Text;
-            int cont = borrar.Length;
-            for (; cont < 29; cont++)
-            {
-                borrar += " "; 
-            }
-            string nombre = " ";
-            
+            // Declaración de variables *****************************
             string n;
-            long apuntadorAtributo = 0;
             long pos = 0;
             long DSIG = 0;
             long DANT = 0;
             long DE = 0;
             int compara;
+            long cabecera = -1;
+            string borrar = textBox1.Text;
+            int cont = borrar.Length;
+            for (; cont < 29; cont++)
+            {
+                borrar += " ";
+            }
+            /****************************************************8*/
+
             bw.Close();
             br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
             pos = br.ReadInt64();
+            cabecera = pos;
             br.BaseStream.Position = pos;
             while (br.BaseStream.Position <= br.BaseStream.Length)
             {
@@ -1900,6 +1903,16 @@ namespace Diccionario_de_Datos
                 compara = borrar.CompareTo(n);
                 if(compara == 0)
                 {
+                    if(cabecera == DE)
+                    {
+                        br.BaseStream.Position = 0;
+                        br.Close();
+                        bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                        bw.Write(DSIG);
+                        bw.Close();
+                        br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+
+                    }   
                     //MessageBox.Show("Se ha encontrado la entidad " + n);
                     //MessageBox.Show("Dirección Anterior " + DANT);
                     //MessageBox.Show("Dirección Entidad: " +  DE);
@@ -1915,11 +1928,7 @@ namespace Diccionario_de_Datos
                     bw.BaseStream.Position = DANT + 54;
                     bw.Write(DSIG);
                     bw.Close();
-                    br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
-                    
-                   
-
-                    
+                    br = new BinaryReader(File.Open(nArchivo, FileMode.Open));                    
                 }
                  DANT = DE;
                 if(DSIG == -1)
@@ -1927,9 +1936,9 @@ namespace Diccionario_de_Datos
                 else
                     br.BaseStream.Position = DSIG;
             }
-
-
-
+            br.Close();
+            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+            imprimeLista(entidad);
         }
         
     }
