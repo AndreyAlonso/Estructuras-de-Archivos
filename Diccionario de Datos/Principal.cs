@@ -388,6 +388,7 @@ namespace Diccionario_de_Datos
         {
             long pos = -1;
             long DSIG = 0;
+            string n=" ";
             int totalEntidad = 0;
             // Limpia el datagrid para una nueva inserción
             dataGridView1.Rows.Clear();
@@ -402,7 +403,14 @@ namespace Diccionario_de_Datos
             br.BaseStream.Position = pos;
             while (br.BaseStream.Position < br.BaseStream.Length)
             {
-                br.ReadString();
+                n = br.ReadString();
+                if(n == "NULL                          ")
+                {
+                    MessageBox.Show("Dentro de if ");
+                    br.BaseStream.Position -= 30;
+                    br.BaseStream.Position += 63;
+                    br.ReadString(); 
+                }
                 br.ReadInt64();
                 br.ReadInt64();
                 br.ReadInt64();
@@ -415,10 +423,16 @@ namespace Diccionario_de_Datos
                 br.BaseStream.Position = DSIG;
             }
             br.BaseStream.Seek((int)8, SeekOrigin.Begin);
+            MessageBox.Show("Total Entidades: " + totalEntidad);
             for (int i = 0; i < totalEntidad; i++)
             {
                 enti = new Entidad();
                 enti.nombrate(br.ReadString());
+                if (enti.dameNombre() == "NULL                          ")
+                {
+                    br.BaseStream.Position += 31;
+                    enti.nombrate(br.ReadString());
+                }
                 comboBox1.Items.Add(enti.dameNombre());
                 comboBox6.Items.Add(enti.dameNombre());
                 enti.direccionate(br.ReadInt64());
@@ -432,11 +446,11 @@ namespace Diccionario_de_Datos
             //Ciclo que inserta las entidades en el datagrid
             foreach (Entidad i in entidad)
             {
-                if (i.dameNombre() == "ELIMINADO")
+                if (i.dameNombre() == "NULL")
                 {
                     continue;
                 }
-                else if (i.dameNombre() == "ELIMINADO                    ")
+                else if (i.dameNombre() == "NULL                          ")
                 {
                     continue;
                 }
@@ -813,6 +827,7 @@ namespace Diccionario_de_Datos
         private void abreArchivo(object sender, EventArgs e)
         {
             string nombre = " ";
+            string n;
             int totalEntidad = 0;
             long apuntadorAtributo = 0;
             long pos = 0;
@@ -826,6 +841,7 @@ namespace Diccionario_de_Datos
             if (archivo.ShowDialog() == DialogResult.OK)
             {
                 nombre = archivo.nombre + ".bin";
+                nArchivo = nombre;
                 if (File.Exists(nombre))
                 {
                     br = new BinaryReader(File.Open(nombre, FileMode.Open));
@@ -853,11 +869,18 @@ namespace Diccionario_de_Datos
                         }
                         br.BaseStream.Position = DSIG;
                     }
-                    br.BaseStream.Seek((int)8, SeekOrigin.Begin);
+                    MessageBox.Show("Total de entidades: " + totalEntidad);
+                    br.BaseStream.Position = 8;
                     for(int i=0; i < totalEntidad; i++)
                     {
                         enti = new Entidad();
+                        MessageBox.Show("Posición " + br.BaseStream.Position);
                         enti.nombrate(br.ReadString());
+                        if(enti.dameNombre() == "NULL                          ")
+                        {
+                            br.BaseStream.Position  = br.BaseStream.Position + 31;                    
+                            enti.nombrate(br.ReadString());
+                        }
                         comboBox1.Items.Add(enti.dameNombre());
                         comboBox6.Items.Add(enti.dameNombre());
                         enti.direccionate(br.ReadInt64());
@@ -868,10 +891,11 @@ namespace Diccionario_de_Datos
                     }
  
                     /********************************************/
-                    imprimeLista(entidad);
-                    imprimeAtributo(atributo);
+                    
                     br.Close();
                     bw = new BinaryWriter(File.Open(nombre, FileMode.Open));
+                    imprimeLista(entidad);
+                   // imprimeAtributo(atributo);
                 }
                 else
                 {
@@ -1840,143 +1864,72 @@ namespace Diccionario_de_Datos
          * el nombre cambia a eliminado
          * la entidad anterior apunta al siguiente de la entidad eliminada
          *************************************************************************************************************************/
-         private void eliminaEntidad(object sender, EventArgs e)
-         {
-            // Para la eliminación se requiere:
-            // 1 variable auxiliar para el apuntador
-            // 1 variable auxiliar para el apuntador siguiente
-            // 1 variable para obtener el nombre del registro
-
-            string _nombre;
-            int tam;
-            long ap;
-            ap = 0;
-            int renglon = 0;
-            _nombre = textBox1.Text;
-            tam = _nombre.Length;
-
-            string n= "";
-            long de, da, dd, ds;
-            de = da = dd = ds = 0;
-            
-            while(tam < 29)
+        private void eliminaEntidad(object sender, EventArgs e)
+        {
+            string borrar = textBox1.Text;
+            int cont = borrar.Length;
+            for (; cont < 29; cont++)
             {
-                _nombre += " ";
-                tam++;
+                borrar += " "; 
             }
-
-            int i;
-            for(i = 0; i < entidad.Count; i++)
-            {
-                if(_nombre == entidad[i].dameNombre())
-                {
-                    if( i == 0)
-                    {
-                        entidad[i].ponteDireccionSig(-1);
-                        entidad[i].nombrate("ELIMINADO");
-                    }
-                    else
-                    {
-                        entidad[i].ponteDireccionSig(-1);
-                        entidad[i].nombrate("ELIMINADO");
-                        entidad[i - 1].ponteDireccionSig(entidad[i + 1].dameDE());
-                    }
-                }
-            }
-            imprimeLista(entidad);
-
-
+            string nombre = " ";
             
-            // Se manda llamar al objeto encargado de la apertura del archivo
-            if (nuevo)
+            string n;
+            long apuntadorAtributo = 0;
+            long pos = 0;
+            long DSIG = 0;
+            long DANT = 0;
+            long DE = 0;
+            int compara;
             bw.Close();
-            br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));
-            cabecera.Text = br.ReadInt64().ToString();
-            while (ap < br.BaseStream.Length)
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            pos = br.ReadInt64();
+            br.BaseStream.Position = pos;
+            while (br.BaseStream.Position <= br.BaseStream.Length)
             {
-                n  = br.ReadString();   //Nombre
-               // MessageBox.Show("Nombre: " + n);
-                de = br.ReadInt64();    //Dirección
-                da = br.ReadInt64();    //DireccionAtributo
-                dd = br.ReadInt64();    //Direccion de Datos
-                ds = br.ReadInt64();    //Direccion Siguiente
-                renglon++;
-                if (_nombre == n)
+                n  = br.ReadString();
+                DE = br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+               
+          //      if (DSIG == -1)
+         /////       {
+        //            break;
+         //       }
+                compara = borrar.CompareTo(n);
+                if(compara == 0)
                 {
-                    break;
-                }
-
-                
-                ap = br.BaseStream.Position;
-            //    MessageBox.Show("El apuntador del archivo está en: " + ap);
-            }
-        //    MessageBox.Show("Entidad eliminanda\n" + n + " " +   de + " " + da + " " + dd + " " +  ds);
-            MessageBox.Show("El apuntador del archivo está en: " + ap);
-            //Cierra el archivo para lectura y abre para la modificación 
-            br.Close();
-            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
-            bw.Seek((int)ap-8, SeekOrigin.Begin);
-            bw.Write(ds);
-            string eliminado;
-            eliminado = "ELIMINADO";
-            int cont;
-            for(cont = eliminado.Length; cont < 29; cont++)
-            {
-                eliminado += " ";
-
-            }
-            bw.Write(eliminado);
-            bw.Write(-1);
-            bw.Write(-1);
-            bw.Write(-1);
-            bw.Write(-1);
-            
-            //dataGridView1.Rows.Remove();
-        //    MessageBox.Show("Direccion de la siguiente entidad " + ds);
-
-            bw.Close();
-            
-
-            /*
-            _nombre = textBox1.Text;
-            int z = _nombre.Length;
-
-            for(;z< 29; z++)
-            {
-                _nombre += " ";
-            }
-
-            string nombre2;
-
-            int i;
-            for (i = 0; i < entidad.Count; i++ )
-            {
-                nombre2 = entidad[i].dameNombre();
-                if(i == 0 && nombre2 == _nombre)
-                {
-                    entidad[i].ponteDireccionSig(-1);
-                    entidad[i].direccionate(-1);
-                    entidad[i].nombrate("Eliminado");
-                    dataGridView1.Rows.RemoveAt(i);
-                    break;
-                }
-                if (nombre2 == _nombre)
-                {
-                   // MessageBox.Show("Encontrado");
-                    entidad[i - 1].ponteDireccionSig(entidad[i].dameDSIG());
-                    entidad[i].nombrate("Eliminado");
-                    entidad[i].direccionate(-1);
-                    entidad[i].ponteDireccionSig(-1);
-                    dataGridView1.Rows.RemoveAt(i-1);
-                    break;
+                    //MessageBox.Show("Se ha encontrado la entidad " + n);
+                    //MessageBox.Show("Dirección Anterior " + DANT);
+                    //MessageBox.Show("Dirección Entidad: " +  DE);
+                    //MessageBox.Show("Dirección Siguiente: " + DSIG);
+                    br.Close();
+                    bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                    bw.BaseStream.Position = DE;
+                    bw.Write((string)"NULL                          ");
+                    bw.Write((long)-1);
+                    bw.BaseStream.Position = DE + 54;
+                    bw.Write((long)-1);
+                   
+                    bw.BaseStream.Position = DANT + 54;
+                    bw.Write(DSIG);
+                    bw.Close();
+                    br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+                    
+                   
 
                     
                 }
-                
+                 DANT = DE;
+                if(DSIG == -1)
+                    break;
+                else
+                    br.BaseStream.Position = DSIG;
             }
-            
-            imprimeLista(entidad);
-            */
+
+
+
         }
         
     }
