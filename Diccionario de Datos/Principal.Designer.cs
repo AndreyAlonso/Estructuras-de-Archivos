@@ -39,7 +39,7 @@
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.modificar = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Nombre = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -181,7 +181,7 @@
             this.tabPage1.Controls.Add(this.button8);
             this.tabPage1.Controls.Add(this.button7);
             this.tabPage1.Controls.Add(this.button3);
-            this.tabPage1.Controls.Add(this.button2);
+            this.tabPage1.Controls.Add(this.modificar);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.dataGridView1);
             this.tabPage1.Controls.Add(this.textBox1);
@@ -227,13 +227,14 @@
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.eliminaEntidad);
             // 
-            // button2
+            // modificar
             // 
-            resources.ApplyResources(this.button2, "button2");
-            this.button2.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Name = "button2";
-            this.button2.UseVisualStyleBackColor = false;
+            resources.ApplyResources(this.modificar, "modificar");
+            this.modificar.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.modificar.ForeColor = System.Drawing.Color.White;
+            this.modificar.Name = "modificar";
+            this.modificar.UseVisualStyleBackColor = false;
+            this.modificar.Click += new System.EventHandler(this.modificaEntidad);
             // 
             // button1
             // 
@@ -802,7 +803,7 @@
         private System.Windows.Forms.Button minimizar;
         private System.Windows.Forms.Button Cerrar;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button modificar;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Nombre;
         private System.Windows.Forms.DataGridViewTextBoxColumn DE;

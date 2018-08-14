@@ -671,8 +671,6 @@ namespace Diccionario_de_Datos
 
         private void seleccionaEntidad(object sender, EventArgs e)
         {
-
-
             contador = 0;
             dataGridView3.Rows.Clear();
             dataGridView3.Columns.Clear();
@@ -870,12 +868,12 @@ namespace Diccionario_de_Datos
                         }
                         br.BaseStream.Position = DSIG;
                     }
-                    MessageBox.Show("Total de entidades: " + totalEntidad);
+                   // MessageBox.Show("Total de entidades: " + totalEntidad);
                     br.BaseStream.Position = 8;
                     for(int i=0; i < totalEntidad; i++)
                     {
                         enti = new Entidad();
-                        MessageBox.Show("Posición " + br.BaseStream.Position);
+                      //  MessageBox.Show("Posición " + br.BaseStream.Position);
                         enti.nombrate(br.ReadString());
                         if(enti.dameNombre() == "NULL                          ")
                         {
@@ -1828,6 +1826,40 @@ namespace Diccionario_de_Datos
 
                 }
             }
+        }
+
+        private void modificaEntidad(object sender, EventArgs e)
+        {
+            string mod;
+            string combo;
+            List<string> nombres = new List<string>();
+            foreach (Entidad i in entidad)
+            {
+                nombres.Add(i.dameNombre());
+            }
+           
+            ModificaEntidad m = new ModificaEntidad(nombres);
+       
+            if (m.ShowDialog() == DialogResult.OK)
+            {
+                combo = m.dameEntidad();
+                mod = m.dameNombre();
+                if (mod != "")
+                {
+                    //MessageBox.Show("Anterior: " + combo);
+                    //MessageBox.Show("Entidad: " + mod);
+                    textBox1.Text = combo;
+                    eliminaEntidad(this, null);
+                    textBox1.Text = mod;
+                    creaEntidad(this, null);
+                }
+                else
+                    MessageBox.Show("No se guardo una Entidad");
+
+            }
+            
+            
+           
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
