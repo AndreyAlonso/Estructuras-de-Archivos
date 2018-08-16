@@ -196,7 +196,7 @@ namespace Diccionario_de_Datos
             pSig = -1;
             int cont;
             _nombre = textBox1.Text;
-            comboBox1.Items.Add(_nombre); //Agrega las entidades al comboBox de atributo
+          //  comboBox1.Items.Add(_nombre); //Agrega las entidades al comboBox de atributo
 
             cont = _nombre.Length;
             for (; cont < 29; cont++){
@@ -386,6 +386,7 @@ namespace Diccionario_de_Datos
         // Metodo que muestra la lista en el datagrid
         private void imprimeLista(List<Entidad> entidad)
         {
+            comboBox1.Items.Clear();
             long pos = -1;
             long DSIG = 0;
             string n=" ";
@@ -461,6 +462,11 @@ namespace Diccionario_de_Datos
                 }
 
             }
+
+         //   foreach(Entidad i in entidad)
+          //  {
+          //      comboBox1.Items.Add(i.dameNombre());
+          //  }
         }
 
         #endregion
@@ -487,7 +493,6 @@ namespace Diccionario_de_Datos
             atri = new Atributo();              // Objeto de la clase atributo
             int cont;                           // Variable contador      
             _nombre = textBox2.Text;            // Se asigna a la variable nombre, el nombre del atributo dada por el textBox2
-
             /**********************************************
              * ciclo for que sucede mientras el nombre
              * del atributo tenga una longitud menor a 30
@@ -510,8 +515,8 @@ namespace Diccionario_de_Datos
                 atri.direccionate(bw.BaseStream.Length);
                 atri.ponteTipoIndice(tipoIndice);
                 atri.ponteDirIndice(-1);
-                atri.ponteDirSig(-3);
-                //  bw.Seek((int)bw.BaseStream.Length, SeekOrigin.Begin);
+                atri.ponteDirSig(-1);
+                bw.Seek((int)bw.BaseStream.Length, SeekOrigin.Begin);
                 bw.Write(atri.dameNombre());
                 bw.Write(atri.dameTipo());
                 bw.Write(atri.dameLongitud());
@@ -529,7 +534,7 @@ namespace Diccionario_de_Datos
                 atri.direccionate(bw.BaseStream.Length);
                 atri.ponteTipoIndice(tipoIndice);
                 atri.ponteDirIndice(-1);
-                atri.ponteDirSig(-3);
+                atri.ponteDirSig(-1);
 
                 atributo[atributo.Count - 1].ponteDirSig(atri.dameDireccion());
                 bw.Seek((int)bw.BaseStream.Length - 8, SeekOrigin.Begin);
@@ -545,11 +550,9 @@ namespace Diccionario_de_Datos
             }
             atributo.Add(atri);     //Se añanade el atributo a la lista de atributos
             imprimeAtributo(atributo);// Se accede al metodo que muestra en el datagrid la lista de atributos
-
             /**************************************************************************************
              * Métodos que agregan en el datagrid para la creación de registros, usar los atributos
              **************************************************************************************/
-
             //   dataGridView3.Columns.Add(enti.dameNombre(), atri.dameNombre());
             // dataGridView4.Columns.Add(enti.dameNombre(), atri.dameNombre());
 
@@ -608,59 +611,63 @@ namespace Diccionario_de_Datos
          *******************************************************************/
         private void ponteAtributo(Atributo atri)
         {
-            if (nuevo)
-                bw.Close(); // Se cierra el archivo de modificación para poder usarlo de lectura 
-            br = new BinaryReader(File.Open("Entidad.bin", FileMode.Open));  //Objeto de lectura del archivo
-            //MessageBox.Show("Cabecera ->" + br.ReadInt64()); // Se lee la cabecera del diccionario de datos
-            br.ReadInt64();
+            // Declaración de variables locales
+            long cab, sigEntidad;
+            long pos = 0;
+            string nombreEntidad, n;
+            nombreEntidad = comboBox1.Text;
+            bw.Close();
             long apuntador = 8; // se inicia desde la posición de la cabecera 
-            string n;
+            
             int tam;
             tam = comboBox1.Text.Length;
             string tempNombre;
             tempNombre = comboBox1.Text;
-            // Debido a que en el archivo, los nombres de las entidades
-            // se guardan con um tamaño de 30, el nombre que se tomo en en el combobox
-            // es menor a 30 entonces se completa para que funcione la comparacion 
-            for (tam = comboBox1.Text.Length; tam < 29; tam++)
-            {
-                tempNombre += " ";
-            }
-            int i;
-            // Ciclo que recorre las listas de entidades hasta que encuentra el nombre de la entidad seleccionada para su modificación
-            for (i = 0; i < entidad.Count; i++)
-            {
-                if (tempNombre == entidad[i].dameNombre())
-                {
-                    entidad[i].ponteDireccionAtributo(atri.dameDireccion());
-                }
-            }
-            // Ya se logro dentro de la lista de entidades
-            // Para hacerlo desde el archivo se hace lo siguiente
-            // se recorre el archivo hasta su valor final en bytes
-            while (apuntador < br.BaseStream.Length)
-            {
-                n = br.ReadString(); // nombre entidad
-                br.ReadInt64();//direccion entidad
-                br.ReadInt64(); // direccion atributo  
-                br.ReadInt64(); // direccion del registro
-                br.ReadInt64(); // direccion siguiente
 
-                // Se iguala el apuntador a la posición actual en el archivo
-                if (n == tempNombre)
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+
+            
+            cab = br.ReadInt64();
+            br.BaseStream.Position = cab;
+            sigEntidad = 0;
+
+            while (cab < br.BaseStream.Length)
+            {
+                if(sigEntidad != -1)
                 {
-                    // MessageBox.Show("Apuntador del archivo\n" + apuntador);
-                    break;
+                    
+                    n = br.ReadString();
+                    br.ReadInt64();
+                    pos = br.BaseStream.Position;
+                    br.ReadInt64();
+                    br.ReadInt64();
+                    sigEntidad = br.ReadInt64();
+                    if(n == nombreEntidad)
+                    {
+                        br.Close();
+                        bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                        bw.BaseStream.Position = pos;
+                        bw.Write(atri.dameDireccion());
+                        bw.Close();
+                        imprimeLista(entidad);
+                        bw.Close();
+                        br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+                        br.Close();
+                        break;
+                    }
+                    br.BaseStream.Position = sigEntidad;
+                    cab = sigEntidad;
+
                 }
-                apuntador = br.BaseStream.Position;
+                
+
+
             }
-            // Se obtuvo la posición de la entidad en el archivo para su modificación
-            br.Close(); // se cierra el archivo de lectura
-            bw = new BinaryWriter(File.Open("Entidad.bin", FileMode.Open));
-            bw.Seek((int)apuntador + 38, SeekOrigin.Current);
-            bw.Write(atri.dameDireccion());
-            //bw.Close();
-            imprimeLista(entidad);
+            br.Close();
+            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+
+
+
         }
 
 
@@ -1827,6 +1834,12 @@ namespace Diccionario_de_Datos
                 }
             }
         }
+        /************************************************************************************
+         * MODIFICA ENTIDAD
+         * Para modificar la entidad, se requiere buscar la entidad a modificar y borrarla
+         * y después crear la nueva entidad.
+         * Reutilizamos los metodos eliminaEntidad y creaEntidad
+         ************************************************************************************/
 
         private void modificaEntidad(object sender, EventArgs e)
         {
@@ -1837,17 +1850,13 @@ namespace Diccionario_de_Datos
             {
                 nombres.Add(i.dameNombre());
             }
-           
             ModificaEntidad m = new ModificaEntidad(nombres);
-       
             if (m.ShowDialog() == DialogResult.OK)
             {
                 combo = m.dameEntidad();
                 mod = m.dameNombre();
                 if (mod != "")
                 {
-                    //MessageBox.Show("Anterior: " + combo);
-                    //MessageBox.Show("Entidad: " + mod);
                     textBox1.Text = combo;
                     eliminaEntidad(this, null);
                     textBox1.Text = mod;
@@ -1855,11 +1864,7 @@ namespace Diccionario_de_Datos
                 }
                 else
                     MessageBox.Show("No se guardo una Entidad");
-
             }
-            
-            
-           
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
