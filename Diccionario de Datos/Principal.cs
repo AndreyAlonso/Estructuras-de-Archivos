@@ -535,10 +535,12 @@ namespace Diccionario_de_Datos
                 atri.ponteTipoIndice(tipoIndice);
                 atri.ponteDirIndice(-1);
                 atri.ponteDirSig(-1);
-
-                atributo[atributo.Count - 1].ponteDirSig(atri.dameDireccion());
-                bw.Seek((int)bw.BaseStream.Length - 8, SeekOrigin.Begin);
-                bw.Write(atributo[atributo.Count - 1].dameDirSig());
+                if(!nuevoAtributo)
+                {
+                    atributo[atributo.Count - 1].ponteDirSig(atri.dameDireccion());
+                    bw.Seek((int)bw.BaseStream.Length - 8, SeekOrigin.Begin);
+                    bw.Write(atributo[atributo.Count - 1].dameDirSig());
+                }
                 bw.Write(atri.dameNombre());
                 bw.Write(atri.dameTipo());
                 bw.Write(atri.dameLongitud());
@@ -762,11 +764,26 @@ namespace Diccionario_de_Datos
 
         private void button4_Click(object sender, EventArgs e)
         {
+            bw.Close();
+            List<string> entidades = new List<string>();
+            foreach(Entidad i in entidad)
+            {
+                entidades.Add(i.dameNombre());
+            }
+
+            EliminaAtributo eliminaAtributo = new EliminaAtributo(entidades, nArchivo);
+            if(eliminaAtributo.ShowDialog() ==  DialogResult.OK)
+            {
+
+            }
+            
+
+
             // Para la eliminación se requiere:
             // 1 variable auxiliar para el apuntador
             // 1 variable auxiliar para el apuntador siguiente
             // 1 variable para obtener el nombre del registro
-
+            /*
             string _nombre;
             int tam;
             long ap;
@@ -803,7 +820,7 @@ namespace Diccionario_de_Datos
             }
             imprimeAtributo(atributo);
 
-
+            */
             /*
             string nn = textBox2.Text;
             int i;

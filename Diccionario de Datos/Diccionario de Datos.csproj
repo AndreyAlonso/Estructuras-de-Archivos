@@ -52,6 +52,12 @@
       <DependentUpon>Archivo.cs</DependentUpon>
     </Compile>
     <Compile Include="Atributo.cs" />
+    <Compile Include="EliminaAtributo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EliminaAtributo.Designer.cs">
+      <DependentUpon>EliminaAtributo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entidad.cs" />
     <Compile Include="Indice.cs" />
     <Compile Include="ModificaEntidad.cs">
@@ -70,6 +76,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Archivo.resx">
       <DependentUpon>Archivo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EliminaAtributo.resx">
+      <DependentUpon>EliminaAtributo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ModificaEntidad.resx">
       <DependentUpon>ModificaEntidad.cs</DependentUpon>

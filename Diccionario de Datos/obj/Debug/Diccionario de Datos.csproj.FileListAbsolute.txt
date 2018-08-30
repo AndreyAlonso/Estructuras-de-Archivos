@@ -27,3 +27,5 @@ C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-
 C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario de Datos.csproj.GenerateResource.Cache
 C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario de Datos.exe
 C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario de Datos.pdb
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario de Datos.csprojResolveAssemblyReference.cache
+C:\Users\Andrey Hernandez\Documents\1. Ingenieria en Informatica\Estructuras-de-Archivos\Diccionario de Datos\obj\Debug\Diccionario_de_Datos.EliminaAtributo.resources
