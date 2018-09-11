@@ -1,0 +1,60 @@
+
+            // Para la eliminación se requiere:
+            // 1 variable auxiliar para el apuntador
+            // 1 variable auxiliar para el apuntador siguiente
+            // 1 variable para obtener el nombre del registro
+            /*
+            string _nombre;
+            int tam;
+            long ap;
+            ap = 0;
+            _nombre = textBox2.Text;
+            string n = "";
+            int tipo;
+            int longitud;
+            int ti;
+            long da, di, ds;
+            tam = _nombre.Length;
+            while (tam < 29)
+            {
+                _nombre += " ";
+                tam++;
+            }
+            int i;
+            for (i = 0; i < atributo.Count; i++)
+            {
+                if (_nombre == atributo[i].dameNombre())
+                {
+                    if (i == 0)
+                    {
+                        atributo[i].ponteDirSig(-1);
+                        atributo[i].nombrate("ELIMINADO");
+                    }
+                    else
+                    {
+                        atributo[i].ponteDirSig(-1);
+                        atributo[i].nombrate("ELIMINADO");
+                        atributo[i - 1].ponteDirSig(atributo[i + 1].dameDireccion());
+                    }
+                }
+            }
+            imprimeAtributo(atributo);
+
+            */
+            /*
+            string nn = textBox2.Text;
+            int i;
+            for (i = 0; i < atributo.Count; i++)
+            {
+                if (atributo[i].dameNombre() == nn)
+                {
+                    atributo[i - 1].ponteDirSig(atributo[i].dameDirSig());
+                    atributo[i].direccionate(-1);
+                    atributo[i].ponteDirSig(-1);
+                    break;
+
+                }
+            }
+            dataGridView2.Rows.RemoveAt(i);
+            imprimeAtributo(atributo);
+            */

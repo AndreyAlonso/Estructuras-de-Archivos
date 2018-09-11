@@ -16,9 +16,10 @@ namespace Diccionario_de_Datos
         private List<string> entidad = new List<string>();
         private string archivo;
         private BinaryReader br;
-        private string nAtributo;
-        private long dAtributo;
-
+        public string nEntidad { get; set; }
+        public string nAtributo { get; set; }
+        public long dAtributo { get; set; }
+        private long dEntidad;
 
         public EliminaAtributo(List<string> entidad, string archivo)
         {
@@ -26,16 +27,12 @@ namespace Diccionario_de_Datos
 
             this.entidad = entidad;
             this.archivo = archivo;
+            dAtributo = -1;
 
             foreach(string s in entidad)
             {
                 comboBox1.Items.Add(s);
             }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -48,16 +45,18 @@ namespace Diccionario_de_Datos
             br.BaseStream.Position = cab;
             while(cab < br.BaseStream.Length)
             {
-                if(DSIG != -1)
+                if(DSIG != -1)  /* LECTURA DE LAS ENTIDADES */
                 {
                     n = br.ReadString();
-                    br.ReadInt64();
+                    dEntidad = br.ReadInt64();
                     DAT = br.ReadInt64();
                     br.ReadInt64();
                     DSIG = br.ReadInt64();
                     if(n == comboBox1.Text)
                     {
                         cab = DAT;
+                        nEntidad = n;
+                        
                         break;
                     }
                 }
@@ -73,10 +72,12 @@ namespace Diccionario_de_Datos
                 {
                     if (DSIG != -1)
                     {
-                        comboBox2.Items.Add(br.ReadString()); // nombre
+                        nAtributo = br.ReadString();          //
+                        comboBox2.Items.Add(nAtributo);       // nombre
+
                         br.ReadChar();                        // tipo
                         br.ReadInt32();                       // longitud
-                        br.ReadInt64();                       // Dirección
+                        dAtributo= br.ReadInt64();            // Dirección
                         br.ReadInt32();                       // tipo indice
                         br.ReadInt64();                       // dirección indice
                         DSIG = br.ReadInt64();                // dirección siguiente
@@ -101,5 +102,57 @@ namespace Diccionario_de_Datos
 
             br.Close();             
         }
+
+        private void eliminar(object sender, EventArgs e)
+        {
+            nAtributo = comboBox2.SelectedItem.ToString();
+            dAtributo = buscaDireccionAtributo(nAtributo);
+
+        }
+        public long buscaDireccionAtributo(string nAtributo)
+        {
+            string n;
+            long DSIG = 0;
+            br = new BinaryReader(File.Open(archivo, FileMode.Open));
+            br.BaseStream.Position = dEntidad; 
+            br.ReadString();    //nombre
+            br.ReadInt64();     // direccion
+            br.BaseStream.Position = br.ReadInt64();  // direccion atributo
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+
+                br.ReadChar();                        // tipo
+                br.ReadInt32();                       // longitud
+                dAtributo = br.ReadInt64();            // Dirección
+                br.ReadInt32();                       // tipo indice
+                br.ReadInt64();                       // dirección indice
+                DSIG = br.ReadInt64();                // dirección siguiente
+                if(n == nAtributo)
+                {
+                    br.Close();
+                    return dAtributo;
+                }
+                if (DSIG == -1)
+                {
+                    break;
+                }
+                else
+                {
+                    br.BaseStream.Position = DSIG;
+              
+                }
+
+            }
+            br.Close();
+            return -1;
+            
+        }
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+
+        }
+
     }
 }
