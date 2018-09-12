@@ -1222,6 +1222,7 @@ namespace Diccionario_de_Datos
                     bw = new BinaryWriter(File.Open(nombre, FileMode.Open));
                     imprimeLista(entidad);
                     imprimeAtributo(atributo);
+                   
                 }
                 else
                 {
@@ -1316,6 +1317,57 @@ namespace Diccionario_de_Datos
          * *********************************************************************************/
          private void insertarRegistro_Click(object sender, EventArgs e)
          {
+            char tipo = ' '; 
+            int tamC = 0; 
+            string dat = comboBox6.Text + ".dat";
+            string celda = "";
+            br.Close();
+            bw.Close();
+            foreach(string arch in datos)
+            {
+                if(arch == dat)
+                {
+                    bw = new BinaryWriter(File.Open(dat, FileMode.Open));
+                    break;
+                }
+            }
+            /*Para saber que onda con el datagrid dinamico, debemos hacer un ciclo for  */
+            dataGridView4.Columns.Add("","");
+            bw.Write(bw.BaseStream.Length);
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                bw.Close();
+                tipo = buscaTipo(comboBox6.Text,dataGridView3.Columns[i].Name);
+                celda = dataGridView3.Rows[0].Cells[i].Value.ToString();
+                bw = new BinaryWriter(File.Open(dat, FileMode.Open));
+                if (tipo == 'E')
+                {
+                    bw.BaseStream.Position = bw.BaseStream.Length;
+                    bw.Write(Convert.ToInt32(celda));
+                }
+                    
+                else if(tipo == 'C')
+                {
+                    tamC = buscaTam(comboBox6.Text,dataGridView3.Columns[i].Name);
+                    while(celda.Length < tamC)
+                    {
+                        celda += " ";
+                    }
+                    bw.Close();
+                    bw = new BinaryWriter(File.Open(dat, FileMode.Open));
+                    bw.BaseStream.Position = bw.BaseStream.Length;
+                    bw.Write(celda);
+                    
+                }
+
+            }
+            bw.Write(bw.BaseStream.Length);
+
+
+
+            
+            
+            /*
             string sVal;
             long ap;
             int auxCol;
@@ -1504,7 +1556,125 @@ namespace Diccionario_de_Datos
                 }
 
             }
+            */
             
+        }
+        public int buscaTam(string nEntidad, string nAtributo)
+        {
+            char tipo;
+            string n = "";
+            string na = "";
+            long DSIG = 0, DSIGA = 0;
+            int tam  = 0;
+            long DA = 0;
+            bw.Close();
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                if (n == nEntidad)
+                {
+                    br.BaseStream.Position = DA;
+                    while (br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        
+                        na = br.ReadString(); //nombre
+                        tipo = br.ReadChar(); //tipo
+                        tam = br.ReadInt32();       //longitud
+                        br.ReadInt64();       // direccion
+                        br.ReadInt32();      // tipo indice
+                        br.ReadInt64();       //direccion indice
+                        DSIGA = br.ReadInt64();      // dirección siguiente
+                        if (na == nAtributo)
+                        {
+                            br.Close();
+                            return tam;
+                        }
+                        if (DSIGA != -1)
+                            br.BaseStream.Position = DSIGA;
+                        else
+                            break;
+                        
+
+                    }
+
+
+
+                }
+                if (DSIG == -1)
+                    break;
+
+            }
+
+            br.Close();
+           
+            return 0;
+        }
+        public char buscaTipo(string nEntidad,string nAtributo)
+        {
+            char tipo;
+            string n = "";
+            string na = "";
+            long DSIG = 0, DSIGA = 0;
+            
+            long DA = 0;
+            bw.Close();
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                if(n == nEntidad)
+                {
+                    br.BaseStream.Position = DA;
+                    while (br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        
+                        na = br.ReadString(); //nombre
+                        tipo = br.ReadChar(); //tipo
+                        br.ReadInt32();       //longitud
+                        br.ReadInt64();       // direccion
+                        br.ReadInt32();      // tipo indice
+                        br.ReadInt64();       //direccion indice
+                        DSIGA = br.ReadInt64();      // dirección siguiente
+                        if (na == nAtributo)
+                        {
+                            br.Close();
+                            //bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                            return tipo;
+                        }
+                        if (DSIGA != -1)
+                            br.BaseStream.Position = DSIGA;
+                        else
+                            break;
+                        
+                            
+                    }
+                    
+
+
+                }
+                if (DSIG == -1)
+                    break;
+                   
+            }
+
+            br.Close();
+            //bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+            return ' ';
         }
         public void ordenaIndicePrimario(List<indicep> claves)
         {
@@ -2070,10 +2240,11 @@ namespace Diccionario_de_Datos
         
         private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
+            dataGridView3.Columns.Clear();
             pintaTablaRegistros();
            
         }
-        public void pintaTablaRegistros()
+        private void pintaTablaRegistros()
         {
             // Leer el archivo
             // ir insertando en el datagrid todos los atributos de  la entidad
@@ -2083,6 +2254,8 @@ namespace Diccionario_de_Datos
             long DSIG = 0,DSIGA = 0;
             // br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
 
+
+            br.Close();
             bw.Close();
             br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
             br.BaseStream.Position = br.ReadInt64();
@@ -2091,6 +2264,7 @@ namespace Diccionario_de_Datos
                 n = br.ReadString();//nombre
                 br.ReadInt64(); //direccion
                 dAtributo = br.ReadInt64(); //direccion atributo
+                br.ReadInt64();             // direccion datos
                 DSIG = br.ReadInt64(); // direccion siguiente
                 if(n == nTemp)
                 {
@@ -2159,12 +2333,11 @@ namespace Diccionario_de_Datos
 
         private void generaRegistros(object sender, EventArgs e)
         {
-            //br.Close();
-            bw.Close();
+            bw.Close(); 
             imprimeLista(entidad);
             string dato, indice;
-            
 
+            bw.Close();
             foreach(Entidad aux in entidad)
             {
                 dato = aux.dameNombre() + ".dat";
@@ -2175,16 +2348,19 @@ namespace Diccionario_de_Datos
             
             foreach(string nombre in datos)
             {
-                bw = new BinaryWriter(File.Create(nombre));
+                bw = new BinaryWriter(File.Open(nombre, FileMode.Create));
+                bw.Close();
             }
-            bw.Close();
+            
             foreach (string nombre in indi)
             {
-                bw = new BinaryWriter(File.Create(nombre));
+                bw = new BinaryWriter(File.Open(nombre,FileMode.Create));
+                bw.Close();
             }
         
             button2.Hide();
-          
+            bw.Close();
+
             //br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
 
            
