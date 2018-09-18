@@ -32,5 +32,6 @@ namespace Diccionario_de_Datos
         {
             return comboBox1.Text;
         }
+
     }
 }

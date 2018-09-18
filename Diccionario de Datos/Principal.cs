@@ -3329,88 +3329,68 @@ namespace Diccionario_de_Datos
 
         private void modificaRegistro(object sender, EventArgs e)
         {
-            string cB = "";
-            long dirA = 0, dirB = 0;
-            long direccionRegistro = 0;
-            long DANT = 0;
-            string dat = comboBox6.Text + ".dat";
-            Atributo aClave = dameClaveBusqueda(dat);
             List<string> claves = new List<string>();
-            for (int i = 0; i < dataGridView3.Columns.Count; i++)
-            {
-                if (dataGridView3.Columns[i].Name == aClave.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
-                {
-                    pos = i;
-                    break;
-                }
-            }
-            foreach (string arch in datos)
-            {
-                if (arch == dat)
-                {
-                    bw = new BinaryWriter(File.Open(dat, FileMode.Open));
-                    break;
-                }
-            }
-
-
             for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
             {
                 claves.Add(dataGridView4.Rows[i].Cells[pos + 1].Value.ToString());
             }
-            EliminaRegistro elimina = new EliminaRegistro(claves);
-            if (elimina.ShowDialog() == DialogResult.OK)
+            ModificaRegistro mod = new ModificaRegistro(dataGridView3,dataGridView4,claves);
+            DataGridView tablatemp = new DataGridView();
+            char tipo;
+            long pos2 = 0;
+            string n;
+            if (mod.ShowDialog() == DialogResult.OK)
             {
-                cB = elimina.dameClave();
-
-                /*buscar en datagrid4 el valor que tenga como nombre el Cb */
+                n = mod.dameClave();
+                
                 for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
                 {
-                    if (dataGridView4.Rows[i].Cells[pos + 1].Value.ToString() == cB)
+
+                    if(dataGridView4.Rows[i].Cells[pos+1].Value.ToString() == n)
                     {
-                        direccionRegistro = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                        bw = new BinaryWriter(File.Open(comboBox6.Text+".dat", FileMode.Open));
+                        pos2 = (long)dataGridView4.Rows[i].Cells[0].Value;
+                        pos2 += 8;
+                        for (int j = 0; j < mod.dameRenglon().Columns.Count; j++)
+                        {
+                            dataGridView4.Rows[i].Cells[j + 1].Value = mod.dameRenglon().Rows[0].Cells[j].Value;
+                            br.Close();
+                            bw.Close();
+                            tipo = buscaTipo(comboBox6.Text, dataGridView3.Columns[j].Name);
+                            bw.Close();
+                            bw = new BinaryWriter(File.Open(comboBox6.Text+".dat", FileMode.Open));
+                            bw.BaseStream.Position = pos2;
+                            if (tipo == 'E')
+                            {
+                                
+                                bw.Write(Convert.ToInt32(mod.dameRenglon().Rows[0].Cells[j].Value));
+                                pos2 += 4;
+                                
+                            }
+                            else if (tipo == 'C')
+                            {
+                                
+                                while (mod.dameRenglon().Rows[0].Cells[j].Value.ToString().Length < 30)
+                                {
+                                        mod.dameRenglon().Rows[0].Cells[j].Value += " ";
+                                }
+
+                                
+                                
+                                bw.Write((string)mod.dameRenglon().Rows[0].Cells[j].Value);
+                                pos2 += 31;
+
+                            }
+
+                            
+                        }
+                            
+                        imprimeRegistro(comboBox6.Text + ".dat");
                         break;
                     }
                 }
-
-
-                for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
-                {
-                    if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count - 1].Value.ToString() == direccionRegistro.ToString())
-                    {
-                        DANT = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
-                        break;
-                    }
-                }
-
-                br.Close();
-                bw.Close();
-                br = new BinaryReader(File.Open(dat, FileMode.Open));
-                br.BaseStream.Position = DANT + primero - 8;
-                dirA = br.ReadInt64();
-                br.BaseStream.Position = direccionRegistro + primero - 8;
-                dirB = br.ReadInt64();
-
-                br.Close();
-                bw = new BinaryWriter(File.Open(dat, FileMode.Open));
-                bw.BaseStream.Position = DANT + primero - 8;
-                bw.Write(dirB);
-
-                bw.Close();
-                long cab = dameDireccionRegistro(comboBox6.Text);
-                if (cab == direccionRegistro)
-                {
-                    br.Close();
-                    bw.Close();
-
-                    ponteRegistro(comboBox6.Text, dirB);
-                }
-
-                imprimeRegistro(dat);
-
-
             }
-
+            imprimeRegistro(comboBox6.Text+".dat");
         }
 
         private void tabPage3_Click(object sender, EventArgs e)
