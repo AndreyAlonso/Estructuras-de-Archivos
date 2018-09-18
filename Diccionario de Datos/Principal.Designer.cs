@@ -73,6 +73,10 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.button10 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.comboBox6 = new System.Windows.Forms.ComboBox();
             this.label14 = new System.Windows.Forms.Label();
             this.dataGridView4 = new System.Windows.Forms.DataGridView();
@@ -113,7 +117,6 @@
             this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -204,8 +207,8 @@
             // button8
             // 
             resources.ApplyResources(this.button8, "button8");
-            this.button8.BackColor = System.Drawing.Color.Green;
-            this.button8.ForeColor = System.Drawing.Color.White;
+            this.button8.BackColor = System.Drawing.Color.Transparent;
+            this.button8.ForeColor = System.Drawing.Color.Black;
             this.button8.Name = "button8";
             this.button8.UseVisualStyleBackColor = false;
             this.button8.Click += new System.EventHandler(this.nuevoProyecto);
@@ -213,10 +216,10 @@
             // button7
             // 
             resources.ApplyResources(this.button7, "button7");
-            this.button7.BackColor = System.Drawing.Color.Firebrick;
-            this.button7.ForeColor = System.Drawing.Color.White;
+            this.button7.BackColor = System.Drawing.Color.Transparent;
+            this.button7.ForeColor = System.Drawing.Color.Black;
             this.button7.Name = "button7";
-            this.button7.UseVisualStyleBackColor = false;
+            this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.abreArchivo);
             // 
             // button3
@@ -390,6 +393,7 @@
             this.button5.ForeColor = System.Drawing.Color.White;
             this.button5.Name = "button5";
             this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.modificaAtributo);
             // 
             // button6
             // 
@@ -482,6 +486,9 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.button10);
+            this.tabPage3.Controls.Add(this.button9);
+            this.tabPage3.Controls.Add(this.button4);
             this.tabPage3.Controls.Add(this.button2);
             this.tabPage3.Controls.Add(this.comboBox6);
             this.tabPage3.Controls.Add(this.label14);
@@ -491,6 +498,43 @@
             resources.ApplyResources(this.tabPage3, "tabPage3");
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
+            // 
+            // button10
+            // 
+            this.button10.BackColor = System.Drawing.SystemColors.HotTrack;
+            resources.ApplyResources(this.button10, "button10");
+            this.button10.ForeColor = System.Drawing.Color.White;
+            this.button10.Name = "button10";
+            this.button10.UseVisualStyleBackColor = false;
+            this.button10.Click += new System.EventHandler(this.eliminaRegistro);
+            // 
+            // button9
+            // 
+            this.button9.BackColor = System.Drawing.SystemColors.HotTrack;
+            resources.ApplyResources(this.button9, "button9");
+            this.button9.ForeColor = System.Drawing.Color.White;
+            this.button9.Name = "button9";
+            this.button9.UseVisualStyleBackColor = false;
+            this.button9.Click += new System.EventHandler(this.modificaRegistro);
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.SystemColors.HotTrack;
+            resources.ApplyResources(this.button4, "button4");
+            this.button4.ForeColor = System.Drawing.Color.White;
+            this.button4.Name = "button4";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.cargaRegistros);
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.SystemColors.HotTrack;
+            resources.ApplyResources(this.button2, "button2");
+            this.button2.ForeColor = System.Drawing.Color.White;
+            this.button2.Name = "button2";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.generaRegistros);
             // 
             // comboBox6
             // 
@@ -757,15 +801,6 @@
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
             // 
-            // button2
-            // 
-            this.button2.BackColor = System.Drawing.SystemColors.HotTrack;
-            resources.ApplyResources(this.button2, "button2");
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Name = "button2";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.generaRegistros);
-            // 
             // Principal
             // 
             resources.ApplyResources(this, "$this");
@@ -844,7 +879,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DI;
         private System.Windows.Forms.DataGridViewTextBoxColumn DirSig;
         private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
         private System.Windows.Forms.TextBox cabecera;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TabPage tabPage3;
@@ -889,6 +923,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column16;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button9;
     }
 }
 

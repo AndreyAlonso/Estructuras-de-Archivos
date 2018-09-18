@@ -32,7 +32,7 @@ namespace Diccionario_de_Datos
         long[,] indiceSecundario;
         int topeClave;
         int[] tope;
-        bool primero;
+        //bool primero;
         int pos;
         int cont;
 
@@ -134,6 +134,11 @@ namespace Diccionario_de_Datos
         int iCol2;
 
         #endregion
+        public int primero;
+        #region Lista Registro
+        Registro regi;
+        List<Registro> lRegistro;
+        #endregion
         #region Constructor
         /***********************************************************************************************************
      *  CONSTRUCTOR DE LA CLASE PRINCIPAL   
@@ -162,6 +167,8 @@ namespace Diccionario_de_Datos
             indice = new List<BinaryWriter>();
             tipoIndice = 0;
             tam = 0;
+            primero = 0;
+            lRegistro = new List<Registro>();
 
 
         }
@@ -1158,6 +1165,10 @@ namespace Diccionario_de_Datos
             long apuntadorAtributo = 0;
             long pos = 0;
             long DSIG = 0;
+            button1.Enabled = true;
+            modificar.Enabled = true;
+            button3.Enabled = true;
+            textBox1.Enabled = true;
             Archivo archivo = new Archivo(nombre);
             if (nuevo)
             {
@@ -1318,32 +1329,96 @@ namespace Diccionario_de_Datos
          private void insertarRegistro_Click(object sender, EventArgs e)
          {
             char tipo = ' '; 
-            int tamC = 0; 
+            int tamC = 0, TAM = 0;
+
             string dat = comboBox6.Text + ".dat";
+            string indi = comboBox6.Text + ".idx";
             string celda = "";
+            Atributo aClave, tempAtributo;
+            int pos = 0;
+            int posprimario = 0;
+            int posSecundario = 0;
+            Atributo iPrimario;
+            Atributo iSecundario;
+            string nRegistro = " ";
+            long DR = 0, DSIGR = 0, DREGI = 0;
             br.Close();
             bw.Close();
-            foreach(string arch in datos)
+
+            long anterior = 0;
+            /*Para saber que onda con el datagrid dinamico, debemos hacer un ciclo for  */
+            //dataGridView4.Columns.Add("","");
+
+            aClave = dameClaveBusqueda(dat);
+            iPrimario = dameIndicePrimario(comboBox6.Text);
+            iSecundario = dameIndiceSecundario(comboBox6.Text);
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
-                if(arch == dat)
+                if (aClave != null)
+                {
+                    if (dataGridView3.Columns[i].Name == aClave.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                    {
+                        pos = i;
+                        break;
+                    }
+                }
+                
+            }
+
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if(iPrimario != null)
+                {
+                    if (dataGridView3.Columns[i].Name == iPrimario.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                    {
+                        posprimario = i;
+                        break;
+                    }
+                }
+                
+            }
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if(iSecundario != null)
+                {
+                    if (dataGridView3.Columns[i].Name == iSecundario.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                    {
+                        posSecundario = i;
+                        break;
+                    }
+                }
+                
+            }
+
+            foreach (string arch in datos)
+            {
+                if (arch == dat)
                 {
                     bw = new BinaryWriter(File.Open(dat, FileMode.Open));
                     break;
                 }
             }
-            /*Para saber que onda con el datagrid dinamico, debemos hacer un ciclo for  */
-            dataGridView4.Columns.Add("","");
-            bw.Write(bw.BaseStream.Length);
+
+            bw.BaseStream.Position = bw.BaseStream.Length;
+
+            
+
+            DR = bw.BaseStream.Length;
+            bw.Write(DR);
+            
+            primero = 8;
             for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
                 bw.Close();
                 tipo = buscaTipo(comboBox6.Text,dataGridView3.Columns[i].Name);
+                
                 celda = dataGridView3.Rows[0].Cells[i].Value.ToString();
                 bw = new BinaryWriter(File.Open(dat, FileMode.Open));
                 if (tipo == 'E')
                 {
                     bw.BaseStream.Position = bw.BaseStream.Length;
                     bw.Write(Convert.ToInt32(celda));
+                    primero += 4;
                 }
                     
                 else if(tipo == 'C')
@@ -1353,18 +1428,76 @@ namespace Diccionario_de_Datos
                     {
                         celda += " ";
                     }
+                    if(pos == i)
+                    {
+                        nRegistro = celda;
+                    }
                     bw.Close();
                     bw = new BinaryWriter(File.Open(dat, FileMode.Open));
                     bw.BaseStream.Position = bw.BaseStream.Length;
                     bw.Write(celda);
+                    primero += celda.Length+1;
                     
                 }
 
             }
-            bw.Write(bw.BaseStream.Length);
+            primero += 8;
+            bw.Write((long)-1);
+            if (primero < bw.BaseStream.Length)
+            {
+                /*ACTUALIZAR DIRECCIONES SEGUN EL TIPO DE INDICE  */
+                /*Obtención de clave de búsqueda! */
+                
+                /* Si el tipo es una cadena utilizar el compareTo, si es numerico utilizar <,>,== */
+                if(aClave != null)
+                {
+                    if (aClave.dameTipo() == 'C')
+                    {
+                        //tempAtributo = dameAtributo(dat);
+                        bw.Close();
+                        br.Close();
+                        DSIGR = siguienteRegistro(dat, aClave, primero, comboBox6.Text, nRegistro, DR);
+
+                        bw.Close();
+                        bw = new BinaryWriter(File.Open(dat, FileMode.Open));
+                        bw.BaseStream.Position = bw.BaseStream.Length - 8;
+                        bw.Write(DSIGR);
+                        //ordenaRegistro(dat, aClave);
 
 
+                    }
+                    else if (aClave.dameTipo() == 'E')
+                    {
+                    
+                    }
 
+                }
+                else
+                {
+                    bw.BaseStream.Position = bw.BaseStream.Length - 8-primero;
+                    DSIGR = DR;
+                   
+                    bw.Write(DSIGR);
+
+                }
+
+                
+                
+            }
+            else if(primero == bw.BaseStream.Length)
+            {
+                
+                ponteRegistro(comboBox6.Text,DR);
+            }
+            
+            bw.Close();
+            /*Ahora se leera el archivo para llenar el datagrid*/
+            imprimeRegistro(dat);
+            if (iPrimario != null)
+                insertaPrimario(indi,iPrimario, posprimario);
+            if(iSecundario != null)
+            insertaSecundario(indi, iSecundario, posSecundario);
+               
             
             
             /*
@@ -1559,6 +1692,699 @@ namespace Diccionario_de_Datos
             */
             
         }
+        private void insertaSecundario(string indi, Atributo iSecundario, int posSecundario)
+        {
+            br.Close();
+            bw.Close();
+            Secundario s;
+            List<Secundario> secundario = new List<Secundario>();
+            for(int i = 0; i < dataGridView4.Rows.Count-1;i++)
+            {
+                s = new Secundario();
+                if( i == 0)
+                {
+                    s.clave = Convert.ToInt32(dataGridView4.Rows[i].Cells[posSecundario + 1].Value);
+                    s.direccion.Add(Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value));
+                    secundario.Add(s);
+
+                }
+                else
+                {
+                    s.clave = Convert.ToInt32(dataGridView4.Rows[i].Cells[posSecundario + 1].Value);
+                    Secundario existe = secundario.Find(x => x.clave.Equals(s.clave));
+                    if(existe != null)
+                    {
+                        foreach(Secundario aux in secundario)
+                        {
+                            if(aux.clave == s.clave)
+                            {
+                                aux.direccion.Add(Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value));
+                            }
+                        }
+                       
+                    }
+                    else
+                    {
+                        s.direccion.Add(Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value));
+                        secundario.Add(s);
+                    }
+
+                }
+
+            }
+            secundario = secundario.OrderBy(x => x.clave).ToList();
+            foreach(Secundario ss in secundario)
+            {
+                ss.direccion.OrderBy(x => x).ToList();
+            }
+            bw.Close();
+            br.Close();
+            bw = new BinaryWriter(File.Open(indi,FileMode.Open));
+            bw.BaseStream.Position += 1000;
+            foreach(Secundario sec in secundario)
+            {
+                bw.Write(sec.clave);
+                foreach(long pos in sec.direccion)
+                {
+                    bw.Write(pos);
+                }
+            }
+            bw.Close();
+            int u = 0;
+            int t = 0;
+            tablaSecundario.Rows.Add();
+            foreach (Secundario sec in secundario)
+            {
+                
+                tablaSecundario.Rows[u].Cells[0].Value = sec.clave;
+                t = 1;
+                foreach(long pos in sec.direccion)
+                {
+                    tablaSecundario.Rows[u].Cells[t].Value = pos;
+                    t++;
+                }
+                u++;
+            }
+          //  imprimeSecundario(comboBox6.Text);
+            
+            
+          
+
+        }
+        public void imprimeSecundario(string indi)
+        {
+            br.Close();
+            bw.Close();
+            br = new BinaryReader(File.Open(indi += ".idx", FileMode.Open));
+            br.BaseStream.Position = 1000;
+            tablaSecundario.Rows.Clear();
+
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+               
+                tablaSecundario.Rows.Add(br.ReadInt64(),br.ReadInt32());
+
+            }
+            br.Close();
+        }
+        private void insertaPrimario(string indi, Atributo iPrimario, int posPrimario)
+        {
+            br.Close();
+            bw.Close();
+            Primario p;
+          
+            List<Primario> primario = new List<Primario>();
+
+            for(int i = 0; i < dataGridView4.Rows.Count-1; i++)
+            {
+                p = new Primario();
+                
+                p.dirVal = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                p.val = Convert.ToInt32(dataGridView4.Rows[i].Cells[posPrimario+1].Value);
+                primario.Add(p);
+                
+            }
+            primario = primario.OrderBy(x => x.val).ToList();
+            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+            bw.BaseStream.Position = iPrimario.dameDireccion() + 30 + 1 + 4 + 8 + 5;
+            bw.Write(primario[0].dirVal);
+            bw.Close();
+            imprimeAtributo(atributo);
+            bw.Close();
+            br.Close();
+            bw = new BinaryWriter(File.Open(indi, FileMode.Create));
+            foreach(Primario prim in primario)
+            {
+                bw.Write(prim.val);
+                bw.Write(prim.dirVal);
+            }
+            bw.Close();
+            br.Close();
+            imprimePrimario(comboBox6.Text);
+
+
+
+
+
+
+
+        }
+        public void imprimePrimario(string indi)
+        {
+            br.Close();
+            bw.Close();
+            br = new BinaryReader(File.Open(indi += ".idx", FileMode.Open));
+            indicePrimario.Rows.Clear();
+            int clave;
+            long dir;
+            while(br.BaseStream.Position < 1000)
+            {
+                try
+                {
+                    indicePrimario.Rows.Add(br.ReadInt32(), br.ReadInt64());
+                }
+                catch
+                {
+                    break;
+                }
+                    
+                
+            }
+            br.Close();
+        }
+        private Atributo dameIndiceSecundario(String nEntidad)
+        {
+            long DE, DA, DSIG;
+            DE = 0;
+            DA = 0;
+            DSIG = 0;
+            string n = "";
+            Atributo temp = new Atributo();
+            br.Close();
+            bw.Close();
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (n == nEntidad)
+                {
+                    br.BaseStream.Position = DA;
+                    while (br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        temp.nombrate(br.ReadString());
+                        temp.ponteTipo(br.ReadChar());
+                        temp.ponteLongitud(br.ReadInt32());
+                        temp.direccionate(br.ReadInt64());
+                        temp.ponteTipoIndice(br.ReadInt32());
+                        temp.ponteDirIndice(br.ReadInt64());
+                        temp.ponteDirSig(br.ReadInt64());
+                        if (temp.dameTI() == 3)
+                        {
+                            br.Close();
+                            return temp;
+                        }
+                        if (temp.dameDirSig() != -1)
+                            br.BaseStream.Position = temp.dameDirSig();
+                        else
+                            break;
+
+                    }
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+
+            br.Close();
+            return null;
+        }
+        private Atributo dameIndicePrimario(string nEntidad)
+        {
+            long DE, DA, DSIG;
+            DE = 0;
+            DA = 0;
+            DSIG = 0;
+            string n = "";
+            Atributo temp = new Atributo();
+            br.Close();
+            bw.Close();
+            br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n == nEntidad)
+                {
+                    br.BaseStream.Position = DA;
+                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        temp.nombrate(br.ReadString());
+                        temp.ponteTipo(br.ReadChar());
+                        temp.ponteLongitud(br.ReadInt32());
+                        temp.direccionate(br.ReadInt64());
+                        temp.ponteTipoIndice(br.ReadInt32());
+                        temp.ponteDirIndice(br.ReadInt64());
+                        temp.ponteDirSig(br.ReadInt64());
+                        if(temp.dameTI() == 2)
+                        {
+                            br.Close();
+                            return temp;
+                        }
+                        if (temp.dameDirSig() != -1)
+                            br.BaseStream.Position = temp.dameDirSig();
+                        else
+                            break;
+
+                    }
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+
+            br.Close();
+            return null;
+        }
+        public void calculaTam(string dat)
+        {
+            br.Close();
+            string nEntidad = comboBox6.Text;
+            bw.Close();
+            primero = 0;
+            long DE = 0, DSIG = 0;
+            long DA = 0, DSIGA = 0;
+            char tipo = ' ';
+            int longitud = 0;
+            string n = "", nA = "";
+            br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n == nEntidad)
+                {
+                    br.BaseStream.Position = DA;
+                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        nA = br.ReadString();
+                        tipo = br.ReadChar();
+                        longitud = br.ReadInt32();
+                        DA = br.ReadInt64();
+                        br.ReadInt32();
+                        br.ReadInt64();
+                        DSIGA = br.ReadInt64();
+                        
+                        primero += longitud;
+                       
+                        if (DSIGA != -1)
+                            br.BaseStream.Position = DSIGA;
+                        else
+                            break;
+                    }
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+            primero += 16;
+            
+
+
+        }
+        /****************************************************************************
+         * Metodo encargado de actualizar la dirección del Registro en la Entidad.
+         * Parametros:
+         * nEntidad --> nombre de la Entidad que se modificará
+         * DR       --> Dirección del Registro que alfabeticamente será el primero.
+         ****************************************************************************/
+        public void ponteRegistro(string nEntidad, long DR)
+        {
+            long DE = 0;
+            bw.Close();
+           
+            foreach(Entidad e in entidad)
+            {
+                if(nEntidad == e.dameNombre())
+                {
+                    DE = e.dameDE();
+                    break;
+                }
+            }
+            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+            bw.BaseStream.Position = DE + 46;
+            bw.Write(DR);
+            bw.Close();
+            imprimeLista(entidad);
+            bw.Close();
+
+           
+        }
+        private long siguienteRegistro(string dat, Atributo aClave, int TAM, string nEntidad,string nClave,long DREGI)
+        {
+            long DIR = 0;
+           
+            long DSIG = -1;
+            long sigE = 0;
+            long ANT = 0;
+            long DR = 0;
+            string n = "";
+            char tipo = ' ';
+            int compara = 0;
+            long p = 0;
+            string nomb = " ";
+            /* Se obtendra la posición del datagrid el que corresponda a la clave de búsqueda*/
+            int pos;
+            pos = 0;
+            bw.Close();
+            br.Close();
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if (dataGridView3.Columns[i].Name == aClave.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                {
+                    pos = i;
+                    break;
+                }
+            }
+            br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();
+                br.ReadInt64();
+                DR = br.ReadInt64();
+                sigE = br.ReadInt64();
+                if(n == nEntidad)
+                {
+                    break;
+                }
+                if (sigE != -1)
+                    br.BaseStream.Position = sigE;
+                else
+                    break;
+            }
+            br.Close();
+            br = new BinaryReader(File.Open(dat,FileMode.Open));
+            br.BaseStream.Position = DR; // se obtiene la cabecera del registro
+            p = DR;
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                ANT = br.ReadInt64();
+                for(int i = 0; i < dataGridView3.Columns.Count; i++)
+                {
+                    long actual = br.BaseStream.Position;
+                    br.Close();
+                    tipo = buscaTipo(nEntidad,dataGridView3.Columns[i].Name);
+
+                    br = new BinaryReader(File.Open(dat, FileMode.Open));
+                    br.BaseStream.Position = actual;
+                    if (tipo == 'E')
+                    {
+                        br.ReadInt32();
+                    }
+                    else if(tipo == 'C')
+                    {
+                        nomb = br.ReadString();
+                        
+                    }
+                    if(i == pos)
+                    {
+                        compara = nClave.CompareTo(nomb);
+                        switch(compara)
+                        {
+                            case -1:
+                                //MessageBox.Show("nomb" + nomb + "\nClave: " + nClave);
+                                //MessageBox.Show("ANT: " + ANT + "\n DIR: " + DIR);
+                                br.Close();
+                                if (ANT == p)
+                                {
+                                    
+                                    ponteRegistro(comboBox6.Text, DREGI);
+                                    bw.Close();
+                                    return ANT;
+
+                                }
+                                else
+                                {
+                                    registroAnterior(DIR, DREGI, dat, TAM);
+                                    br.Close();
+                                    return ANT;
+                                }
+
+                                
+                            break;
+                            case 0:
+                            break;
+                            case 1:
+
+                            break;
+                        }
+
+                    }
+                    DIR = ANT;
+                }
+                DSIG = br.ReadInt64();
+
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                {
+                    registroAnterior(DIR, DREGI, dat, TAM);
+                    br.Close();
+
+                    return -1;
+                }
+                    
+            }
+
+
+
+            br.Close();
+            return DSIG;
+
+
+        }
+        public void registroAnterior(long ant,long reg,string dat, int TAM)
+        {
+            br.Close();
+            bw.Close();
+            bw = new BinaryWriter(File.Open(dat, FileMode.Open));
+            bw.BaseStream.Position = ant;
+            bw.BaseStream.Position += TAM - 8;
+            bw.Write(reg);
+            bw.Close();
+        }
+        private void ordenaRegistro(string dat, Atributo aClave)
+        {
+            /* Se obtendra la posición del datagrid el que corresponda a la clave de búsqueda*/
+            int pos;
+            pos = 0;
+
+            for(int i =0; i < dataGridView3.Columns.Count; i++)
+            {
+                if(dataGridView3.Columns[i].Name == aClave.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                {
+                    pos = i;
+                    break;
+                }
+            }
+            
+
+        }
+        private Atributo dameClaveBusqueda(string dat)
+        {
+            string ent, n;
+            long DSIG = 0, DSIGA = 0, DA = 0;
+            List<string> atributos = new List<string>();
+            List<Atributo> tempAtributo = new List<Atributo>();
+            Atributo aClave;
+            ent = dat.Replace(".dat", "");
+            br.Close();
+            bw.Close();
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (n == ent)
+                {
+                    br.BaseStream.Position = DA;
+                    while (br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        atri = new Atributo();
+                        atri.nombrate(br.ReadString());
+                        atri.ponteTipo(br.ReadChar());
+                        atri.ponteLongitud(br.ReadInt32());
+                        atri.direccionate(br.ReadInt64());
+                        atri.ponteTipoIndice(br.ReadInt32());
+                        atri.ponteDirIndice(br.ReadInt64());
+                        DSIGA = br.ReadInt64();
+                        atri.ponteDirSig(DSIGA);
+                        tempAtributo.Add(atri);
+                      
+                        if (DSIGA != -1)
+                            br.BaseStream.Position = DSIGA;
+                        else
+                            break;
+                    }
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+
+
+            }
+            br.Close();
+            foreach(Atributo a in tempAtributo)
+            {
+                if(a.dameTI() == 1)
+                {
+                    aClave = a;
+                    return aClave;
+                }
+            }
+            return null;
+        }
+        /*Metodo encargado de leer el archivo, y mostrar los registros en el datagrid*/
+        public void imprimeRegistro(string dat)
+        {
+           
+            string ent, n;
+            long DSIG = 0, DSIGA = 0, DA = 0;
+            List<string> atributos = new List<string>();
+            List<Atributo> tempAtributo = new List<Atributo>();
+            ent = dat.Replace(".dat", "");
+            br.Close();
+            bw.Close();
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n    = br.ReadString();
+                       br.ReadInt64();
+                DA   = br.ReadInt64();
+                       br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n == ent)
+                {
+                    br.BaseStream.Position = DA;
+                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        atri = new Atributo();
+                        atri.nombrate(br.ReadString());
+                        atri.ponteTipo(br.ReadChar());
+                        atri.ponteLongitud(br.ReadInt32());
+                        atri.direccionate(br.ReadInt64());
+                        atri.ponteTipoIndice(br.ReadInt32());
+                        atri.ponteDirIndice(br.ReadInt64());
+                        DSIGA = br.ReadInt64();
+                        atri.ponteDirSig(DSIGA);
+                        tempAtributo.Add(atri);
+                        if (DSIGA != -1)
+                            br.BaseStream.Position = DSIGA;
+                        else
+                            break;
+                    }
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+
+
+            }
+            br.Close();
+            registro.Clear();
+
+            int i = 0;
+            int j = 0;
+            
+            dataGridView4.Rows.Clear();
+            dataGridView4.Columns.Clear();
+            dataGridView4.Columns.Add("Dirección Registro", "Dirección Registro");
+            foreach (Atributo a in tempAtributo)
+            {
+                dataGridView4.Columns.Add(a.dameNombre(), a.dameNombre());
+            }
+            dataGridView4.Columns.Add("Dirección Siguiente", "Dirección Siguiente");
+            
+            br = new BinaryReader(File.Open(dat,FileMode.Open));
+            long cab;
+            long DSIGR = 0;
+            cab = dameDireccionRegistro(comboBox6.Text);
+            br = new BinaryReader(File.Open(dat, FileMode.Open));
+            if(cab != -1)
+                br.BaseStream.Position = cab;
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                dataGridView4.Rows.Add();
+                while (i < tempAtributo.Count+2)
+                {
+                    dataGridView4.Rows[j].Cells[i].Value = br.ReadInt64();
+                    
+                    i++;
+                    foreach (Atributo a in tempAtributo)
+                    {
+                        if (a.dameTipo() == 'E')
+                        {
+                            dataGridView4.Rows[j].Cells[i].Value = br.ReadInt32();
+
+                        }
+                        else if (a.dameTipo() == 'C')
+                        {
+                            dataGridView4.Rows[j].Cells[i].Value = br.ReadString();
+                        }
+                        
+                        i++;
+                    }
+                    DSIGR = br.ReadInt64();
+                    dataGridView4.Rows[j].Cells[i].Value  = DSIGR;
+                    break;
+
+                }
+                if (DSIGR != -1)
+                    br.BaseStream.Position = DSIGR;
+                else
+                    break;
+
+                
+                i = 0;
+                j++;
+            }
+            
+            br.Close();
+
+
+        }
+        public long dameDireccionRegistro(string nEntidad)
+        {
+            long DREGISTRO = -1;
+            long DSIG = 0;
+            string n;
+            bw.Close();
+            br.Close();
+            br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();
+                br.ReadInt64();
+                DREGISTRO = br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n == nEntidad)
+                {
+                    br.Close();
+                    return DREGISTRO;
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+            return DREGISTRO;
+        }
         public int buscaTam(string nEntidad, string nAtributo)
         {
             char tipo;
@@ -1676,22 +2502,7 @@ namespace Diccionario_de_Datos
             //bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
             return ' ';
         }
-        public void ordenaIndicePrimario(List<indicep> claves)
-        {
-            indicePrimario.Rows.Clear();
-            claves = claves.OrderBy(indicep => indicep.clave).ToList();
-
-            foreach(indicep c in claves)
-            {
-                indicePrimario.Rows.Add(c.clave, c.dir);
-                fIndice.Write(c.clave);
-                fIndice.Write(c.dir);
-              
-
-            }
-           
-            
-        }
+        
         public void insertaClave(long dir, int cb, int i)
         {
             // MessageBox.Show("valor de i " + i);
@@ -2240,8 +3051,39 @@ namespace Diccionario_de_Datos
         
         private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string dato = "", indice= "";
+            foreach (Entidad aux in entidad)
+            {
+                dato = aux.dameNombre() + ".dat";
+                indice = aux.dameNombre() + ".idx";
+                datos.Add(dato);
+                indi.Add(indice);
+            }
+            Atributo iPrimario = dameIndicePrimario(comboBox6.Text);
+            Atributo iSecundario = dameIndiceSecundario(comboBox6.Text);
+            int posSecundario = 0;
+            pintaTablaRegistros();
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if (iSecundario != null)
+                {
+                    if (dataGridView3.Columns[i].Name == iSecundario.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                    {
+                        posSecundario = i;
+                        break;
+                    }
+                }
+
+            }
             dataGridView3.Columns.Clear();
             pintaTablaRegistros();
+            imprimeRegistro(dato);
+            if(iPrimario != null)
+                imprimePrimario(comboBox6.Text);
+            if (iSecundario != null)
+                insertaSecundario(comboBox6.Text+=".idx", iSecundario, posSecundario);
+            
+            calculaTam(dato);
            
         }
         private void pintaTablaRegistros()
@@ -2336,7 +3178,7 @@ namespace Diccionario_de_Datos
             bw.Close(); 
             imprimeLista(entidad);
             string dato, indice;
-
+            button4.Hide();
             bw.Close();
             foreach(Entidad aux in entidad)
             {
@@ -2362,8 +3204,241 @@ namespace Diccionario_de_Datos
             bw.Close();
 
             //br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
-
+            comboBox6.Enabled = true;
            
+        }
+
+        private void cargaRegistros(object sender, EventArgs e)
+        {
+            br.Close();
+            bw.Close();
+            string dato;
+            string indice;
+            foreach (Entidad aux in entidad)
+            {
+                dato = aux.dameNombre() + ".dat";
+                indice = aux.dameNombre() + ".idx";
+                datos.Add(dato);
+                indi.Add(indice);
+            }
+
+            foreach (string nombre in datos)
+            {
+                bw = new BinaryWriter(File.Open(nombre, FileMode.Open));
+                bw.Close();
+            }
+
+            foreach (string nombre in indi)
+            {
+                bw = new BinaryWriter(File.Open(nombre, FileMode.Open));
+                bw.Close();
+            }
+            
+            comboBox6.Enabled = true;
+            button2.Hide();
+            button4.Hide();
+
+            
+        }
+
+        private void eliminaRegistro(object sender, EventArgs e)
+        {
+            string cB = "";
+            long dirA = 0, dirB = 0;
+            long direccionRegistro = 0;
+            long DANT = 0;
+            string dat = comboBox6.Text + ".dat";
+            Atributo aClave = dameClaveBusqueda(dat);
+            List<string> claves = new List<string>();
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if (dataGridView3.Columns[i].Name == aClave.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                {
+                    pos = i;
+                    break;
+                }
+            }
+            foreach (string arch in datos)
+            {
+                if (arch == dat)
+                {
+                    bw = new BinaryWriter(File.Open(dat, FileMode.Open));
+                    break;
+                }
+            }
+                    
+
+            for(int i = 0; i < dataGridView4.Rows.Count-1; i++)
+            {
+                 claves.Add(dataGridView4.Rows[i].Cells[pos+1].Value.ToString());
+            }
+            EliminaRegistro elimina = new EliminaRegistro(claves);
+            if(elimina.ShowDialog() == DialogResult.OK)
+            {
+                cB = elimina.dameClave();
+
+                /*buscar en datagrid4 el valor que tenga como nombre el Cb */
+                for(int i = 0; i < dataGridView4.Rows.Count-1; i++)
+                {
+                    if(dataGridView4.Rows[i].Cells[pos+1].Value.ToString() == cB)
+                    {
+                        direccionRegistro = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                        break;
+                    }
+                }
+                
+
+                for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
+                {
+                    if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count-1].Value.ToString() == direccionRegistro.ToString())
+                    {
+                        DANT = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                        break;
+                    }
+                }
+                
+                br.Close();
+                bw.Close();
+                br = new BinaryReader(File.Open(dat, FileMode.Open));
+                br.BaseStream.Position = DANT + primero-8;
+                dirA = br.ReadInt64();
+                br.BaseStream.Position = direccionRegistro + primero-8;
+                dirB = br.ReadInt64();
+
+                br.Close();
+                bw = new BinaryWriter(File.Open(dat,FileMode.Open));
+                bw.BaseStream.Position = DANT + primero - 8;
+                bw.Write(dirB);
+                
+                bw.Close();
+                long cab = dameDireccionRegistro(comboBox6.Text);
+                if (cab == direccionRegistro)
+                {
+                    br.Close();
+                    bw.Close();
+
+                    ponteRegistro(comboBox6.Text, dirB);
+                }
+                
+                imprimeRegistro(dat);
+                imprimePrimario(comboBox6.Text);
+                
+                
+            }
+        }
+
+        private void modificaRegistro(object sender, EventArgs e)
+        {
+            string cB = "";
+            long dirA = 0, dirB = 0;
+            long direccionRegistro = 0;
+            long DANT = 0;
+            string dat = comboBox6.Text + ".dat";
+            Atributo aClave = dameClaveBusqueda(dat);
+            List<string> claves = new List<string>();
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if (dataGridView3.Columns[i].Name == aClave.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                {
+                    pos = i;
+                    break;
+                }
+            }
+            foreach (string arch in datos)
+            {
+                if (arch == dat)
+                {
+                    bw = new BinaryWriter(File.Open(dat, FileMode.Open));
+                    break;
+                }
+            }
+
+
+            for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
+            {
+                claves.Add(dataGridView4.Rows[i].Cells[pos + 1].Value.ToString());
+            }
+            EliminaRegistro elimina = new EliminaRegistro(claves);
+            if (elimina.ShowDialog() == DialogResult.OK)
+            {
+                cB = elimina.dameClave();
+
+                /*buscar en datagrid4 el valor que tenga como nombre el Cb */
+                for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
+                {
+                    if (dataGridView4.Rows[i].Cells[pos + 1].Value.ToString() == cB)
+                    {
+                        direccionRegistro = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                        break;
+                    }
+                }
+
+
+                for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
+                {
+                    if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count - 1].Value.ToString() == direccionRegistro.ToString())
+                    {
+                        DANT = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                        break;
+                    }
+                }
+
+                br.Close();
+                bw.Close();
+                br = new BinaryReader(File.Open(dat, FileMode.Open));
+                br.BaseStream.Position = DANT + primero - 8;
+                dirA = br.ReadInt64();
+                br.BaseStream.Position = direccionRegistro + primero - 8;
+                dirB = br.ReadInt64();
+
+                br.Close();
+                bw = new BinaryWriter(File.Open(dat, FileMode.Open));
+                bw.BaseStream.Position = DANT + primero - 8;
+                bw.Write(dirB);
+
+                bw.Close();
+                long cab = dameDireccionRegistro(comboBox6.Text);
+                if (cab == direccionRegistro)
+                {
+                    br.Close();
+                    bw.Close();
+
+                    ponteRegistro(comboBox6.Text, dirB);
+                }
+
+                imprimeRegistro(dat);
+
+
+            }
+
+        }
+
+        private void tabPage3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void modificaAtributo(object sender, EventArgs e)
+        {
+            ModificaAtributo mod = new ModificaAtributo(atributo);
+            Atributo nuevo;
+            bw.Close();
+            br.Close();
+            if(mod.ShowDialog() == DialogResult.OK)
+            {
+                nuevo = mod.dameNuevo();
+                bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                bw.BaseStream.Position = nuevo.dameDireccion();
+                bw.Write(nuevo.dameNombre());
+                bw.Write(nuevo.dameTipo());
+                bw.Write(nuevo.dameLongitud());
+                bw.Write(nuevo.dameDireccion());
+                bw.Write(nuevo.dameTI());
+                bw.Write(nuevo.dameDirIndice());
+                bw.Write(nuevo.dameDirSig());
+                bw.Close();
+                imprimeAtributo(atributo);
+            }
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -2378,6 +3453,11 @@ namespace Diccionario_de_Datos
         {
 
             string nombre = " ";
+            button1.Enabled = true;
+            modificar.Enabled = true;
+            button3.Enabled = true;
+            textBox1.Enabled = true;
+            button4.Hide();
             Archivo archivo = new Archivo(nombre);
 
             AddOwnedForm(archivo);
