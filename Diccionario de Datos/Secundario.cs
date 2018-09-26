@@ -8,7 +8,7 @@ namespace Diccionario_de_Datos
 {
     class Secundario
     {
-        public int clave { get; set; }
+        public string clave { get; set; }
         public List<long> direccion { get; set; }
         public Secundario()
         {

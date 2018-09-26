@@ -35,5 +35,9 @@ namespace Diccionario_de_Datos
             return comboBox1.Text;
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

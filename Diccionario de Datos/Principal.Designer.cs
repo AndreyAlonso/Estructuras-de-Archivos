@@ -84,6 +84,7 @@
             this.insertarRegistro = new System.Windows.Forms.Button();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.comboSecundario = new System.Windows.Forms.ComboBox();
             this.tablaSecundario = new System.Windows.Forms.DataGridView();
             this.cb = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -117,6 +118,7 @@
             this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.button11 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -582,6 +584,8 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.button11);
+            this.tabPage4.Controls.Add(this.comboSecundario);
             this.tabPage4.Controls.Add(this.tablaSecundario);
             this.tabPage4.Controls.Add(this.label9);
             this.tabPage4.Controls.Add(this.indicePrimario);
@@ -589,6 +593,14 @@
             resources.ApplyResources(this.tabPage4, "tabPage4");
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // comboSecundario
+            // 
+            resources.ApplyResources(this.comboSecundario, "comboSecundario");
+            this.comboSecundario.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.comboSecundario.FormattingEnabled = true;
+            this.comboSecundario.Name = "comboSecundario";
+            this.comboSecundario.SelectedIndexChanged += new System.EventHandler(this.comboSecundario_SelectedIndexChanged);
             // 
             // tablaSecundario
             // 
@@ -801,6 +813,15 @@
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
             // 
+            // button11
+            // 
+            this.button11.BackColor = System.Drawing.SystemColors.HotTrack;
+            resources.ApplyResources(this.button11, "button11");
+            this.button11.ForeColor = System.Drawing.Color.White;
+            this.button11.Name = "button11";
+            this.button11.UseVisualStyleBackColor = false;
+            this.button11.Click += new System.EventHandler(this.muestraIndicePrimario);
+            // 
             // Principal
             // 
             resources.ApplyResources(this, "$this");
@@ -927,6 +948,8 @@
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.ComboBox comboSecundario;
+        private System.Windows.Forms.Button button11;
     }
 }
 

@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Entidad.cs" />
     <Compile Include="Indice.cs" />
+    <Compile Include="ListaSecundario.cs" />
     <Compile Include="ModificaAtributo.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -21,9 +21,20 @@ namespace Diccionario_de_Datos
         public string nArchivo;
         public long posicion;
         public long pSig;
+        public int posArchivo = 0;
 
         List<string> datos = new List<string>();
         List<string> indi = new List<string>();
+
+
+        /*  VARIABLE PARA INDICES SECUNDARIOS */
+        int valor = 0;
+        List<string> secundarios = new List<string>();
+        List<int> iSecundarios = new List<int>();
+
+        ListaSecundario indiceSec;
+        List<ListaSecundario> ListSec = new List<ListaSecundario>();
+
 
 
         /****************************************************************************************************
@@ -36,6 +47,8 @@ namespace Diccionario_de_Datos
         int pos;
         int cont;
 
+
+        int poSI = 0;
         /*****************************************************************************************************/
 
         /*****************************************************************************************************
@@ -334,8 +347,8 @@ namespace Diccionario_de_Datos
                                 return dirEntidad;
                             break;
                             case 0:
-                                br.BaseStream.Position = sigEntidad;
-                                aux = sigEntidad;
+                               // br.BaseStream.Position = sigEntidad;
+                               // aux = sigEntidad;
                                 break;
                             case 1:
                                // MessageBox.Show(entidad + " es despues que " + nEntidad);
@@ -362,7 +375,7 @@ namespace Diccionario_de_Datos
                                 }
                                 else
                                 {
-                                  
+                                   
                                     br.BaseStream.Position = sigEntidad;
                                     aux = sigEntidad;
                                     
@@ -401,21 +414,59 @@ namespace Diccionario_de_Datos
             comboBox6.Items.Clear();
             long pos = -1;
             long DSIG = 0;
-            string n=" ";
+            string n = "";
+           
+            
             int totalEntidad = 0;
             // Limpia el datagrid para una nueva inserción
             dataGridView1.Rows.Clear();
             entidad.Clear();
            
             bw.Close();
+
             br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                enti = new Entidad();
+                enti.nombrate(br.ReadString());
+                enti.direccionate(br.ReadInt64());
+                enti.ponteDireccionAtributo(br.ReadInt64());
+                enti.ponteDireccionRegistro(br.ReadInt64());
+                enti.ponteDireccionSig(br.ReadInt64());
+                entidad.Add(enti);
+                if (enti.dameDSIG() != -1)
+                {
+                    br.BaseStream.Position = enti.dameDSIG();
+                }
+                else
+                    break;
+
+                
+            }
+            br.Close();
+            foreach (Entidad i in entidad)
+            {
+                dataGridView1.Rows.Add(i.dameNombre(), i.dameDE(), i.dameDA(), i.dameDD(), i.dameDSIG());
+            }
+            foreach (Entidad i in entidad)
+            {
+                comboBox1.Items.Add(i.dameNombre());
+            }
+            foreach (Entidad i in entidad)
+            {
+                comboBox6.Items.Add(i.dameNombre());
+            }
+
+            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+            /*
             // 1. Se lee la cabecera del Archivo
             pos = br.ReadInt64();
             cabecera.Text = pos.ToString(); // Se muestra en el textbox
 
             // 2. Se posiciona el apuntador 
             br.BaseStream.Position = pos;
-            while (br.BaseStream.Position < br.BaseStream.Length)
+            while (br.BaseStream.Position <= br.BaseStream.Length)
             {
                 n = br.ReadString();
                 if(n == "NULL                          ")
@@ -479,6 +530,7 @@ namespace Diccionario_de_Datos
           //  {
           //      comboBox1.Items.Add(i.dameNombre());
           //  }
+          */
         }
 
         #endregion
@@ -669,7 +721,7 @@ namespace Diccionario_de_Datos
                             br.ReadInt64();
                             br.ReadInt32();
                             br.ReadInt64();
-                            pos = br.BaseStream.Position;
+                                pos = br.BaseStream.Position;
                             DSIGA = br.ReadInt64();
                             if(DSIGA == -1)
                             {
@@ -678,6 +730,8 @@ namespace Diccionario_de_Datos
                                 bw.BaseStream.Position = pos;
                                 bw.Write(dAtributo);
                                 bw.Close();
+
+                                br.Close();
                                 br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
                                 DSIGA = -1;
                                 
@@ -698,8 +752,10 @@ namespace Diccionario_de_Datos
                         bw.BaseStream.Position = pos;
                         bw.Write(dAtributo);
                         bw.Close();
+
+                        br.Close();
                         br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
-                       
+                        br.BaseStream.Position = br.BaseStream.Length;
                         break;
                     }
                 }
@@ -790,6 +846,7 @@ namespace Diccionario_de_Datos
             renglon = 0;
             dataGridView4.Columns.Add("Dirección del Registro", "Dirección del Registro");
             nuevoAtributo = true;
+            imprimeAtributo(atributo);
 
             string n;
             string nombre;
@@ -863,89 +920,64 @@ namespace Diccionario_de_Datos
          ***********************************************************************************************/
         private void imprimeAtributo(List<Atributo> atributo)
         {
+            string n = comboBox1.Text;
+            string nEntidad = "";
+            long DA = 0;
+            long DSIG = 0;
             bw.Close();
-            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));   
-            dataGridView2.Rows.Clear();
-            /*Obtener el total de entidades para sacar el primer atributo */
-            int totalEntidad = entidad.Count;
-            int totalAtributos = 0;
-            string nombre;
-            long pos = 0;
-            string n;
-            totalEntidad = (entidad.Count * 62)+ 8;
-            br.BaseStream.Position = totalEntidad;
-            pos = totalEntidad;
+            br.Close();
             atributo.Clear();
-            if(br.BaseStream.Position+62 < br.BaseStream.Length)
+            dataGridView2.Rows.Clear();
+            br.Close();
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
             {
-                while (br.BaseStream.Position < br.BaseStream.Length)
+                nEntidad = br.ReadString();
+                br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(nEntidad == n)
                 {
-                    atri = new Atributo();
-                    n = br.ReadString();         // nombre               30 
-                    atri.nombrate(n);
-                    while (n == "NULL                          " || n == "NULL                         ")
+                    if(DA != -1)
                     {
-                        if (br.BaseStream.Position + 33 < br.BaseStream.Length - 63)
+                        br.BaseStream.Position = DA;
+                        while (br.BaseStream.Position < br.BaseStream.Length)
                         {
-                            //  br.BaseStream.Position = br.BaseStream.Position + 33;
-                            br.ReadChar();
-                            br.ReadInt32();
-                            br.ReadInt64();
-                            br.ReadInt32();
-                            br.ReadInt64();
-                            br.BaseStream.Position = br.ReadInt64();
-                            n = br.ReadString();
-                            atri.nombrate(n);
-                        }
-                        else
-                            if (br.BaseStream.Position + 33 == br.BaseStream.Length)
-                        {
-                            br.BaseStream.Position = br.BaseStream.Length;
-                            break;
+                            atri = new Atributo();
+                            atri.nombrate(br.ReadString());
+                            atri.ponteTipo(br.ReadChar());
+                            atri.ponteLongitud(br.ReadInt32());
+                            atri.direccionate(br.ReadInt64());
+                            atri.ponteTipoIndice(br.ReadInt32());
+                            atri.ponteDirIndice(br.ReadInt64());
+                            atri.ponteDirSig(br.ReadInt64());
+                            atributo.Add(atri);
+                            if (atri.dameDirSig() != -1)
+                                br.BaseStream.Position = atri.dameDirSig();
+                            else
+                                break;
                         }
 
                     }
-                    if (n != "NULL                          ")
-                    {
-                        atri.ponteTipo(br.ReadChar());                  // tipo                 01
-                        atri.ponteLongitud(br.ReadInt32());             // longitudo            04
-                        atri.direccionate(br.ReadInt64());              // dir Atributo         08
-                        atri.ponteTipoIndice(br.ReadInt32());           // tipo indice          04
-                        atri.ponteDirIndice(br.ReadInt64());            // dir Indice           08
-                        pos = br.ReadInt64();                           // dir Sig              08
-                        atri.ponteDirSig(pos);
-                        atributo.Add(atri);
-                        totalAtributos++;
-                        if (pos != -1)
-                            br.BaseStream.Position = pos;
-                        else if (br.BaseStream.Position < br.BaseStream.Length)
-                        {
-
-                        }
-                        /*    else if (br.BaseStream.Position < br.BaseStream.Length)
-                            {
-                                br.BaseStream.Position += 8;
-                            }*/
-                        else
-                            break;
-
-                    }
-
-
+                    
                 }
-
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
             }
-           
 
             br.Close();
-            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-         //   br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
-
-            foreach (Atributo a in atributo)
+            bw.Close();
+            bw = new BinaryWriter(File.Open(nArchivo,FileMode.Open));
+            foreach(Atributo a in atributo)
             {
-                dataGridView2.Rows.Add(a.dameNombre(), a.dameTipo(), a.dameLongitud(), a.dameDireccion(), a.dameTI(), a.dameDirIndice(), a.dameDirSig());
+               dataGridView2.Rows.Add(a.dameNombre(), a.dameTipo(), a.dameLongitud(), a.dameDireccion(), a.dameTI(), a.dameDirIndice(), a.dameDirSig());
+
             }
-            
+
         }
         /******************************************************************************************************************************************************************
          *                              M E T O D O    E L I M I N A      A T R I B U T O
@@ -1048,6 +1080,7 @@ namespace Diccionario_de_Datos
 
 
             }
+            imprimeLista(entidad);
             imprimeAtributo(atributo);
 
 
@@ -1310,6 +1343,26 @@ namespace Diccionario_de_Datos
         }
 
         #endregion
+        /**************************************************************************************************************
+         * 
+         * dat          ->  nombre del arhivo .dat
+         * aClave       ->  Atributo que tiene la clave de búsqueda
+         * nEntidad     ->  nombre de la Entidad en el combobox6
+         * nRegistro    ->  nombre del registro a insertar
+         * DR           ->  direccion del nuevo registro
+         * 
+         * 
+         * 
+         * Metodo encargado de obtener la direccion a la cual apuntara el nuevo registro
+         * 
+         ****************************************************************************************************************/ 
+         
+        private long dameDireccionSiguienteRegistro(string dat,Atributo  aClave,string nEntidad,string nRegistro,long DR)
+        {
+            return -1;
+        }
+
+
 
         private void tabPage1_Click(object sender, EventArgs e)
         {
@@ -1328,9 +1381,12 @@ namespace Diccionario_de_Datos
          * *********************************************************************************/
          private void insertarRegistro_Click(object sender, EventArgs e)
          {
+            br.Close();
+            bw.Close();
             char tipo = ' '; 
             int tamC = 0, TAM = 0;
 
+            List<int> pos2 = new List<int>();
             string dat = comboBox6.Text + ".dat";
             string indi = comboBox6.Text + ".idx";
             string celda = "";
@@ -1352,6 +1408,7 @@ namespace Diccionario_de_Datos
             aClave = dameClaveBusqueda(dat);
             iPrimario = dameIndicePrimario(comboBox6.Text);
             iSecundario = dameIndiceSecundario(comboBox6.Text);
+            secundarios = buscaSecundarios(comboBox6.Text);
             for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
                 if (aClave != null)
@@ -1377,14 +1434,15 @@ namespace Diccionario_de_Datos
                 }
                 
             }
+            int j = 0;
             for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
                 if(iSecundario != null)
                 {
-                    if (dataGridView3.Columns[i].Name == iSecundario.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                    if (dataGridView3.Columns[i].Name == secundarios[j]) /* Encuentra la columna para realizar el ordenamiento*/
                     {
-                        posSecundario = i;
-                        break;
+                        pos2.Add(i);// = i;
+                        j++;
                     }
                 }
                 
@@ -1413,6 +1471,9 @@ namespace Diccionario_de_Datos
                 tipo = buscaTipo(comboBox6.Text,dataGridView3.Columns[i].Name);
                 
                 celda = dataGridView3.Rows[0].Cells[i].Value.ToString();
+
+                bw.Close();
+                br.Close();
                 bw = new BinaryWriter(File.Open(dat, FileMode.Open));
                 if (tipo == 'E')
                 {
@@ -1424,7 +1485,7 @@ namespace Diccionario_de_Datos
                 else if(tipo == 'C')
                 {
                     tamC = buscaTam(comboBox6.Text,dataGridView3.Columns[i].Name);
-                    while(celda.Length < tamC)
+                    while(celda.Length < tamC-1)
                     {
                         celda += " ";
                     }
@@ -1433,6 +1494,7 @@ namespace Diccionario_de_Datos
                         nRegistro = celda;
                     }
                     bw.Close();
+                    br.Close();
                     bw = new BinaryWriter(File.Open(dat, FileMode.Open));
                     bw.BaseStream.Position = bw.BaseStream.Length;
                     bw.Write(celda);
@@ -1457,7 +1519,9 @@ namespace Diccionario_de_Datos
                         bw.Close();
                         br.Close();
                         DSIGR = siguienteRegistro(dat, aClave, primero, comboBox6.Text, nRegistro, DR);
-
+                        //DSIGR = dameDireccionSiguienteRegistro(dat, aClave, comboBox6.Text, nRegistro, DR);
+                        bw.Close();
+                        br.Close();
                         bw.Close();
                         bw = new BinaryWriter(File.Open(dat, FileMode.Open));
                         bw.BaseStream.Position = bw.BaseStream.Length - 8;
@@ -1492,12 +1556,14 @@ namespace Diccionario_de_Datos
             
             bw.Close();
             /*Ahora se leera el archivo para llenar el datagrid*/
+            br.Close();
             imprimeRegistro(dat);
-            if (iPrimario != null)
+             if (iPrimario != null)
                 insertaPrimario(indi,iPrimario, posprimario);
-            if(iSecundario != null)
-            insertaSecundario(indi, iSecundario, posSecundario);
-               
+            //if(iSecundario != null)
+            //insertaSecundario(indi, iSecundarios);
+            bw.Close();
+            br.Close();
             
             
             /*
@@ -1692,25 +1758,109 @@ namespace Diccionario_de_Datos
             */
             
         }
-        private void insertaSecundario(string indi, Atributo iSecundario, int posSecundario)
+        public List<string> buscaSecundarios(string nEntidad)
         {
+            string n = " ";
+            long DSIG, DA, DSIGA;
+            string cSEC;
+            int tipo;
+            br.Close();
+            bw.Close();
+            List<string> sec = new List<string>();
+            br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n == nEntidad)
+                {
+                    br.BaseStream.Position = DA;
+                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        cSEC = br.ReadString();
+                        br.ReadChar();
+                        br.ReadInt32();
+                        br.ReadInt64();
+                        tipo = br.ReadInt32();
+                        br.ReadInt64();
+                        DSIGA = br.ReadInt64();
+                        if (tipo == 3)
+                            sec.Add(cSEC);
+                        if (DSIGA != -1)
+                            br.BaseStream.Position = DSIGA;
+                        else
+                            break;
+                    }
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+            br.Close();
+            return sec;
+        }
+        private void insertaSecundario(string indi, List<int> iSecundarios)
+        {
+            int posSecundario = 0;
             br.Close();
             bw.Close();
             Secundario s;
+            int pos = 0;
+            poSI = 0;
+            int j = 0;
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if(dataGridView3.Columns[i].Name == secundarios[j])
+                {
+                    iSecundarios.Add(i);
+                    if(secundarios[j] == comboSecundario.Text)
+                        poSI = (j + 1) * 1000;
+                    j++;
+                }
+            }
+
+            indiceSec = new ListaSecundario();
+            indiceSec.nombre = comboSecundario.Text;
+            indiceSec.posTabla = pos;
+            indiceSec.posTabla = posSecundario;
+
+
+
+
+            List<List<Secundario>> listaSecundario = new List<List<Secundario>>();
             List<Secundario> secundario = new List<Secundario>();
+            j = 0;
+            foreach(string nn in secundarios)
+            {
+                if(comboSecundario.Text == nn)
+                {
+                    posSecundario = iSecundarios[j];
+                }
+                j++;
+            }
+
+
+
+
+
             for(int i = 0; i < dataGridView4.Rows.Count-1;i++)
             {
                 s = new Secundario();
                 if( i == 0)
                 {
-                    s.clave = Convert.ToInt32(dataGridView4.Rows[i].Cells[posSecundario + 1].Value);
+                    s.clave = Convert.ToString(dataGridView4.Rows[i].Cells[posSecundario + 1].Value);
                     s.direccion.Add(Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value));
                     secundario.Add(s);
 
                 }
                 else
                 {
-                    s.clave = Convert.ToInt32(dataGridView4.Rows[i].Cells[posSecundario + 1].Value);
+                    s.clave = Convert.ToString(dataGridView4.Rows[i].Cells[posSecundario + 1].Value);
                     Secundario existe = secundario.Find(x => x.clave.Equals(s.clave));
                     if(existe != null)
                     {
@@ -1732,35 +1882,53 @@ namespace Diccionario_de_Datos
                 }
 
             }
+
+
+
+
+
+
             secundario = secundario.OrderBy(x => x.clave).ToList();
             foreach(Secundario ss in secundario)
             {
                 ss.direccion.OrderBy(x => x).ToList();
             }
+
+            listaSecundario.Add(secundario);
+            
+
+
             bw.Close();
             br.Close();
-            bw = new BinaryWriter(File.Open(indi,FileMode.Open));
-            bw.BaseStream.Position += 1000;
+            bw = new BinaryWriter(File.Open(indi+".idx",FileMode.Open));
+            bw.BaseStream.Position = poSI;
             foreach(Secundario sec in secundario)
             {
                 bw.Write(sec.clave);
-                foreach(long pos in sec.direccion)
+                foreach(long p in sec.direccion)
                 {
-                    bw.Write(pos);
+                    bw.Write(p);
                 }
             }
             bw.Close();
             int u = 0;
             int t = 0;
-            tablaSecundario.Rows.Add();
+            //tablaSecundario.Rows.Add();
+            //tablaSecundario.Rows.Add();
             foreach (Secundario sec in secundario)
             {
-                
+
+                tablaSecundario.Rows.Add();
                 tablaSecundario.Rows[u].Cells[0].Value = sec.clave;
                 t = 1;
-                foreach(long pos in sec.direccion)
+                foreach(long p in sec.direccion)
                 {
-                    tablaSecundario.Rows[u].Cells[t].Value = pos;
+                    if (t >= tablaSecundario.Columns.Count)
+                    {
+                        tablaSecundario.Columns.Add("direccion", "direccion");
+                    }
+                    tablaSecundario.Rows[u].Cells[t].Value = p;
+                    
                     t++;
                 }
                 u++;
@@ -1776,7 +1944,7 @@ namespace Diccionario_de_Datos
             br.Close();
             bw.Close();
             br = new BinaryReader(File.Open(indi += ".idx", FileMode.Open));
-            br.BaseStream.Position = 1000;
+            br.BaseStream.Position = poSI;
             tablaSecundario.Rows.Clear();
 
             while (br.BaseStream.Position < br.BaseStream.Length)
@@ -1833,7 +2001,9 @@ namespace Diccionario_de_Datos
         {
             br.Close();
             bw.Close();
-            br = new BinaryReader(File.Open(indi += ".idx", FileMode.Open));
+            br.Close();
+            br.Close();
+            br = new BinaryReader(File.Open(indi + ".idx", FileMode.Open));
             indicePrimario.Rows.Clear();
             int clave;
             long dir;
@@ -1873,27 +2043,31 @@ namespace Diccionario_de_Datos
                 DSIG = br.ReadInt64();
                 if (n == nEntidad)
                 {
-                    br.BaseStream.Position = DA;
-                    while (br.BaseStream.Position < br.BaseStream.Length)
+                    if(DA != -1)
                     {
-                        temp.nombrate(br.ReadString());
-                        temp.ponteTipo(br.ReadChar());
-                        temp.ponteLongitud(br.ReadInt32());
-                        temp.direccionate(br.ReadInt64());
-                        temp.ponteTipoIndice(br.ReadInt32());
-                        temp.ponteDirIndice(br.ReadInt64());
-                        temp.ponteDirSig(br.ReadInt64());
-                        if (temp.dameTI() == 3)
+                        br.BaseStream.Position = DA;
+                        while (br.BaseStream.Position < br.BaseStream.Length)
                         {
-                            br.Close();
-                            return temp;
-                        }
-                        if (temp.dameDirSig() != -1)
-                            br.BaseStream.Position = temp.dameDirSig();
-                        else
-                            break;
+                            temp.nombrate(br.ReadString());
+                            temp.ponteTipo(br.ReadChar());
+                            temp.ponteLongitud(br.ReadInt32());
+                            temp.direccionate(br.ReadInt64());
+                            temp.ponteTipoIndice(br.ReadInt32());
+                            temp.ponteDirIndice(br.ReadInt64());
+                            temp.ponteDirSig(br.ReadInt64());
+                            if (temp.dameTI() == 3)
+                            {
+                                br.Close();
+                                return temp;
+                            }
+                            if (temp.dameDirSig() != -1)
+                                br.BaseStream.Position = temp.dameDirSig();
+                            else
+                                break;
 
+                        }
                     }
+                    
                 }
                 if (DSIG != -1)
                     br.BaseStream.Position = DSIG;
@@ -1925,27 +2099,32 @@ namespace Diccionario_de_Datos
                 DSIG = br.ReadInt64();
                 if(n == nEntidad)
                 {
-                    br.BaseStream.Position = DA;
-                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    if(DA != -1)
                     {
-                        temp.nombrate(br.ReadString());
-                        temp.ponteTipo(br.ReadChar());
-                        temp.ponteLongitud(br.ReadInt32());
-                        temp.direccionate(br.ReadInt64());
-                        temp.ponteTipoIndice(br.ReadInt32());
-                        temp.ponteDirIndice(br.ReadInt64());
-                        temp.ponteDirSig(br.ReadInt64());
-                        if(temp.dameTI() == 2)
+                        br.BaseStream.Position = DA;
+                        while (br.BaseStream.Position < br.BaseStream.Length)
                         {
-                            br.Close();
-                            return temp;
+                            temp.nombrate(br.ReadString());
+                            temp.ponteTipo(br.ReadChar());
+                            temp.ponteLongitud(br.ReadInt32());
+                            temp.direccionate(br.ReadInt64());
+                            temp.ponteTipoIndice(br.ReadInt32());
+                            temp.ponteDirIndice(br.ReadInt64());
+                            temp.ponteDirSig(br.ReadInt64());
+                            if (temp.dameTI() == 2)
+                            {
+                                br.Close();
+                                return temp;
+                            }
+                            if (temp.dameDirSig() != -1)
+                                br.BaseStream.Position = temp.dameDirSig();
+                            else
+                                break;
+
                         }
-                        if (temp.dameDirSig() != -1)
-                            br.BaseStream.Position = temp.dameDirSig();
-                        else
-                            break;
 
                     }
+                    
                 }
                 if (DSIG != -1)
                     br.BaseStream.Position = DSIG;
@@ -1978,24 +2157,29 @@ namespace Diccionario_de_Datos
                 DSIG = br.ReadInt64();
                 if(n == nEntidad)
                 {
-                    br.BaseStream.Position = DA;
-                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    if(DA != -1)
                     {
-                        nA = br.ReadString();
-                        tipo = br.ReadChar();
-                        longitud = br.ReadInt32();
-                        DA = br.ReadInt64();
-                        br.ReadInt32();
-                        br.ReadInt64();
-                        DSIGA = br.ReadInt64();
-                        
-                        primero += longitud;
-                       
-                        if (DSIGA != -1)
-                            br.BaseStream.Position = DSIGA;
-                        else
-                            break;
+                        br.BaseStream.Position = DA;
+                        while (br.BaseStream.Position < br.BaseStream.Length)
+                        {
+                            nA = br.ReadString();
+                            tipo = br.ReadChar();
+                            longitud = br.ReadInt32();
+                            DA = br.ReadInt64();
+                            br.ReadInt32();
+                            br.ReadInt64();
+                            DSIGA = br.ReadInt64();
+
+                            primero += longitud;
+
+                            if (DSIGA != -1)
+                                br.BaseStream.Position = DSIGA;
+                            else
+                                break;
+                        }
+
                     }
+                    
                 }
                 if (DSIG != -1)
                     br.BaseStream.Position = DSIG;
@@ -2137,8 +2321,9 @@ namespace Diccionario_de_Datos
                         }
 
                     }
-                    DIR = ANT;
+                    
                 }
+                DIR = ANT;
                 DSIG = br.ReadInt64();
 
                 if (DSIG != -1)
@@ -2249,7 +2434,8 @@ namespace Diccionario_de_Datos
         /*Metodo encargado de leer el archivo, y mostrar los registros en el datagrid*/
         public void imprimeRegistro(string dat)
         {
-           
+            br.Close();
+            bw.Close();
             string ent, n;
             long DSIG = 0, DSIGA = 0, DA = 0;
             List<string> atributos = new List<string>();
@@ -2268,24 +2454,29 @@ namespace Diccionario_de_Datos
                 DSIG = br.ReadInt64();
                 if(n == ent)
                 {
-                    br.BaseStream.Position = DA;
-                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    if(DA != -1)
                     {
-                        atri = new Atributo();
-                        atri.nombrate(br.ReadString());
-                        atri.ponteTipo(br.ReadChar());
-                        atri.ponteLongitud(br.ReadInt32());
-                        atri.direccionate(br.ReadInt64());
-                        atri.ponteTipoIndice(br.ReadInt32());
-                        atri.ponteDirIndice(br.ReadInt64());
-                        DSIGA = br.ReadInt64();
-                        atri.ponteDirSig(DSIGA);
-                        tempAtributo.Add(atri);
-                        if (DSIGA != -1)
-                            br.BaseStream.Position = DSIGA;
-                        else
-                            break;
+                        br.BaseStream.Position = DA;
+                        while (br.BaseStream.Position < br.BaseStream.Length)
+                        {
+                            atri = new Atributo();
+                            atri.nombrate(br.ReadString());
+                            atri.ponteTipo(br.ReadChar());
+                            atri.ponteLongitud(br.ReadInt32());
+                            atri.direccionate(br.ReadInt64());
+                            atri.ponteTipoIndice(br.ReadInt32());
+                            atri.ponteDirIndice(br.ReadInt64());
+                            DSIGA = br.ReadInt64();
+                            atri.ponteDirSig(DSIGA);
+                            tempAtributo.Add(atri);
+                            if (DSIGA != -1)
+                                br.BaseStream.Position = DSIGA;
+                            else
+                                break;
+                        }
+
                     }
+                    
                 }
                 if (DSIG != -1)
                     br.BaseStream.Position = DSIG;
@@ -2295,6 +2486,7 @@ namespace Diccionario_de_Datos
 
             }
             br.Close();
+            bw.Close();
             registro.Clear();
 
             int i = 0;
@@ -2314,7 +2506,8 @@ namespace Diccionario_de_Datos
             long DSIGR = 0;
             cab = dameDireccionRegistro(comboBox6.Text);
             br = new BinaryReader(File.Open(dat, FileMode.Open));
-            if(cab != -1)
+            dataGridView4.Rows.Add();
+            if (cab != -1)
                 br.BaseStream.Position = cab;
             while (br.BaseStream.Position < br.BaseStream.Length)
             {
@@ -2354,6 +2547,7 @@ namespace Diccionario_de_Datos
             }
             
             br.Close();
+            bw.Close();
 
 
         }
@@ -3061,28 +3255,40 @@ namespace Diccionario_de_Datos
             }
             Atributo iPrimario = dameIndicePrimario(comboBox6.Text);
             Atributo iSecundario = dameIndiceSecundario(comboBox6.Text);
+            secundarios = buscaSecundarios(comboBox6.Text);
             int posSecundario = 0;
+            List<int> iSecundarios = new List<int>();
             pintaTablaRegistros();
+            int j = 0;
             for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
                 if (iSecundario != null)
                 {
-                    if (dataGridView3.Columns[i].Name == iSecundario.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                    if (dataGridView3.Columns[i].Name == secundarios[j]) /* Encuentra la columna para realizar el ordenamiento*/
                     {
                         posSecundario = i;
-                        break;
+                        iSecundarios.Add(i);
+                        if (j < secundarios.Count)
+                            j++;
+                        else
+                            break;
+                        
                     }
                 }
 
             }
             dataGridView3.Columns.Clear();
             pintaTablaRegistros();
-            imprimeRegistro(dato);
+            imprimeRegistro(comboBox6.Text + ".dat");
             if(iPrimario != null)
                 imprimePrimario(comboBox6.Text);
-            if (iSecundario != null)
-                insertaSecundario(comboBox6.Text+=".idx", iSecundario, posSecundario);
-            
+            //if (iSecundario != null)
+                //insertaSecundario(comboBox6.Text+=".idx", iSecundarios);
+            comboSecundario.Items.Clear();
+            foreach(string secun in secundarios)
+            {
+                comboSecundario.Items.Add(secun);
+            }
             calculaTam(dato);
            
         }
@@ -3110,23 +3316,27 @@ namespace Diccionario_de_Datos
                 DSIG = br.ReadInt64(); // direccion siguiente
                 if(n == nTemp)
                 {
-                    br.BaseStream.Position = dAtributo;
-                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    if(dAtributo != -1)
                     {
-                        dataGridView3.Columns.Add(br.ReadString(),null);  //nombre
-                        br.ReadChar();    //tipo
-                        br.ReadInt32();     // longitud
-                        br.ReadInt64();     // direccion
-                        br.ReadInt32();     // tipo de indice
-                        br.ReadInt64();     // direccion indice
-                        DSIGA = br.ReadInt64();     // direccion siguiente
-                        if (DSIGA == -1)
+                        br.BaseStream.Position = dAtributo;
+                        while (br.BaseStream.Position < br.BaseStream.Length)
                         {
-                            break;
+                            dataGridView3.Columns.Add(br.ReadString(), null);  //nombre
+                            br.ReadChar();    //tipo
+                            br.ReadInt32();     // longitud
+                            br.ReadInt64();     // direccion
+                            br.ReadInt32();     // tipo de indice
+                            br.ReadInt64();     // direccion indice
+                            DSIGA = br.ReadInt64();     // direccion siguiente
+                            if (DSIGA == -1)
+                            {
+                                break;
+                            }
+                            else
+                                br.BaseStream.Position = DSIGA;
                         }
-                        else
-                            br.BaseStream.Position = DSIGA;
                     }
+                    
                 }
                 if (DSIG == -1)
                     break;
@@ -3149,30 +3359,309 @@ namespace Diccionario_de_Datos
 
         private void modificaEntidad(object sender, EventArgs e)
         {
-            string mod;
-            string combo;
+            string nueva;
+            string actual;
+            long anterior;
+            long actualSig;
+            long DE;
+            long cab;
+            long siguiente;
+            long entidadant;
+            long DES = 0;
+            bw.Close();
+            br.Close();
             List<string> nombres = new List<string>();
             foreach (Entidad i in entidad)
-            {
                 nombres.Add(i.dameNombre());
-            }
-            ModificaEntidad m = new ModificaEntidad(nombres);
-            if (m.ShowDialog() == DialogResult.OK)
+            ModificaEntidad modifica = new ModificaEntidad(nombres);
+            if(modifica.ShowDialog() == DialogResult.OK)
             {
-                combo = m.dameEntidad();
-                mod = m.dameNombre();
-                if (mod != "")
+                actual = modifica.dameEntidad();
+                nueva = modifica.dameNombre();
+               
+                if(nueva != "")
                 {
-                    textBox1.Text = combo;
-                    eliminaEntidad(this, null);
-                    textBox1.Text = mod;
-                    creaEntidad(this, null);
-                }
-                else
-                    MessageBox.Show("No se guardo una Entidad");
-            }
-        }
+                    while (nueva.Length < 29)
+                        nueva += " ";
+                                     
+                    DE = dameDireccionActual(actual);
+                    br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+                    cab = br.ReadInt64();
+                    br.BaseStream.Position = DE;
+                    br.ReadString();
+                    br.ReadUInt64();
+                    br.ReadUInt64();
+                    br.ReadUInt64();
+                    DES = br.ReadInt64();
+                    br.Close();
 
+                    actualSig = actualSiguiente(actual);
+                    anterior = dameAnterior(nueva,actual); // te da la direccion que te apuntara 
+                    siguiente = dameSiguiente(nueva, actual);  // te da la direcciona a la que apuntaras
+                    entidadant = dameEntidadAnterior2(actual, DE);
+                    bw.Close();
+                    br.Close();
+                    bw = new BinaryWriter(File.Open(nArchivo,FileMode.Open));
+                    
+                    if (cab == DE)
+                    {
+                        bw.BaseStream.Position = 0;
+                        bw.Write(DES);
+                        cabecera.Text = DES.ToString();
+                    }
+                    if(anterior == 0)
+                    {
+                        bw.BaseStream.Position = 0;
+                        bw.Write(DE);
+                        cabecera.Text = DE.ToString();
+                           
+                    }
+                    //actualizar nodo que apunta a nuevo
+                    bw.BaseStream.Position = anterior + 30 + 8 + 8 + 8;
+                    if(anterior != 0)
+                    {
+                        bw.Write(DE);
+                    }
+                    
+                    // actualizar nombre
+                    bw.BaseStream.Position = DE;
+                    bw.Write(nueva);
+
+                    //actualizar  siguiente de nuevo
+                    bw.BaseStream.Position = DE + 30 + 8 + 8 + 8;
+                    bw.Write((long)siguiente);
+                    if(DES !=  siguiente && DES != -1 )
+                    {
+                        bw.BaseStream.Position = entidadant + 30 + 8 + 8 + 8;
+                        bw.Write(DES);
+                    }
+                    if(anterior == 0)
+                    {
+
+                    }
+
+
+                    //actualiza nodo 
+                    //bw.BaseStream.Position = entidadant + 30 + 8 + 8 + 8;
+                    //bw.Write(anterior);
+                    bw.Close();
+
+                }
+                imprimeLista(entidad);
+                
+
+            }
+            
+        }
+        public long actualSiguiente(string actual)
+        {
+            br.Close();
+            bw.Close();
+            string n = "";
+            long DE = 0, DSIG;
+            long DE2 = 0;
+            int compara;
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (n == actual)
+                {
+                    br.Close();
+                    return DSIG;
+                }
+
+                DE2 = DE;
+
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+            return -1;
+
+        }
+        public long dameEntidadAnterior2(string actual,long dir)
+        {
+            br.Close();
+            bw.Close();
+            string n = "";
+            long DE = 0, DSIG;
+            long DE2 = 0;
+            int compara;
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (DSIG == dir)
+                {
+                    br.Close();
+                    return DE;
+                }
+
+                DE2 = DE;
+
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+            return -1;
+        }
+        public long dameSiguiente(string nEntidad, string actual)
+        {
+            br.Close();
+            bw.Close();
+            string n = "";
+            long DE = 0, DSIG;
+            long DE2 = 0;
+            int compara;
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (n != actual)
+                {
+                    compara = n.CompareTo(nEntidad);
+
+                    if (compara == 1)
+                    {
+                        br.Close();
+                        return DE;
+                    }
+                }
+
+                DE2 = DE;
+
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+            return -1;
+        }
+        public long dameAnterior(string nEntidad, string actual)
+        {
+            br.Close();
+            bw.Close();
+            string n = "";
+            long DE = 0, DSIG;
+            long DE2 = 0;
+            int compara;
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n != actual)
+                {
+                    compara = n.CompareTo(nEntidad);
+
+                    if (compara == 1)
+                    {
+                        //if (br.BaseStream.Position == 70)
+                           // DE2 = DE;
+                        br.Close();
+                        return DE2;
+                    }
+                    DE2 = DE;
+                }
+                
+                
+
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+            return DE;
+        }
+        public long dameDireccionActual(string nEntidad)
+        {
+            br.Close();
+            bw.Close();
+            string n = "";
+            long DE, DSIG;
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n == nEntidad)
+                {
+                    br.Close();
+                    return DE;
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+
+
+            }
+            br.Close();
+            return -1;
+        }
+        private void creaEntidad2(Entidad entis, string ant)
+        {
+            br.Close();
+            bw.Close();
+            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+            foreach(Entidad s in entidad)
+            {
+                if(ant == s.dameNombre())
+                {
+                    bw.BaseStream.Position = s.dameDE();
+                    break;
+                }
+            }
+            long pos;
+            long sig = 0;
+            bw.Write(entis.dameNombre());
+            bw.Write(entis.dameDE());
+            bw.Write(entis.dameDA());
+            bw.Write(entis.dameDD());
+            pos = bw.BaseStream.Position;
+            bw.Close();
+            sig = buscaEntidad(ant);
+            bw.Close();
+            br.Close();
+            bw.Close();
+            bw = new BinaryWriter(File.Open(nArchivo,FileMode.Open));
+            bw.BaseStream.Position = pos;
+            bw.Write(sig);
+            bw.Close();
+
+
+
+
+
+
+
+        }
         private void generaRegistros(object sender, EventArgs e)
         {
             bw.Close(); 
@@ -3268,7 +3757,7 @@ namespace Diccionario_de_Datos
             }
                     
 
-            for(int i = 0; i < dataGridView4.Rows.Count-1; i++)
+            for(int i = 0; i < dataGridView4.Rows.Count-2; i++)
             {
                  claves.Add(dataGridView4.Rows[i].Cells[pos+1].Value.ToString());
             }
@@ -3288,7 +3777,7 @@ namespace Diccionario_de_Datos
                 }
                 
 
-                for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
+                for (int i = 0; i < dataGridView4.Rows.Count - 2; i++)
                 {
                     if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count-1].Value.ToString() == direccionRegistro.ToString())
                     {
@@ -3330,9 +3819,18 @@ namespace Diccionario_de_Datos
         private void modificaRegistro(object sender, EventArgs e)
         {
             List<string> claves = new List<string>();
-            for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
+            Atributo aClave = dameClaveBusqueda(comboBox6.Text+".dat");
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
-                claves.Add(dataGridView4.Rows[i].Cells[pos + 1].Value.ToString());
+                if (dataGridView3.Columns[i].Name == aClave.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                {
+                    pos = i;
+                    break;
+                }
+            }
+            for (int i = 0; i < dataGridView4.Rows.Count - 2; i++)
+            {
+                claves.Add(dataGridView4.Rows[i].Cells[pos+1].Value.ToString());
             }
             ModificaRegistro mod = new ModificaRegistro(dataGridView3,dataGridView4,claves);
             DataGridView tablatemp = new DataGridView();
@@ -3369,8 +3867,10 @@ namespace Diccionario_de_Datos
                             }
                             else if (tipo == 'C')
                             {
-                                
-                                while (mod.dameRenglon().Rows[0].Cells[j].Value.ToString().Length < 30)
+                                int tamC = buscaTam(comboBox6.Text, dataGridView3.Columns[j].Name);
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.BaseStream.Position = pos2;
+                                while (mod.dameRenglon().Rows[0].Cells[j].Value.ToString().Length < tamC-1)
                                 {
                                         mod.dameRenglon().Rows[0].Cells[j].Value += " ";
                                 }
@@ -3378,13 +3878,14 @@ namespace Diccionario_de_Datos
                                 
                                 
                                 bw.Write((string)mod.dameRenglon().Rows[0].Cells[j].Value);
-                                pos2 += 31;
+                                pos2 += tamC+1;
 
                             }
 
                             
                         }
-                            
+
+                        bw.Close();
                         imprimeRegistro(comboBox6.Text + ".dat");
                         break;
                     }
@@ -3417,6 +3918,7 @@ namespace Diccionario_de_Datos
                 bw.Write(nuevo.dameDirIndice());
                 bw.Write(nuevo.dameDirSig());
                 bw.Close();
+                imprimeLista(entidad);
                 imprimeAtributo(atributo);
             }
         }
@@ -3452,7 +3954,24 @@ namespace Diccionario_de_Datos
                 button7.Hide();
                 button8.Hide();
                 nArchivo = nombre;
+                bw.Close();
+                bw = new BinaryWriter(File.Open(nombre, FileMode.Open));
             }
+        }
+
+        private void comboSecundario_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            br.Close();
+            bw.Close();
+            tablaSecundario.Rows.Clear();
+            insertaSecundario(comboBox6.Text,iSecundarios);
+            br.Close();
+            bw.Close();
+        }
+
+        private void muestraIndicePrimario(object sender, EventArgs e)
+        {
+            //insertaPrimario(comboBox6.Text + ".idx", iPrimario, posPrimario);
         }
 
         /**************************************************************************************************************************
@@ -3463,78 +3982,117 @@ namespace Diccionario_de_Datos
          *************************************************************************************************************************/
         private void eliminaEntidad(object sender, EventArgs e)
         {
-            // Declaración de variables *****************************
-            string n;
-            long pos = 0;
-            long DSIG = 0;
-            long DANT = 0;
-            long DE = 0;
-            int compara;
-            long cabecera = -1;
-            string borrar = textBox1.Text;
-            int cont = borrar.Length;
-            for (; cont < 29; cont++)
-            {
-                borrar += " ";
-            }
-            /****************************************************8*/
-
+            br.Close();
             bw.Close();
-            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
-            pos = br.ReadInt64();
-            cabecera = pos;
-            br.BaseStream.Position = pos;
-            while (br.BaseStream.Position <= br.BaseStream.Length)
+            string n = textBox1.Text;
+            while (n.Length < 29)
+                n += " ";
+            long anterior;
+            anterior = dameEntidadAnterior(n);
+            long siguiente;
+            long cab = 0;
+            string nn = " ";
+            siguiente = dameSiguienteEntidad(n);
+            br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            nn = br.ReadString();
+            br.Close();
+            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+            
+            if(nn == n)
             {
-                n  = br.ReadString();
+                bw.BaseStream.Position = 0;
+                bw.Write(siguiente);
+                cabecera.Text = siguiente.ToString();
+            }
+            bw.BaseStream.Position = anterior + 30 + 8 + 8 + 8;
+            if(anterior == -1)
+            {
+                bw.BaseStream.Position = 0;
+            }
+            bw.Write(siguiente);
+            bw.Close();
+            imprimeLista(entidad);
+            
+
+        }
+        public long dameSiguienteEntidad(string nEntidad)
+        {
+            br.Close();
+            bw.Close();
+            string n = "";
+            long DSIG = 0;
+
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n == nEntidad)
+                {
+                    br.Close();
+                    return DSIG;
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+            return -1;
+        }
+        public long dameEntidadAnterior(string nEntidad)
+        {
+            br.Close();
+            bw.Close();
+            string n = "";
+            long DSIG = 0;
+            long DE = 0;
+            long ANT = 0;
+            long DSANT = 0;
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
                 DE = br.ReadInt64();
                 br.ReadInt64();
                 br.ReadInt64();
                 DSIG = br.ReadInt64();
-               
-          //      if (DSIG == -1)
-         /////       {
-        //            break;
-         //       }
-                compara = borrar.CompareTo(n);
-                if(compara == 0)
+                if(n == nEntidad)
                 {
-                    if(cabecera == DE)
-                    {
-                        br.BaseStream.Position = 0;
-                        br.Close();
-                        bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                        bw.Write(DSIG);
-                        bw.Close();
-                        br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
-
-                    }   
-                    //MessageBox.Show("Se ha encontrado la entidad " + n);
-                    //MessageBox.Show("Dirección Anterior " + DANT);
-                    //MessageBox.Show("Dirección Entidad: " +  DE);
-                    //MessageBox.Show("Dirección Siguiente: " + DSIG);
-                    br.Close();
-                    bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                    bw.BaseStream.Position = DE;
-                    bw.Write((string)"NULL                          ");
-                    bw.Write((long)-1);
-                    bw.BaseStream.Position = DE + 54;
-                    bw.Write((long)-1);
-                   
-                    bw.BaseStream.Position = DANT + 54;
-                    bw.Write(DSIG);
-                    bw.Close();
-                    br = new BinaryReader(File.Open(nArchivo, FileMode.Open));                    
-                }
-                 DANT = DE;
-                if(DSIG == -1)
                     break;
-                else
+                }
+                if (DSIG != -1)
                     br.BaseStream.Position = DSIG;
+                else
+                    break;
             }
+            br.BaseStream.Position = 0;
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                br.ReadString();
+                ANT = br.ReadInt64();
+                br.ReadInt64();
+                br.ReadInt64();
+                DSANT = br.ReadInt64();
+                if(DSANT == DE)
+                {
+                    br.Close();
+                    return ANT;
+                }
+                if (DSANT != -1)
+                    br.BaseStream.Position = DSANT;
+                else
+                    break;
+            }
+
             br.Close();
-            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-            imprimeLista(entidad);
+            return -1;
         }
         
     }
