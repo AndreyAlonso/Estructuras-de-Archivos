@@ -27,6 +27,9 @@ namespace Diccionario_de_Datos
         List<string> indi = new List<string>();
 
 
+
+        public int TR;
+
         /*  VARIABLE PARA INDICES SECUNDARIOS */
         int valor = 0;
         List<string> secundarios = new List<string>();
@@ -60,6 +63,8 @@ namespace Diccionario_de_Datos
         /*****************************************************************************************************/
         private int Col;
         private int Ren;
+
+
 
 
         //Declaraciones de variables para mover la pantalla
@@ -929,6 +934,7 @@ namespace Diccionario_de_Datos
             atributo.Clear();
             dataGridView2.Rows.Clear();
             br.Close();
+            br.Close();
             br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
             br.BaseStream.Position = br.ReadInt64();
             while(br.BaseStream.Position < br.BaseStream.Length)
@@ -1468,10 +1474,11 @@ namespace Diccionario_de_Datos
             for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
                 bw.Close();
+                br.Close();
                 tipo = buscaTipo(comboBox6.Text,dataGridView3.Columns[i].Name);
-                
-                celda = dataGridView3.Rows[0].Cells[i].Value.ToString();
-
+                bw.Close();
+                br.Close();
+                celda = dataGridView3.Rows[0].Cells[i].Value.ToString(); 
                 bw.Close();
                 br.Close();
                 bw = new BinaryWriter(File.Open(dat, FileMode.Open));
@@ -1509,10 +1516,13 @@ namespace Diccionario_de_Datos
             {
                 /*ACTUALIZAR DIRECCIONES SEGUN EL TIPO DE INDICE  */
                 /*Obtención de clave de búsqueda! */
-                
+                bw.Close();
+                br.Close();
                 /* Si el tipo es una cadena utilizar el compareTo, si es numerico utilizar <,>,== */
-                if(aClave != null)
+                if (aClave != null)
                 {
+                    bw.Close();
+                    br.Close();
                     if (aClave.dameTipo() == 'C')
                     {
                         //tempAtributo = dameAtributo(dat);
@@ -1520,8 +1530,8 @@ namespace Diccionario_de_Datos
                         br.Close();
                         DSIGR = siguienteRegistro(dat, aClave, primero, comboBox6.Text, nRegistro, DR);
                         //DSIGR = dameDireccionSiguienteRegistro(dat, aClave, comboBox6.Text, nRegistro, DR);
-                        bw.Close();
                         br.Close();
+                        bw.Close();
                         bw.Close();
                         bw = new BinaryWriter(File.Open(dat, FileMode.Open));
                         bw.BaseStream.Position = bw.BaseStream.Length - 8;
@@ -1558,6 +1568,8 @@ namespace Diccionario_de_Datos
             /*Ahora se leera el archivo para llenar el datagrid*/
             br.Close();
             imprimeRegistro(dat);
+            br.Close();
+            bw.Close();
              if (iPrimario != null)
                 insertaPrimario(indi,iPrimario, posprimario);
             //if(iSecundario != null)
@@ -1566,196 +1578,7 @@ namespace Diccionario_de_Datos
             br.Close();
             
             
-            /*
-            string sVal;
-            long ap;
-            int auxCol;
-            int longitud;
-            long direccion;
-            int long1;
-            string long2;
-            int iTam = 0;
-            int claveB;
-            long dir;
-           
-            char dato = ' ';
             
-            reg = new List<string>();
-            //Se asigna el apuntador del archivo 
-            dataGridView4.Rows.Add();
-            // INSERCIÓN EN LA TABLA DE REGISTROS
-            if (Ren == 0){
-                foreach (Atributo i in atributo){
-                    dataGridView4.Columns.Add(i.dameNombre(), i.dameNombre());
-                    
-                }
-                dataGridView4.Columns.Add("Direccion siguiente", "Direccion siguiente");
-            }
-            for (auxCol = 0; auxCol <= dataGridView3.Columns.Count; auxCol++)
-            {
-                if (auxCol == 0)
-                {
-                  // SE OBTIENE LA DIRECCIÓN DEL REGISTRO
-                  dataGridView4.Rows[Ren].Cells[auxCol].Value = fRegistro.BaseStream.Length;
-                  direccion = Convert.ToInt64(dataGridView4.Rows[Ren].Cells[auxCol].Value);
-                  fRegistro.Write(fRegistro.BaseStream.Length);
-              }
-              else
-              {
-                dato = buscaTipoDato(dataGridView3.Columns[Col].HeaderText);
-                iTam = buscaLongitud(dataGridView3.Columns[Col].HeaderText);
-                if (dato == 'E')
-                {
-                    long1 = Convert.ToInt32(dataGridView3.Rows[0].Cells[auxCol - 1].Value); // valor de la tabla
-                    dataGridView4.Rows[Ren].Cells[auxCol].Value = long1;
-                    fRegistro.Write(long1);
-                        reg.Add(long1.ToString());
-                }
-                else if(dato == 'C')
-                {
-                   long2 = dataGridView3.Rows[0].Cells[auxCol - 1].Value.ToString();
-                   for(int c = long2.Length; c < iTam-1; c++){
-                    long2 += " ";
-                }
-                fRegistro.Write(long2);
-                reg.Add(long2);
-                dataGridView4.Rows[Ren].Cells[auxCol].Value = reg[auxCol - 1];
-            }
-
-
-        }
-    }
-    //MessageBox.Show("HASTA AQUI ESTA BIEN");
-    if(Ren > 0)
-    {
-                dataGridView4.Rows[Ren-1].Cells[auxCol].Value = dataGridView4.Rows[Ren].Cells[0].Value;// fRegistro.BaseStream.Length;
-                dataGridView4.Rows[Ren].Cells[auxCol].Value = -1;
-                fRegistro.Write(Convert.ToInt64(-1));
-              //  MessageBox.Show("tamaño del archivo " + fRegistro.BaseStream.Length);
-            }
-            else
-            {
-                dataGridView4.Rows[Ren].Cells[auxCol].Value = -1;
-                fRegistro.Write(Convert.ToInt64(-1));
-            }
-
-
-            Ren++;
-            // METODO ENCARGADO PARA ENVIAR A SUS RESPECTIVOS ARCHIVOS
-            // buscaRegistros();
-
-            int tipo;
-            int val;
-          
-   
-            for(int i = 0; i < dataGridView3.Columns.Count; i++)
-            {
-                tipo = 0;
-                tipo = buscaTipoIndice(dataGridView3.Columns[i].HeaderText);
-             //   MessageBox.Show("Atributo " + dataGridView3.Rows[0].Cells[i].Value + "\nTipo" + tipo);
-                //Switch que controla el tipo de cada  atributo para saber a cual indice mandar
-                // INDICE PRIMARIO  n
-                switch(tipo) 
-                {
-                    case 0:
-                      //  MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo );
-                    break;
-                    case 1:
-                     //   MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
-                        break;
-                    case 2:
-                      //  MessageBox.Show("CASE 2\natributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
-                        // Se envia al indice primario el valor 
-                        indicep ip;
-                        ip.clave = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
-                        ip.dir = Convert.ToInt64(dataGridView4.Rows[Ren-1].Cells[0].Value);
-                        claves.Add(ip);
-                        ordenaIndicePrimario(claves);
-                        
-                        break;
-                    case 3:
-                        if(primero == false)
-                        {
-                            for(int f = 0; f < 10; f++)
-                            {
-                                tope[f] = 1;
-                            }
-                            tablaSecundario.Rows.Add();
-                            indiceSecundario[0,0] = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
-                            indiceSecundario[0,1] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
-                          //  MessageBox.Show("[" + topeClave + "," + tope[pos] + "]");
-                            tablaSecundario.Rows[0].Cells[0].Value = indiceSecundario[0,0];
-                            tablaSecundario.Rows[0].Cells[1].Value = indiceSecundario[0,1];
-                            
-                            //  tope[0]++;
-                            primero = true;
-                            //topeClave++;
-                        }
-                        else
-                        {
-                            int tempClave = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
-                            bool existe = false;
-                            cont = 0;
-                            while(cont < 10)
-                            {
-                                if(indiceSecundario[cont,0] == tempClave) // solo dice en que clave esta pero no la posicion de direccion
-                                {
-                                    existe = true;
-                                    pos = cont;
-                                    topeClave = pos;
-                                }
-                                cont++;
-                            }
-                       
-                            if (existe)
-                            {
-                                tope[pos]++;
-                                
-                            //    MessageBox.Show("[" + topeClave + "," + tope[pos]+ "]");
-                                indiceSecundario[topeClave, tope[pos]] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
-                                tablaSecundario.Rows[topeClave].Cells[tope[pos]].Value = indiceSecundario[topeClave, tope[pos]];
-                                
-                            }
-                            else
-                            {
-                                topeClave = pos;
-                                pos++;
-                                tope[pos] = 1;
-                                topeClave++;
-                                tablaSecundario.Rows.Add();
-                          //      MessageBox.Show("[" + topeClave + "," + tope[pos] + "]");
-                                indiceSecundario[topeClave,0] = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
-                                indiceSecundario[1, tope[pos]] = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
-                           //     MessageBox.Show("Edad " + indiceSecundario[topeClave, 0] + "  dirección " + indiceSecundario[1, tope[pos]]);
-
-                                tablaSecundario.Rows[topeClave].Cells[0].Value = indiceSecundario[topeClave,0];
-                                tablaSecundario.Rows[topeClave].Cells[1].Value = indiceSecundario[1, tope[pos]];
-                               
-                            }
-                        }
-                        break;
-                    case 4:
-                     //   MessageBox.Show("atributo " + dataGridView3.Rows[0].Cells[i].Value + ", con tipo " + tipo);
-                        claveB = Convert.ToInt32(dataGridView3.Rows[0].Cells[i].Value);
-                        dir = Convert.ToInt64(dataGridView4.Rows[Ren - 1].Cells[0].Value);
-                        // MessageBox.Show("Clave: " + claveB + "\n dirección: " + dir);
-                        insertaClave(dir, claveB, cont2);
-                        if(cont2 == 4){
-                            cont2 = 0;
-                        }
-                        else
-                        {
-                            cont2++;
-                        }
-                        
-                        break;
-                    case 5:
-                    break;
-
-                }
-
-            }
-            */
             
         }
         public List<string> buscaSecundarios(string nEntidad)
@@ -1847,8 +1670,7 @@ namespace Diccionario_de_Datos
 
 
 
-
-            for(int i = 0; i < dataGridView4.Rows.Count-1;i++)
+            for(int i = 0; i < dataGridView4.Rows.Count-2;i++)
             {
                 s = new Secundario();
                 if( i == 0)
@@ -1963,7 +1785,7 @@ namespace Diccionario_de_Datos
           
             List<Primario> primario = new List<Primario>();
 
-            for(int i = 0; i < dataGridView4.Rows.Count-1; i++)
+            for(int i = 0; i < dataGridView4.Rows.Count-2; i++)
             {
                 p = new Primario();
                 
@@ -1997,6 +1819,58 @@ namespace Diccionario_de_Datos
 
 
         }
+        public int calculaTamRegistro(string nEntidad)
+        {
+            br.Close();
+            bw.Close();
+            int tam = 0;
+            long DA = 0;
+            int longitud = 0;
+            long DSIG = 0;
+            long DSIGA = 0;
+            string n = "";
+            br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while(br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if(n == nEntidad)
+                {
+                    br.BaseStream.Position = DA;
+                    while(br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        br.ReadString();
+                        br.ReadChar();
+                        longitud = br.ReadInt32();
+                        tam = tam + longitud;
+                        br.ReadInt64();
+                        br.ReadInt32();
+                        br.ReadInt64();
+                        DSIGA = br.ReadInt64();
+                        if (DSIGA != -1)
+                            br.BaseStream.Position = DSIGA;
+                        else
+                            break;
+                    }
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+
+            }
+            br.Close();
+            return (tam + 16);
+
+
+
+
+            return 0;
+        }
         public void imprimePrimario(string indi)
         {
             br.Close();
@@ -2006,12 +1880,18 @@ namespace Diccionario_de_Datos
             br = new BinaryReader(File.Open(indi + ".idx", FileMode.Open));
             indicePrimario.Rows.Clear();
             int clave;
+            int j = 0;
             long dir;
-            while(br.BaseStream.Position < 1000)
+            long TAM = (dataGridView4.Rows.Count) * 12;
+            while(br.BaseStream.Position < TAM)
             {
                 try
                 {
+                    //dir = br.ReadInt64();
                     indicePrimario.Rows.Add(br.ReadInt32(), br.ReadInt64());
+                    
+                    j++;
+
                 }
                 catch
                 {
@@ -2245,6 +2125,7 @@ namespace Diccionario_de_Datos
                     break;
                 }
             }
+            br.Close();
             br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
             br.BaseStream.Position = br.ReadInt64();
             while(br.BaseStream.Position < br.BaseStream.Length)
@@ -2263,6 +2144,8 @@ namespace Diccionario_de_Datos
                 else
                     break;
             }
+            
+            br.Close();
             br.Close();
             br = new BinaryReader(File.Open(dat,FileMode.Open));
             br.BaseStream.Position = DR; // se obtiene la cabecera del registro
@@ -3253,6 +3136,7 @@ namespace Diccionario_de_Datos
                 datos.Add(dato);
                 indi.Add(indice);
             }
+            TR = calculaTamRegistro(comboBox6.Text);
             Atributo iPrimario = dameIndicePrimario(comboBox6.Text);
             Atributo iSecundario = dameIndiceSecundario(comboBox6.Text);
             secundarios = buscaSecundarios(comboBox6.Text);
@@ -3815,6 +3699,92 @@ namespace Diccionario_de_Datos
                 
             }
         }
+        public long dameApuntadorNodo(string actual, long DR, int clave)
+        {
+            int i, j;
+            int compara = 0;
+            long direccion = 0;
+            for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
+            {
+                if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count-1].Value.ToString() == DR.ToString())
+                {
+                    direccion = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                    return direccion;
+                }
+
+
+            }
+
+            return -1;
+        }
+        public long dameSiguienteR(string actual, long DR, int clave)
+        {
+            int i, j;
+            int compara = 0;
+            long direccion = 0;
+            for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
+            {
+
+                compara = actual.CompareTo(dataGridView4.Rows[i].Cells[clave + 1].Value.ToString());
+                if (compara == 0)
+                {
+                    direccion = Convert.ToInt64(dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count - 1].Value);
+                    return direccion;
+                }
+
+
+            }
+
+            return -1;
+        }
+        public long dameDireccionSiguienteAnterior(string actual, long DR, int clave)
+        {
+            int i, j;
+            int compara = 0;
+            long direccion = 0;
+            for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
+            {
+
+                compara = actual.CompareTo(dataGridView4.Rows[i].Cells[clave + 1].Value.ToString());
+                if (compara == -1)
+                {
+                    direccion = Convert.ToInt64(dataGridView4.Rows[i - 1].Cells[dataGridView4.Columns.Count-1].Value);
+                    return direccion;
+                }
+
+
+            }
+
+            return -1;
+        }
+        /********************************************************************************
+         *  Metodo encargado de recorrer los registros y encontrar cual apunta al nuevo
+         ********************************************************************************/
+        public long dameDireccionAnteriorRegistro(string actual, long DR, int clave)
+        {
+            int i, j;
+            int compara = 0;
+            long direccion = 0;
+            for(i = 0; i < dataGridView4.Rows.Count-2;i++)
+            {
+
+                compara = actual.CompareTo(dataGridView4.Rows[i].Cells[clave+1].Value.ToString());
+                if(compara == -1)
+                {
+                    if(i == 0)
+                    {
+                        direccion = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                    }
+                    else 
+                    direccion = Convert.ToInt64(dataGridView4.Rows[i-1].Cells[0].Value);
+                    return direccion;
+                }
+
+                
+            }
+
+            return -1;
+        }
 
         private void modificaRegistro(object sender, EventArgs e)
         {
@@ -3836,28 +3806,42 @@ namespace Diccionario_de_Datos
             DataGridView tablatemp = new DataGridView();
             char tipo;
             long pos2 = 0;
+            long DireccionRegistro = 0;
+            string nRegistro = "";
             string n;
+            long DSIGR = 0;
+            long DANT = 0;
+            long DSANT = 0;
+            long DACTUAL = 0;
+            tam = 0;
             if (mod.ShowDialog() == DialogResult.OK)
             {
-                n = mod.dameClave();
+                n = mod.dameClave(); // nombre actual
                 
-                for (int i = 0; i < dataGridView4.Rows.Count - 1; i++)
+                for (int i = 0; i < dataGridView4.Rows.Count - 2; i++)
                 {
 
                     if(dataGridView4.Rows[i].Cells[pos+1].Value.ToString() == n)
                     {
+                       
                         bw = new BinaryWriter(File.Open(comboBox6.Text+".dat", FileMode.Open));
-                        pos2 = (long)dataGridView4.Rows[i].Cells[0].Value;
+                        pos2 = (long)dataGridView4.Rows[i].Cells[0].Value; // Se obtiene la dirección del registro a modificar
+                        DireccionRegistro = pos2;
+                        DACTUAL = dameSiguienteR(n, DireccionRegistro, pos);
+
+
+
                         pos2 += 8;
                         for (int j = 0; j < mod.dameRenglon().Columns.Count; j++)
                         {
-                            dataGridView4.Rows[i].Cells[j + 1].Value = mod.dameRenglon().Rows[0].Cells[j].Value;
+                            dataGridView4.Rows[i].Cells[j + 1].Value = mod.dameRenglon().Rows[0].Cells[j].Value; // Se intercambian los nombres
+
                             br.Close();
                             bw.Close();
-                            tipo = buscaTipo(comboBox6.Text, dataGridView3.Columns[j].Name);
+                            tipo = buscaTipo(comboBox6.Text, dataGridView3.Columns[j].Name); // busca el tipo de registro
                             bw.Close();
                             bw = new BinaryWriter(File.Open(comboBox6.Text+".dat", FileMode.Open));
-                            bw.BaseStream.Position = pos2;
+                            bw.BaseStream.Position = pos2-1; //Se iguala a la posicion para cambiar el nombre
                             if (tipo == 'E')
                             {
                                 
@@ -3867,9 +3851,9 @@ namespace Diccionario_de_Datos
                             }
                             else if (tipo == 'C')
                             {
-                                int tamC = buscaTam(comboBox6.Text, dataGridView3.Columns[j].Name);
+                                int tamC = buscaTam(comboBox6.Text, dataGridView3.Columns[j].Name); // Busca el tamñano del nombre del registro
                                 bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
-                                bw.BaseStream.Position = pos2;
+                                bw.BaseStream.Position = pos2; // Se iguala a la posicion para el cambiar el nombre del registro
                                 while (mod.dameRenglon().Rows[0].Cells[j].Value.ToString().Length < tamC-1)
                                 {
                                         mod.dameRenglon().Rows[0].Cells[j].Value += " ";
@@ -3877,15 +3861,59 @@ namespace Diccionario_de_Datos
 
                                 
                                 
-                                bw.Write((string)mod.dameRenglon().Rows[0].Cells[j].Value);
+                                bw.Write(mod.dameRenglon().Rows[0].Cells[j].Value.ToString()); // Se escribe el nuevo nombre
+                                nRegistro = (string)mod.dameRenglon().Rows[0].Cells[j].Value;
                                 pos2 += tamC+1;
 
                             }
 
                             
                         }
+                        bw.Close();
+                        br.Close();
+                        // DSIGR = siguienteRegistro(comboBox6.Text+".dat", aClave, primero, comboBox6.Text, nRegistro, DireccionRegistro);
+                        //  bw = new BinaryWriter(File.Open(comboBox6.Text+".dat",FileMode.Open)); 
+                        //  bw.BaseStream.Position = pos2;
+                        //bw.Write(DSIGR);
+
+                        /*     ACTUALIZACION DE DIRECCIONES     */
+
+
+                        // ACTUALIZA A ==> B
+                        DANT = dameDireccionAnteriorRegistro(mod.dameRenglon().Rows[0].Cells[pos].Value.ToString(), DireccionRegistro, pos);
+                        //MessageBox.Show("Direccion de A: " + DANT);
+                       
+                        bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                        bw.BaseStream.Position = DANT + TR - 8;
+                        bw.Write(DireccionRegistro);
+               //         MessageBox.Show("Direccion de B: " + DireccionRegistro);
+                        // ACTUALIZA B == > C
+                        DSANT = dameDireccionSiguienteAnterior(mod.dameRenglon().Rows[0].Cells[pos].Value.ToString(), DireccionRegistro, pos);
+                        bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                        bw.Write(DSANT);
+             //           MessageBox.Show("Direccion de C: " + DSANT);
+                        // ACTUALIZA C == > D
+
+                        
+              //          MessageBox.Show("Direccion de E: " + DACTUAL);
+                        long AP = dameApuntadorNodo(mod.dameRenglon().Rows[0].Cells[pos].Value.ToString(), DireccionRegistro, pos);
+                        bw.Close();
+                        bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                        bw.BaseStream.Position = AP + TR -8;
+                        bw.Write(DACTUAL);
+                        bw.Close();
+
+
 
                         bw.Close();
+                        if(DANT == -1)
+                        {
+                            br.Close();
+                            bw.Close();
+                            ponteRegistro(comboBox6.Text, DACTUAL);
+                            br.Close();
+                            bw.Close();
+                        }
                         imprimeRegistro(comboBox6.Text + ".dat");
                         break;
                     }
@@ -3971,7 +3999,22 @@ namespace Diccionario_de_Datos
 
         private void muestraIndicePrimario(object sender, EventArgs e)
         {
-            //insertaPrimario(comboBox6.Text + ".idx", iPrimario, posPrimario);
+            Atributo iPrimario = dameIndicePrimario(comboBox6.Text);
+            int posprimario = 0;
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if (iPrimario != null)
+                {
+                    if (dataGridView3.Columns[i].Name == iPrimario.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                    {
+                        posprimario = i;
+                        break;
+                    }
+                }
+
+            }
+            insertaPrimario(comboBox6.Text + ".idx", iPrimario, posprimario);
+            imprimePrimario(comboBox6.Text);
         }
 
         /**************************************************************************************************************************
