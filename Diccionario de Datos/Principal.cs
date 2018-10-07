@@ -58,8 +58,18 @@ namespace Diccionario_de_Datos
          *                                                                                  ARBOL B+
          *****************************************************************************************************/
         private Arbol nodo;
+        private Arbol arbol = new Arbol();
         private List<Arbol> Arbol = new List<Arbol>();
         int cont2 = 0;
+
+
+
+        public struct TNodo
+        {
+            public int cp;
+            public long dir;
+        }
+
         /*****************************************************************************************************/
         private int Col;
         private int Ren;
@@ -1400,8 +1410,10 @@ namespace Diccionario_de_Datos
             int pos = 0;
             int posprimario = 0;
             int posSecundario = 0;
+            int posArbol = 0;
             Atributo iPrimario;
             Atributo iSecundario;
+            Atributo iArbol;
             string nRegistro = " ";
             long DR = 0, DSIGR = 0, DREGI = 0;
             br.Close();
@@ -1414,6 +1426,7 @@ namespace Diccionario_de_Datos
             aClave = dameClaveBusqueda(dat);
             iPrimario = dameIndicePrimario(comboBox6.Text);
             iSecundario = dameIndiceSecundario(comboBox6.Text);
+            iArbol = dameIndiceArbol(comboBox6.Text);
             secundarios = buscaSecundarios(comboBox6.Text);
             for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
@@ -1452,6 +1465,18 @@ namespace Diccionario_de_Datos
                     }
                 }
                 
+            }
+            for (int i = 0; i < dataGridView3.Columns.Count; i++)
+            {
+                if (iPrimario != null)
+                {
+                    if (dataGridView3.Columns[i].Name == iArbol.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                    {
+                        posArbol = i;
+                        break;
+                    }
+                }
+
             }
 
             foreach (string arch in datos)
@@ -1533,6 +1558,7 @@ namespace Diccionario_de_Datos
                         br.Close();
                         bw.Close();
                         bw.Close();
+                        bw.Close();
                         bw = new BinaryWriter(File.Open(dat, FileMode.Open));
                         bw.BaseStream.Position = bw.BaseStream.Length - 8;
                         bw.Write(DSIGR);
@@ -1548,6 +1574,8 @@ namespace Diccionario_de_Datos
                 }
                 else
                 {
+
+                    bw = new BinaryWriter(File.Open(comboBox6.Text+".dat",FileMode.Open)); 
                     bw.BaseStream.Position = bw.BaseStream.Length - 8-primero;
                     DSIGR = DR;
                    
@@ -1572,14 +1600,12 @@ namespace Diccionario_de_Datos
             bw.Close();
              if (iPrimario != null)
                 insertaPrimario(indi,iPrimario, posprimario);
+            if (iArbol != null)
+                insertaNodo(comboBox6.Text + ".idx", iArbol, posArbol);
             //if(iSecundario != null)
             //insertaSecundario(indi, iSecundarios);
             bw.Close();
             br.Close();
-            
-            
-            
-            
         }
         public List<string> buscaSecundarios(string nEntidad)
         {
@@ -1626,6 +1652,288 @@ namespace Diccionario_de_Datos
             }
             br.Close();
             return sec;
+        }
+        private void insertaNodo(string arch, Atributo iArbol, int posArbol)
+        {
+            br.Close();
+            bw.Close();
+            bool lleno = false;
+            List<int> nodos = new List<int>();
+            List<int> direcciones = new List<int>();
+            List<int> tempClaves;// = new List<int>();
+            List<long> tempDir;
+            for (int i = 0; i < dataGridView4.Rows.Count - 2; i++)
+            {
+                nodos.Add(Convert.ToInt32(dataGridView4.Rows[i].Cells[posArbol + 1].Value));
+                direcciones.Add(Convert.ToInt32(dataGridView4.Rows[i].Cells[0].Value));
+            }
+            /* AQUI LA LISTA YA FUNCIONA DE ENTEROS */
+          //  bw = new BinaryWriter(File.Open(comboBox6.Text + ".idx", FileMode.Open));
+
+            Arbol arbol = new Arbol();
+            Nodo anterior = new Nodo();
+
+            Nodo nuevo;// = new Nodo();
+            long dirRaiz = 0;
+                        nuevo = new Nodo();
+            for (int i = 0; i < nodos.Count; i++)
+            {
+                dirRaiz = arbol.dameRaiz();
+                if (dirRaiz == -1)
+                {
+                    if (lleno == false)
+                    {
+                        if (arbol.Count == 0)
+                        {
+
+                            nuevo = arbol.creaNodo(nuevo, 0);
+                            arbol.Add(nuevo);
+                            lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i], direcciones[i]);
+                        }
+                        else
+                        {
+                            lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i], direcciones[i]);
+                            anterior = nuevo;
+                        }
+                    }
+                    if (lleno == true)
+                    {
+
+                        nuevo = new Nodo();
+                        nuevo = arbol.creaNodo(nuevo, arbol[arbol.Count-1].dirNodo+65); //se asigna dirección al nodo
+                        anterior.sig = nuevo.dirNodo;                       // se apunta el anterior al siguiente
+                        arbol.Add(nuevo);
+                        tempClaves = new List<int>();
+                        tempDir = new List<long>();
+
+
+                        for (int aux = 2; aux < anterior.clave.Count; aux++)
+                        {
+                            tempClaves.Add(anterior.clave[aux]);
+
+                            tempDir.Add(anterior.direccion[aux]);
+
+                        }
+
+                        /*Remueve los ultimos 2 elementos del nodo porque se pasaron a uno nuevo*/
+                        anterior.clave.RemoveAt(3);
+                        anterior.clave.RemoveAt(2);
+                        anterior.direccion.RemoveAt(3);
+                        anterior.direccion.RemoveAt(2);
+                        /*Se añanade a una lista de 5 datos el nuevo a insertar*/
+                        tempClaves.Add(nodos[i]);
+                        tempDir.Add(direcciones[i]);
+                        arbol.ordenaCinco(tempClaves, tempDir);
+                        /*Se agregan los ultimos 3 datos al nuevo nodo */
+                        for (int aux = 0; aux < tempClaves.Count; aux++)
+                        {
+                            lleno = arbol.agregaDato(nuevo.dirNodo, tempClaves[aux], tempDir[aux]);
+                        }
+                        /*Crear nodo raiz */
+                        anterior = nuevo;
+                        nuevo = new Nodo();
+                        nuevo = arbol.creaNodo(nuevo, anterior.dirNodo + 65);
+                        nuevo.tipo = 'R';
+                        nuevo.direccion.Add(arbol[arbol.Count - 2].dirNodo);
+                        nuevo.clave.Add(tempClaves[0]);
+                        nuevo.direccion.Add(arbol[arbol.Count - 1].dirNodo);
+                        arbol.Add(nuevo);
+                        //nuevo = new Nodo();
+                        //nuevo = arbol.creaNodo(nuevo, anterior.dirNodo + 65);
+
+                        /*
+                        lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i], direcciones[i]);
+                        lleno = arbol.agregaDato(nuevo.dirNodo, nodos[-1], direcciones[i-1]);
+                        lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i-2], direcciones[i-2]);
+                        lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i-3], direcciones[i-3]);
+                        */
+
+
+                    }
+
+                }
+                else // EXISTE RAIZ
+                {
+                    long dir = arbol.buscaNodo(nodos[i]);                   // funcion que te dice en que nodo se insertara la clave
+                    long raiz = arbol.dameRaiz();                           // Dirección de raiz    
+                    Nodo actual = arbol.dameNodo(dir);                      // Nodo que se va a modificar
+
+                    lleno = arbol.agregaDato(dir, nodos[i], direcciones[i]);
+                    if (lleno == true)  // se crea nuevo nodo y se agrega a raiz
+                    {
+                        long dirAnt;
+                        dirAnt = actual.dirNodo;
+                        
+                        nuevo = new Nodo();
+                        nuevo = arbol.creaNodo(nuevo, arbol[arbol.Count-1].dirNodo + 65);         //se asigna dirección al nodo
+                        actual.sig = nuevo.dirNodo;                         // se apunta el anterior al siguiente
+                        arbol.Add(nuevo);
+                        tempClaves = new List<int>();
+                        tempDir = new List<long>();
+
+
+                        for (int aux = 2; aux < actual.clave.Count; aux++)
+                        {
+                            tempClaves.Add(actual.clave[aux]);
+
+                            tempDir.Add(actual.direccion[aux]);
+
+                        }
+
+                        /*Remueve los ultimos 2 elementos del nodo porque se pasaron a uno nuevo*/
+                        actual.clave.RemoveAt(3);
+                        actual.clave.RemoveAt(2);
+                        actual.direccion.RemoveAt(3);
+                        actual.direccion.RemoveAt(2);
+                        /*Se añanade a una lista de 5 datos el nuevo a insertar*/
+                        tempClaves.Add(nodos[i]);
+                        tempDir.Add(direcciones[i]);
+                        arbol.ordenaCinco(tempClaves, tempDir);
+                        /*Se agregan los ultimos 3 datos al nuevo nodo */
+                        for (int aux = 0; aux < tempClaves.Count; aux++)
+                        {
+                            lleno = arbol.agregaDato(nuevo.dirNodo, tempClaves[aux], tempDir[aux]);
+                        }
+
+                        /* AGREGAR A RAIZ */
+
+
+                        lleno = arbol.agregaDato(raiz, tempClaves[0], arbol[arbol.Count - 1].dirNodo);
+
+                        /*****************************************************************************
+                         * RAIZ LLENA
+                         * agregar todas las claves de la raiz a temClaves + la nueva clave que se iba a insertar
+                         * agregar todas las direcciones de raiz a temDir + la nueva direccion a insertar 
+                         *****************************************************************************/
+                        if(lleno == true) //RAIZ llena 
+                        {
+                            int nDato = tempClaves[0];
+                            long dDato = arbol[arbol.Count - 1].dirNodo;
+                            MessageBox.Show("La raiz esta llena!!");
+                            raiz = arbol.dameRaiz();
+                            Nodo nRaiz = arbol.dameNodo(raiz);
+                            tempClaves = new List<int>();
+                            tempDir = new List<long>();
+                            foreach(int n in nRaiz.clave)
+                            {
+                                tempClaves.Add(n);
+                            }
+                            foreach(long l in nRaiz.direccion)
+                            {
+                                tempDir.Add(l);
+
+                            }
+                            tempClaves.Add(nDato);
+                            tempDir.Add(dDato);
+                            arbol.ordenaCinco(tempClaves, tempDir);
+                            /************** LISTO PARA ASIGNAR Y QUITAR CLAVES A LA RAIZ  ************************/
+
+                            /*crear nuevo nodo  */
+                            Nodo intermedio = new Nodo();
+                            intermedio = arbol.creaNodo(intermedio, arbol[arbol.Count - 1].dirNodo + 65);
+                            intermedio.tipo = 'I';
+                            nRaiz.tipo = 'I';
+                            nRaiz.sig = intermedio.dirNodo;
+                            arbol.Add(intermedio);
+
+                            intermedio.clave.Add(tempClaves[3]);
+                            intermedio.clave.Add(tempClaves[4]);
+                            intermedio.direccion.Add(tempDir[3]);
+                            intermedio.direccion.Add(tempDir[4]);
+                            intermedio.direccion.Add(tempDir[5]);
+           
+                            /*Remueve los ultimos 2 elementos del nodo porque se pasaron a uno nuevo*/
+
+                            nRaiz.clave.RemoveAt(3);
+                            nRaiz.clave.RemoveAt(2);
+                            nRaiz.direccion.RemoveAt(4);
+                            nRaiz.direccion.RemoveAt(3);
+                            /*Se añanade a una lista de 5 datos el nuevo a insertar*/
+                       //     tempClaves.Add(nodos[i]);
+                     //       tempDir.Add(direcciones[i]);
+                      //      arbol.ordenaCinco(tempClaves, tempDir);
+
+                            /*Se agregan los ultimos 3 datos al nuevo nodo */
+                            Nodo Cab = new Nodo();
+                            Cab = arbol.creaNodo(Cab, arbol[arbol.Count - 1].dirNodo + 65);
+                            Cab.tipo = 'R';
+                            Cab.clave.Add(tempClaves[2]);
+                            Cab.direccion.Add(nRaiz.dirNodo);
+                            Cab.direccion.Add(intermedio.dirNodo);
+                            arbol.Add(Cab);    
+                            
+
+                        }
+
+
+
+                    }
+                }
+
+
+                }
+
+
+
+                imprimeArbol(arbol);
+
+
+
+
+
+
+
+
+
+
+
+            
+            
+
+        }
+        private void imprimeArbol(Arbol arbol)
+        {
+            int k = 0;
+            int i = 0;
+            tablaArbol.Rows.Clear();
+            foreach (Nodo nodo in arbol)
+            {
+                k = 0;
+                    tablaArbol.Rows.Add();
+                    for (int j = 0; j < tablaArbol.Columns.Count; j++)
+                    {
+                        if (j == 0)
+                        {
+                            tablaArbol.Rows[i].Cells[j].Value = nodo.dirNodo;
+                        }
+                        if(j == 1)
+                        {
+                            tablaArbol.Rows[i].Cells[j].Value = nodo.tipo;
+
+                        }
+                        if (j > 1 && j < tablaArbol.Columns.Count - 1 )
+                        {                         
+                            if( k < nodo.direccion.Count)
+                                tablaArbol.Rows[i].Cells[j].Value = nodo.direccion[k];
+                            j++;
+                            if(k < nodo.clave.Count)
+                                tablaArbol.Rows[i].Cells[j].Value = nodo.clave[k];
+                            k++;
+                        }
+                        if (j == tablaArbol.Columns.Count - 1)
+                            tablaArbol.Rows[i].Cells[j].Value = nodo.sig;
+                        
+
+
+
+                    }
+                
+                i++;
+
+            }
+
+
+            
         }
         private void insertaSecundario(string indi, List<int> iSecundarios)
         {
@@ -1902,7 +2210,64 @@ namespace Diccionario_de_Datos
             }
             br.Close();
         }
-        private Atributo dameIndiceSecundario(String nEntidad)
+        private Atributo dameIndiceArbol(string nEntidad)
+        {
+            long DE, DA, DSIG;
+            DE = 0;
+            DA = 0;
+            DSIG = 0;
+            string n = "";
+            Atributo temp = new Atributo();
+            br.Close();
+            bw.Close();
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (n == nEntidad)
+                {
+                    if (DA != -1)
+                    {
+                        br.BaseStream.Position = DA;
+                        while (br.BaseStream.Position < br.BaseStream.Length)
+                        {
+                            temp.nombrate(br.ReadString());
+                            temp.ponteTipo(br.ReadChar());
+                            temp.ponteLongitud(br.ReadInt32());
+                            temp.direccionate(br.ReadInt64());
+                            temp.ponteTipoIndice(br.ReadInt32());
+                            temp.ponteDirIndice(br.ReadInt64());
+                            temp.ponteDirSig(br.ReadInt64());
+                            if (temp.dameTI() == 4)
+                            {
+                                br.Close();
+                                return temp;
+                            }
+                            if (temp.dameDirSig() != -1)
+                                br.BaseStream.Position = temp.dameDirSig();
+                            else
+                                break;
+
+                        }
+                    }
+
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+
+            br.Close();
+            return null;
+
+        }
+        private Atributo dameIndiceSecundario(string nEntidad)
         {
             long DE, DA, DSIG;
             DE = 0;
@@ -2579,200 +2944,6 @@ namespace Diccionario_de_Datos
             //bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
             return ' ';
         }
-        
-        public void insertaClave(long dir, int cb, int i)
-        {
-            // MessageBox.Show("valor de i " + i);
-            if (Arbol.Count == 0) // Si no hay nodos
-            {
-                nodo = new Arbol();
-                nodo.clave[i] = cb;
-                nodo.apuntador[i] = dir;
-                nodo.direccion = 1000;
-                nodo.renglon = 0;
-                nodo.valor = 0;
-                nodo.tipo = 'H';
-                nodo.tam = 2;
-                tablaArbol.Rows[nodo.renglon].Cells[0].Value = nodo.direccion;
-                tablaArbol.Rows[nodo.renglon].Cells[1].Value = nodo.tipo;
-                tablaArbol.Rows[nodo.renglon].Cells[nodo.tam].Value = nodo.apuntador[i];
-                nodo.tam++;
-                tablaArbol.Rows[nodo.renglon].Cells[nodo.tam].Value = nodo.clave[i];
-                nodo.tam++;
-                Arbol.Add(nodo);
-
-            }
-            else
-            {
-                // busca raiz
-                int pos = 0;
-                foreach (Arbol aux in Arbol)
-                {
-                    if (aux.tipo == 'R')
-                    {
-                        pos = aux.valor;
-                    }
-                    else
-                    {
-                        if (i < 4)
-                        {
-                            for (int j = 0; j < i; j++)
-                            {
-                                if (cb < nodo.clave[j] && j < i)
-                                {
-                                    for (int g = i; g > j; g--)
-                                    {
-                                        nodo.clave[g] = nodo.clave[g - 1];
-                                        nodo.apuntador[g] = nodo.apuntador[g - 1];
-                                    }
-                                    nodo.clave[j] = cb;
-                                    nodo.apuntador[j] = dir;
-                                    break;
-                                }
-                                else
-                                {
-                                    nodo.clave[i] = cb;
-                                    nodo.apuntador[i] = dir;
-                                    break;
-                                }
-                                
-
-                            }
-                            for (int k = 0, h = 2; k <= i; k++)
-                            {
-                                tablaArbol.Rows[nodo.renglon].Cells[h].Value = nodo.apuntador[k];
-                                h++;
-                                tablaArbol.Rows[nodo.renglon].Cells[h].Value = nodo.clave[k];
-                                h++;
-                            }
-                        }
-                        else if(i == 4)
-                        {
-                            MessageBox.Show("Nodo Lleno");
-                            Arbol temp = new Arbol();
-                            temp = nodo;
-                            nodo = new Arbol();
-                            //Metodo para capturar claves
-                            nodo.tipo = 'H';
-                            nodo.renglon++;
-                            nodo.direccion = 1100;
-                            tablaArbol.Rows.Add();
-                            tablaArbol.Rows[nodo.renglon].Cells[0].Value = nodo.direccion;
-                            tablaArbol.Rows[nodo.renglon].Cells[1].Value = nodo.tipo;
-                            nodo.tam = 2;
-                            for(int c = 2, d = 0; c < 4; c++, d++)
-                            {
-                                nodo.clave[d] = temp.clave[c];
-                                temp.clave[c] = 0;
-                                nodo.apuntador[d] = temp.apuntador[c];
-                                temp.apuntador[c] = 0;
-                            }
-
-                            Arbol[temp.renglon] = temp;
-                            Arbol.Add(nodo);
-                            for (int k = 0, h = 2; k < i; k++)
-                            {
-                                tablaArbol.Rows[nodo.renglon].Cells[h].Value = nodo.apuntador[k];
-                                h++;
-                                tablaArbol.Rows[nodo.renglon].Cells[h].Value = nodo.clave[k];
-                                h++;
-                            }
-                            insertaClave(dir, cb, 0);
-                            
-                            int f = 0, g = 0;
-                            foreach(Arbol arbl in Arbol)
-                            {
-                                f = 2;
-                                g = 0;
-                                tablaArbol.Rows[arbl.renglon].Cells[0].Value = arbl.direccion;
-                                tablaArbol.Rows[arbl.renglon].Cells[1].Value = arbl.tipo;
-                                for (int k = 0, h = 2; k < i; k++)
-                                {
-                                    tablaArbol.Rows[arbl.renglon].Cells[h].Value = arbl.apuntador[k];
-                                    h++;
-                                    tablaArbol.Rows[arbl.renglon].Cells[h].Value = arbl.clave[k];
-                                    h++;
-                                }
-                            }
-                           
-                       
-                           // break;
-                        }
-                    }
-                }
-            }
-
-            
-
-
-
-
-          /*
-          if(i == 0)
-            {
-                nodo = new Arbol();
-                nodo.tipo = 'H';
-                nodo.renglon = 0;
-                nodo.tam = 2;
-                nodo.direccion = 1000;
-                nodo.apuntador[i] = dir;
-                nodo.clave[i] = cb;
-                tablaArbol.Rows[nodo.renglon].Cells[0].Value = nodo.direccion;
-                tablaArbol.Rows[nodo.renglon].Cells[1].Value = nodo.tipo;
-                tablaArbol.Rows[nodo.renglon].Cells[nodo.tam].Value = nodo.apuntador[i];
-                nodo.tam++;
-                tablaArbol.Rows[nodo.renglon].Cells[nodo.tam].Value = nodo.clave[i];
-                nodo.tam++;
-
-
-
-            }
-          else if( i < 4)
-          {
-              
-                for(int j =0; j < i; j++)
-                {
-                    if (cb < nodo.clave[j] && j < i)
-                    {
-                        for(int g = i;g > j;g-- )
-                        {
-                            nodo.clave[g] = nodo.clave[g - 1];
-                            nodo.apuntador[g] = nodo.apuntador[g - 1]; 
-                        }
-                        nodo.clave[j] = cb;
-                        nodo.apuntador[j] = dir;
-                        break;
-                    }
-                    else
-                    {
-                        nodo.clave[i] = cb;
-                        nodo.apuntador[i] = dir;
-                        break;
-                    }
-                        
-
-                    
-                }
-                
-                for(int k = 0, h= 2; k <= i; k++)
-                {
-                    tablaArbol.Rows[nodo.renglon].Cells[h].Value = nodo.apuntador[k];
-                    h++;
-                    tablaArbol.Rows[nodo.renglon].Cells[h].Value = nodo.clave[k];
-                    h++;
-                }
-              
-                
-            }
-            else
-            {
-                MessageBox.Show("N O D O  -- L L E N O ");
-                
-                Arbol.Add(nodo);
-            }
-            */
-        }
-        
         public int buscaLongitud(string nombre)
         {
             int tipo = 0;
@@ -3625,7 +3796,7 @@ namespace Diccionario_de_Datos
             List<string> claves = new List<string>();
             for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
-                if (dataGridView3.Columns[i].Name == aClave.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
+                if (aClave != null && dataGridView3.Columns[i].Name == aClave.dameNombre()  ) /* Encuentra la columna para realizar el ordenamiento*/
                 {
                     pos = i;
                     break;
@@ -4016,6 +4187,8 @@ namespace Diccionario_de_Datos
             insertaPrimario(comboBox6.Text + ".idx", iPrimario, posprimario);
             imprimePrimario(comboBox6.Text);
         }
+
+   
 
         /**************************************************************************************************************************
          * Metodo encargado de eliminar la entidad

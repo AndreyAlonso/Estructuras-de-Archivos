@@ -84,6 +84,7 @@
             this.insertarRegistro = new System.Windows.Forms.Button();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.button11 = new System.Windows.Forms.Button();
             this.comboSecundario = new System.Windows.Forms.ComboBox();
             this.tablaSecundario = new System.Windows.Forms.DataGridView();
             this.cb = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -118,7 +119,6 @@
             this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.button11 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -594,6 +594,15 @@
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // button11
+            // 
+            this.button11.BackColor = System.Drawing.SystemColors.HotTrack;
+            resources.ApplyResources(this.button11, "button11");
+            this.button11.ForeColor = System.Drawing.Color.White;
+            this.button11.Name = "button11";
+            this.button11.UseVisualStyleBackColor = false;
+            this.button11.Click += new System.EventHandler(this.muestraIndicePrimario);
+            // 
             // comboSecundario
             // 
             resources.ApplyResources(this.comboSecundario, "comboSecundario");
@@ -812,15 +821,6 @@
             // 
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
-            // 
-            // button11
-            // 
-            this.button11.BackColor = System.Drawing.SystemColors.HotTrack;
-            resources.ApplyResources(this.button11, "button11");
-            this.button11.ForeColor = System.Drawing.Color.White;
-            this.button11.Name = "button11";
-            this.button11.UseVisualStyleBackColor = false;
-            this.button11.Click += new System.EventHandler(this.muestraIndicePrimario);
             // 
             // Principal
             // 

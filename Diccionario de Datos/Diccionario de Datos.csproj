@@ -52,6 +52,7 @@
       <DependentUpon>Archivo.cs</DependentUpon>
     </Compile>
     <Compile Include="Atributo.cs" />
+    <Compile Include="Claves.cs" />
     <Compile Include="EliminaAtributo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,6 +86,7 @@
     <Compile Include="ModificaRegistro.Designer.cs">
       <DependentUpon>ModificaRegistro.cs</DependentUpon>
     </Compile>
+    <Compile Include="Nodo.cs" />
     <Compile Include="Primario.cs" />
     <Compile Include="Principal.cs">
       <SubType>Form</SubType>
