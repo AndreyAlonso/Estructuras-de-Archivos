@@ -43,29 +43,29 @@ namespace Diccionario_de_Datos
         /****************************************************************************************************
          *                                                                                  INDICE SECUNDARIO
          ****************************************************************************************************/
-        long[,] indiceSecundario;
-        int topeClave;
-        int[] tope;
+         long[,] indiceSecundario;
+         int topeClave;
+         int[] tope;
         //bool primero;
-        int pos;
-        int cont;
+         int pos;
+         int cont;
 
 
-        int poSI = 0;
+         int poSI = 0;
         /*****************************************************************************************************/
 
         /*****************************************************************************************************
          *                                                                                  ARBOL B+
          *****************************************************************************************************/
-        private Arbol nodo;
-        private Arbol arbol = new Arbol();
-        private List<Arbol> Arbol = new List<Arbol>();
-        int cont2 = 0;
+         private Arbol nodo;
+         private Arbol arbol = new Arbol();
+         private List<Arbol> Arbol = new List<Arbol>();
+         int cont2 = 0;
 
 
 
-        public struct TNodo
-        {
+         public struct TNodo
+         {
             public int cp;
             public long dir;
         }
@@ -171,87 +171,87 @@ namespace Diccionario_de_Datos
         /***********************************************************************************************************
      *  CONSTRUCTOR DE LA CLASE PRINCIPAL   
      ***********************************************************************************************************/
-        public Principal()
-        {
-            InitializeComponent();
-            posx = 0;
-            posy = 0;
+     public Principal()
+     {
+        InitializeComponent();
+        posx = 0;
+        posy = 0;
             // enti = new Entidad();
-            entidad = new List<Entidad>();
-            letras = new List<int>();
-            Cab = -1;
-            atri = new Atributo();
-            atributo = new List<Atributo>();
-            band = false;
-            band2 = false;
+        entidad = new List<Entidad>();
+        letras = new List<int>();
+        Cab = -1;
+        atri = new Atributo();
+        atributo = new List<Atributo>();
+        band = false;
+        band2 = false;
             // bw.Write(Cab);
-            nuevo = false;
-            abierto = false;
-            registro = new List<BinaryWriter>();
-            longi = 0;
-            contador = 0;
-            nuevoAtributo = false;
-            botonAtributo = false;
-            indice = new List<BinaryWriter>();
-            tipoIndice = 0;
-            tam = 0;
-            primero = 0;
-            lRegistro = new List<Registro>();
+        nuevo = false;
+        abierto = false;
+        registro = new List<BinaryWriter>();
+        longi = 0;
+        contador = 0;
+        nuevoAtributo = false;
+        botonAtributo = false;
+        indice = new List<BinaryWriter>();
+        tipoIndice = 0;
+        tam = 0;
+        primero = 0;
+        lRegistro = new List<Registro>();
 
 
-        }
+    }
         #endregion
         #region Configuracion Formulario
         //Metodo que permite mover la ventana con el mouse dando clic
-        private void panel1_MouseMove(object sender, MouseEventArgs e)
-        {
-        	if(e.Button != MouseButtons.Left){
-        		posx = e.X;
-        		posy = e.Y;
-        	}
-        	else{
-        		Left = Left + (e.X - posx);
-        		Top  = Top  + (e.Y - posy);
-        	}
-        }
+    private void panel1_MouseMove(object sender, MouseEventArgs e)
+    {
+       if(e.Button != MouseButtons.Left){
+          posx = e.X;
+          posy = e.Y;
+      }
+      else{
+          Left = Left + (e.X - posx);
+          Top  = Top  + (e.Y - posy);
+      }
+  }
         //Opcion cerrar
-        private void Cierrate(object sender, MouseEventArgs e)
-        {
-            this.Close();
-        }
+  private void Cierrate(object sender, MouseEventArgs e)
+  {
+    this.Close();
+}
         //Opcion minimizar
-        private void minimizate(object sender, EventArgs e)
-        {
-            this.WindowState = FormWindowState.Minimized;
-        }
+private void minimizate(object sender, EventArgs e)
+{
+    this.WindowState = FormWindowState.Minimized;
+}
         #endregion
         #region Algoritmos Entidad
-        private void creaEntidad(object sender, EventArgs e)
-        {
-            enti = new Entidad();
-            List<string> nombresOrdenados = new List<string>();
-            long Cab = -1;
-            long dir = -1;
-            pSig = -1;
-            int cont;
-            _nombre = textBox1.Text;
+private void creaEntidad(object sender, EventArgs e)
+{
+    enti = new Entidad();
+    List<string> nombresOrdenados = new List<string>();
+    long Cab = -1;
+    long dir = -1;
+    pSig = -1;
+    int cont;
+    _nombre = textBox1.Text;
           //  comboBox1.Items.Add(_nombre); //Agrega las entidades al comboBox de atributo
 
-            cont = _nombre.Length;
-            for (; cont < 29; cont++){
-                _nombre += " ";
-            }
-            cEntidadRegistro.Items.Add(_nombre);
+    cont = _nombre.Length;
+    for (; cont < 29; cont++){
+        _nombre += " ";
+    }
+    cEntidadRegistro.Items.Add(_nombre);
             //comboBox6.Items.Add(_nombre);
-            if (entidad.Count == 0)
-            {
-                enti.nombrate(_nombre);
-                enti.direccionate(bw.BaseStream.Length);
-                enti.ponteDireccionAtributo(-1);
-                enti.ponteDireccionRegistro(-1);
-                enti.ponteDireccionSig(-1);
+    if (entidad.Count == 0)
+    {
+        enti.nombrate(_nombre);
+        enti.direccionate(bw.BaseStream.Length);
+        enti.ponteDireccionAtributo(-1);
+        enti.ponteDireccionRegistro(-1);
+        enti.ponteDireccionSig(-1);
 
-                bw.Seek(0, SeekOrigin.Begin);
+        bw.Seek(0, SeekOrigin.Begin);
                 bw.Write(enti.dameDE()); // Cabecera
                 cabecera.Text = enti.dameDE().ToString();
                 Cab = enti.dameDE();
@@ -329,7 +329,7 @@ namespace Diccionario_de_Datos
                     br.ReadInt64();                 // entidad 
                     sigEntidad = br.ReadInt64();    //
                    // MessageBox.Show("Entidad: "+ nEntidad + "\nSiguiente Entidad: " + sigEntidad);
-                   
+                    
 
                     if(dirEntidad == aux)
                     {
@@ -337,72 +337,72 @@ namespace Diccionario_de_Datos
                         switch(compara)
                         {
                             case -1:
-                                
+                            
                                // MessageBox.Show(entidad + " es antes que " + nEntidad);
-                                br.Close();
-                                bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                                if(antA > 0)
-                                {
-                                    bw.BaseStream.Position = antA + 54;
-                                    bw.Write(bw.BaseStream.Length);
-                                }
+                            br.Close();
+                            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                            if(antA > 0)
+                            {
+                                bw.BaseStream.Position = antA + 54;
+                                bw.Write(bw.BaseStream.Length);
+                            }
 
-                                
-                                bw.Close();
+                            
+                            bw.Close();
                                // br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
-                                bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                                if (principio == aux )
-                                {
-                                    posicion = 1;
-                                }
-                                else
-                                {
-                                    posicion = -1;
-                                }
-                                return dirEntidad;
+                            bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                            if (principio == aux )
+                            {
+                                posicion = 1;
+                            }
+                            else
+                            {
+                                posicion = -1;
+                            }
+                            return dirEntidad;
                             break;
                             case 0:
                                // br.BaseStream.Position = sigEntidad;
                                // aux = sigEntidad;
-                                break;
+                            break;
                             case 1:
                                // MessageBox.Show(entidad + " es despues que " + nEntidad);
-                              
+                            
                                // br.Close();
-                                antA = dirEntidad;
-                                sigA = sigEntidad;
-                               
-                                if (sigEntidad == -1)
-                                {
+                            antA = dirEntidad;
+                            sigA = sigEntidad;
+                            
+                            if (sigEntidad == -1)
+                            {
                                     //MessageBox.Show("Dentro de if");
-                                    
-                                    br.Close();
-                                    bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                                    bw.BaseStream.Position = antA + 54;
-                                    bw.Write(bw.BaseStream.Length);
-                                    bw.BaseStream.Position = bw.BaseStream.Length;
-                                    bw.Close();
-                                    posicion = -1;
-                                    bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                                    return sigEntidad;
-                                   
+                                
+                                br.Close();
+                                bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                                bw.BaseStream.Position = antA + 54;
+                                bw.Write(bw.BaseStream.Length);
+                                bw.BaseStream.Position = bw.BaseStream.Length;
+                                bw.Close();
+                                posicion = -1;
+                                bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                                return sigEntidad;
+                                
 
-                                }
-                                else
-                                {
-                                   
-                                    br.BaseStream.Position = sigEntidad;
-                                    aux = sigEntidad;
-                                    
-                                    
+                            }
+                            else
+                            {
+                             
+                                br.BaseStream.Position = sigEntidad;
+                                aux = sigEntidad;
+                                
+                                
                                     //Se llamara a la función ordenaAnterior
                                    // ordenaAnterior(antA, sigA, entidad);
                                    // MessageBox.Show("Direccion: " + antA + "\nSiguiente: " + sigA);
-                                }
-                               
+                            }
+                            
 
 
-                                break;
+                            break;
                         }
                     }
                     else
@@ -430,13 +430,13 @@ namespace Diccionario_de_Datos
             long pos = -1;
             long DSIG = 0;
             string n = "";
-           
+            
             
             int totalEntidad = 0;
             // Limpia el datagrid para una nueva inserción
             dataGridView1.Rows.Clear();
             entidad.Clear();
-           
+            
             bw.Close();
 
             br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
@@ -455,7 +455,7 @@ namespace Diccionario_de_Datos
                     br.BaseStream.Position = enti.dameDSIG();
                 }
                 else
-                    break;
+                break;
 
                 
             }
@@ -566,8 +566,8 @@ namespace Diccionario_de_Datos
          *      a un datagrid que permitirá agregar los registros.
          *      
          *********************************************************************************/
-        private void creaAtributo(object sender, EventArgs e)
-        {
+         private void creaAtributo(object sender, EventArgs e)
+         {
             
             //bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
             atri = new Atributo();              // Objeto de la clase atributo
@@ -577,9 +577,9 @@ namespace Diccionario_de_Datos
              * ciclo for que sucede mientras el nombre
              * del atributo tenga una longitud menor a 30
              **********************************************/
-            cont = _nombre.Length;
-            for (; cont <= 29; cont++)
-            {
+             cont = _nombre.Length;
+             for (; cont <= 29; cont++)
+             {
                 _nombre += " ";
             }
             // comboBox5.Items.Add(_nombre);
@@ -587,8 +587,8 @@ namespace Diccionario_de_Datos
              * Si no hay ningun atributo, entonces se agrega con valores principales en -1
              * SI NO entonces, se añade al final y se acomodan los apuntadores
              **********************************************************************************/
-            if (atributo.Count == 0)
-            {
+             if (atributo.Count == 0)
+             {
                 atri.nombrate(_nombre);
                 atri.ponteTipo(Convert.ToChar(comboTipo.SelectedItem));
                 atri.ponteLongitud(Convert.ToInt32(textBox3.Text));
@@ -719,10 +719,10 @@ namespace Diccionario_de_Datos
                     br.ReadInt64();
                     DSIG = br.ReadInt64();
                     if (DSIG != -1)
-                        br.BaseStream.Position = DSIG;
+                    br.BaseStream.Position = DSIG;
 
                 }
-             
+                
                 if(n == nEntidad)
                 {
                     if(DA != -1)            // Si tiene algun atributo
@@ -736,7 +736,7 @@ namespace Diccionario_de_Datos
                             br.ReadInt64();
                             br.ReadInt32();
                             br.ReadInt64();
-                                pos = br.BaseStream.Position;
+                            pos = br.BaseStream.Position;
                             DSIGA = br.ReadInt64();
                             if(DSIGA == -1)
                             {
@@ -753,7 +753,7 @@ namespace Diccionario_de_Datos
 
                             }
                             else
-                                br.BaseStream.Position = DSIGA;
+                            br.BaseStream.Position = DSIGA;
                         }
                         break;
                         
@@ -785,8 +785,8 @@ namespace Diccionario_de_Datos
         /*******************************************************************
          * Metodo encargado de agregar la direccion del atributo a la entidad 
          *******************************************************************/
-        private void ponteAtributo(Atributo atri)
-        {
+         private void ponteAtributo(Atributo atri)
+         {
             // Declaración de variables locales
             long cab, sigEntidad;
             long pos = 0;
@@ -852,8 +852,8 @@ namespace Diccionario_de_Datos
          *************************************************************************************************/
 
 
-        private void seleccionaEntidad(object sender, EventArgs e)
-        {
+         private void seleccionaEntidad(object sender, EventArgs e)
+         {
             contador = 0;
             dataGridView3.Rows.Clear();
             dataGridView3.Columns.Clear();
@@ -866,7 +866,7 @@ namespace Diccionario_de_Datos
             string n;
             string nombre;
             long DSIG = 0;
-          
+            
             
             
 
@@ -933,8 +933,8 @@ namespace Diccionario_de_Datos
         /***********************************************************************************************
          * Método encargado de mostrar en el datagrid los atributos
          ***********************************************************************************************/
-        private void imprimeAtributo(List<Atributo> atributo)
-        {
+         private void imprimeAtributo(List<Atributo> atributo)
+         {
             string n = comboBox1.Text;
             string nEntidad = "";
             long DA = 0;
@@ -971,18 +971,18 @@ namespace Diccionario_de_Datos
                             atri.ponteDirSig(br.ReadInt64());
                             atributo.Add(atri);
                             if (atri.dameDirSig() != -1)
-                                br.BaseStream.Position = atri.dameDirSig();
+                            br.BaseStream.Position = atri.dameDirSig();
                             else
-                                break;
+                            break;
                         }
 
                     }
                     
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
 
             br.Close();
@@ -990,17 +990,17 @@ namespace Diccionario_de_Datos
             bw = new BinaryWriter(File.Open(nArchivo,FileMode.Open));
             foreach(Atributo a in atributo)
             {
-               dataGridView2.Rows.Add(a.dameNombre(), a.dameTipo(), a.dameLongitud(), a.dameDireccion(), a.dameTI(), a.dameDirIndice(), a.dameDirSig());
+             dataGridView2.Rows.Add(a.dameNombre(), a.dameTipo(), a.dameLongitud(), a.dameDireccion(), a.dameTI(), a.dameDirIndice(), a.dameDirSig());
 
-            }
+         }
 
-        }
+     }
         /******************************************************************************************************************************************************************
          *                              M E T O D O    E L I M I N A      A T R I B U T O
          ******************************************************************************************************************************************************************/
 
-        private void button4_Click(object sender, EventArgs e)
-        {
+         private void button4_Click(object sender, EventArgs e)
+         {
             bw.Close();
             long dAtributo, dEntidad, dir, dSig, anterior;
             string nEntidad, nAtributo;
@@ -1045,7 +1045,7 @@ namespace Diccionario_de_Datos
                         bw.BaseStream.Position = dAtributo;
                         string temp = "NULL";
                         while (temp.Length <= 29)
-                            temp += " ";
+                        temp += " ";
 
                         bw.Write(temp);
 
@@ -1057,14 +1057,14 @@ namespace Diccionario_de_Datos
                         bw.BaseStream.Position = dAtributo;
                         string temp = "NULL";
                         while (temp.Length <= 29)
-                            temp += " ";
+                        temp += " ";
 
                         bw.Write(temp);
                         
                         bw.BaseStream.Position = dEntidad + 38;
                         bw.Write(dSig);
                     }
-                
+                    
                 }
                 else // Es cualquier otro 
                 {
@@ -1073,8 +1073,8 @@ namespace Diccionario_de_Datos
                     bw.BaseStream.Position = dAtributo;
                     string temp = "NULL";
                     while (temp.Length <= 29)
-                        temp += " ";
-                     
+                    temp += " ";
+                    
                     bw.Write(temp);
                     
                     dSig = dAtributo + 55; //54 ;
@@ -1118,8 +1118,8 @@ namespace Diccionario_de_Datos
          * Metodo encargado de recorrer la lista de atributos y obtener la dirección
          * del atributo que apunta al que se va a eliminar
          *****************************************************************************/
-        public long obtenAtributoAnterior(long dAtributo, long dEntidad)
-        {
+         public long obtenAtributoAnterior(long dAtributo, long dEntidad)
+         {
             long dir, DSIG = 0;
             int totalEntidad;
             string n;
@@ -1150,7 +1150,7 @@ namespace Diccionario_de_Datos
                     return dir;
                 }
                 else
-                    break;
+                break;
 
             }
             br.Close();
@@ -1193,7 +1193,7 @@ namespace Diccionario_de_Datos
                     return dEntidad;
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
 
             }
             return -1;
@@ -1206,8 +1206,8 @@ namespace Diccionario_de_Datos
          * Metodo que permite abrir el archivo y lo envia a uno nuevo
          * 
          *****************************************************************************/
-        private void abreArchivo(object sender, EventArgs e)
-        {
+         private void abreArchivo(object sender, EventArgs e)
+         {
             string nombre = " ";
             string n;
             int totalEntidad = 0;
@@ -1275,14 +1275,14 @@ namespace Diccionario_de_Datos
                         enti.ponteDireccionSig(br.ReadInt64());
                         entidad.Add(enti);
                     }
- 
+                    
                     /********************************************/
                     
                     br.Close();
                     bw = new BinaryWriter(File.Open(nombre, FileMode.Open));
                     imprimeLista(entidad);
                     imprimeAtributo(atributo);
-                   
+                    
                 }
                 else
                 {
@@ -1373,8 +1373,8 @@ namespace Diccionario_de_Datos
          * 
          ****************************************************************************************************************/ 
          
-        private long dameDireccionSiguienteRegistro(string dat,Atributo  aClave,string nEntidad,string nRegistro,long DR)
-        {
+         private long dameDireccionSiguienteRegistro(string dat,Atributo  aClave,string nEntidad,string nRegistro,long DR)
+         {
             return -1;
         }
 
@@ -1468,7 +1468,7 @@ namespace Diccionario_de_Datos
             }
             for (int i = 0; i < dataGridView3.Columns.Count; i++)
             {
-                if (iPrimario != null)
+                if (iArbol != null)
                 {
                     if (dataGridView3.Columns[i].Name == iArbol.dameNombre()) /* Encuentra la columna para realizar el ordenamiento*/
                     {
@@ -1513,7 +1513,7 @@ namespace Diccionario_de_Datos
                     bw.Write(Convert.ToInt32(celda));
                     primero += 4;
                 }
-                    
+                
                 else if(tipo == 'C')
                 {
                     tamC = buscaTam(comboBox6.Text,dataGridView3.Columns[i].Name);
@@ -1568,7 +1568,7 @@ namespace Diccionario_de_Datos
                     }
                     else if (aClave.dameTipo() == 'E')
                     {
-                    
+                        
                     }
 
                 }
@@ -1578,7 +1578,7 @@ namespace Diccionario_de_Datos
                     bw = new BinaryWriter(File.Open(comboBox6.Text+".dat",FileMode.Open)); 
                     bw.BaseStream.Position = bw.BaseStream.Length - 8-primero;
                     DSIGR = DR;
-                   
+                    
                     bw.Write(DSIGR);
 
                 }
@@ -1598,10 +1598,10 @@ namespace Diccionario_de_Datos
             imprimeRegistro(dat);
             br.Close();
             bw.Close();
-             if (iPrimario != null)
-                insertaPrimario(indi,iPrimario, posprimario);
+            if (iPrimario != null)
+            insertaPrimario(indi,iPrimario, posprimario);
             if (iArbol != null)
-                insertaNodo(comboBox6.Text + ".idx", iArbol, posArbol);
+            insertaNodo(comboBox6.Text + ".idx", iArbol, posArbol);
             //if(iSecundario != null)
             //insertaSecundario(indi, iSecundarios);
             bw.Close();
@@ -1638,17 +1638,17 @@ namespace Diccionario_de_Datos
                         br.ReadInt64();
                         DSIGA = br.ReadInt64();
                         if (tipo == 3)
-                            sec.Add(cSEC);
+                        sec.Add(cSEC);
                         if (DSIGA != -1)
-                            br.BaseStream.Position = DSIGA;
+                        br.BaseStream.Position = DSIGA;
                         else
-                            break;
+                        break;
                     }
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             br.Close();
             return sec;
@@ -1658,6 +1658,7 @@ namespace Diccionario_de_Datos
             br.Close();
             bw.Close();
             bool lleno = false;
+            bool existeIntermedio = false;
             List<int> nodos = new List<int>();
             List<int> direcciones = new List<int>();
             List<int> tempClaves;// = new List<int>();
@@ -1675,7 +1676,7 @@ namespace Diccionario_de_Datos
 
             Nodo nuevo;// = new Nodo();
             long dirRaiz = 0;
-                        nuevo = new Nodo();
+            nuevo = new Nodo();
             for (int i = 0; i < nodos.Count; i++)
             {
                 dirRaiz = arbol.dameRaiz();
@@ -1701,7 +1702,7 @@ namespace Diccionario_de_Datos
 
                         nuevo = new Nodo();
                         nuevo = arbol.creaNodo(nuevo, arbol[arbol.Count-1].dirNodo+65); //se asigna dirección al nodo
-                        anterior.sig = nuevo.dirNodo;                       // se apunta el anterior al siguiente
+                        anterior.sig = nuevo.dirNodo;                                   //se apunta el anterior al siguiente
                         arbol.Add(nuevo);
                         tempClaves = new List<int>();
                         tempDir = new List<long>();
@@ -1738,48 +1739,33 @@ namespace Diccionario_de_Datos
                         nuevo.clave.Add(tempClaves[0]);
                         nuevo.direccion.Add(arbol[arbol.Count - 1].dirNodo);
                         arbol.Add(nuevo);
-                        //nuevo = new Nodo();
-                        //nuevo = arbol.creaNodo(nuevo, anterior.dirNodo + 65);
-
-                        /*
-                        lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i], direcciones[i]);
-                        lleno = arbol.agregaDato(nuevo.dirNodo, nodos[-1], direcciones[i-1]);
-                        lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i-2], direcciones[i-2]);
-                        lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i-3], direcciones[i-3]);
-                        */
-
-
                     }
 
                 }
-                else // EXISTE RAIZ
+                else // EXISTE RAIZ /**************************************************************************************************************************/
                 {
                     long dir = arbol.buscaNodo(nodos[i]);                   // funcion que te dice en que nodo se insertara la clave
                     long raiz = arbol.dameRaiz();                           // Dirección de raiz    
                     Nodo actual = arbol.dameNodo(dir);                      // Nodo que se va a modificar
-
-                    lleno = arbol.agregaDato(dir, nodos[i], direcciones[i]);
+                    
+                    lleno = arbol.agregaDato(dir, nodos[i], direcciones[i]);  // NODO LLENO
+                    
                     if (lleno == true)  // se crea nuevo nodo y se agrega a raiz
                     {
                         long dirAnt;
                         dirAnt = actual.dirNodo;
-                        
                         nuevo = new Nodo();
                         nuevo = arbol.creaNodo(nuevo, arbol[arbol.Count-1].dirNodo + 65);         //se asigna dirección al nodo
+                        nuevo.sig = actual.sig;
                         actual.sig = nuevo.dirNodo;                         // se apunta el anterior al siguiente
                         arbol.Add(nuevo);
                         tempClaves = new List<int>();
                         tempDir = new List<long>();
-
-
                         for (int aux = 2; aux < actual.clave.Count; aux++)
                         {
                             tempClaves.Add(actual.clave[aux]);
-
                             tempDir.Add(actual.direccion[aux]);
-
                         }
-
                         /*Remueve los ultimos 2 elementos del nodo porque se pasaron a uno nuevo*/
                         actual.clave.RemoveAt(3);
                         actual.clave.RemoveAt(2);
@@ -1790,105 +1776,164 @@ namespace Diccionario_de_Datos
                         tempDir.Add(direcciones[i]);
                         arbol.ordenaCinco(tempClaves, tempDir);
                         /*Se agregan los ultimos 3 datos al nuevo nodo */
-                        for (int aux = 0; aux < tempClaves.Count; aux++)
-                        {
+                        for (int aux = 0; aux < tempClaves.Count; aux++){
                             lleno = arbol.agregaDato(nuevo.dirNodo, tempClaves[aux], tempDir[aux]);
                         }
+                        /* AGREGAR A RAIZ O A NODO INTERMEDIO */
+                        existeIntermedio = arbol.existeIntermedio();
+                        if(existeIntermedio == false)
+                        {
+                            lleno = arbol.agregaDato(raiz, tempClaves[0], arbol[arbol.Count-1].dirNodo); // 0 PORQUE ES EL VALOR CENTRAL, QUE VA A RAIZ
+                            arbol.ordenaRaiz();
+                            if (lleno == true) //RAIZ llena 
+                            {
+                                int nDato = tempClaves[0];
+                                long dDato = tempDir[0];
+                                //MessageBox.Show("La raiz esta llena!!");
+                                raiz = arbol.dameRaiz();
+                                Nodo nRaiz = arbol.dameNodo(raiz);
+                                tempClaves = new List<int>();
+                                tempDir = new List<long>();
+                                foreach (int n in nRaiz.clave){
+                                    tempClaves.Add(n);
+                                }
+                                foreach (long l in nRaiz.direccion){
+                                    tempDir.Add(l);
+                                }
+                                tempClaves.Add(nDato);
+                                tempDir.Add(dDato);
+                                arbol.ordenaCinco(tempClaves, tempDir);
+                                /************** LISTO PARA ASIGNAR Y QUITAR CLAVES A LA RAIZ  ************************/
+                                /*crear nuevo nodo  */
+                                Nodo intermedio = new Nodo();
+                                intermedio = arbol.creaNodo(intermedio, arbol[arbol.Count - 1].dirNodo + 65);
+                                intermedio.tipo = 'I';
+                                nRaiz.tipo = 'I';
+                                nRaiz.sig = intermedio.dirNodo;
+                                arbol.Add(intermedio);
 
-                        /* AGREGAR A RAIZ */
+                                intermedio.clave.Add(tempClaves[3]);
+                                intermedio.clave.Add(tempClaves[4]);
+                                intermedio.direccion.Add(tempDir[3]);
+                                intermedio.direccion.Add(tempDir[4]);
+                                intermedio.direccion.Add(tempDir[5]);
+
+                                /*Remueve los ultimos 2 elementos del nodo porque se pasaron a uno nuevo*/
+
+                                nRaiz.clave.RemoveAt(3);
+                                nRaiz.clave.RemoveAt(2);
+                                nRaiz.direccion.RemoveAt(4);
+                                nRaiz.direccion.RemoveAt(3);
+                                /*Se agregan los ultimos 3 datos al nuevo nodo */
+                                Nodo Cab = new Nodo();
+                                Cab = arbol.creaNodo(Cab, arbol[arbol.Count - 1].dirNodo + 65);
+                                Cab.tipo = 'R';
+                                Cab.clave.Add(tempClaves[2]);
+                                Cab.direccion.Add(nRaiz.dirNodo);
+                                Cab.direccion.Add(intermedio.dirNodo);
+                                arbol.Add(Cab);
+                            }
+                        }
+                        // existeIntermedio = arbol.existeIntermedio();
+
+                        if (existeIntermedio == true) // Si existe intermedio
+                        {
+                            long dirIntermedio = arbol.dameIntermedio(tempClaves[0]);
+                            Nodo inter;
+                            lleno = arbol.agregaDato(dirIntermedio, tempClaves[0], arbol[arbol.Count - 1].dirNodo);
+                            if(lleno == true)
+                            {
+                                int nDato = tempClaves[0];
+                                long dDato = arbol[arbol.Count - 1].dirNodo;
+                                tempClaves = new List<int>();
+                                tempDir = new List<long>();
+                                
+                                tempClaves.Add(nDato);
+                                tempDir.Add(dDato);
+                                arbol.ordenaCinco(tempClaves, tempDir);
+                                /************** LISTO PARA ASIGNAR Y QUITAR CLAVES A LA RAIZ  ************************/
 
 
-                        lleno = arbol.agregaDato(raiz, tempClaves[0], arbol[arbol.Count - 1].dirNodo);
+                                inter = arbol.dameNodo(dirIntermedio);
+                                
+                                /*crear nuevo nodo  */
+                                Nodo intermedio = new Nodo();
+                                intermedio = arbol.creaNodo(intermedio, arbol[arbol.Count - 1].dirNodo + 65);
+                                intermedio.tipo = 'I';
+                                inter.sig = intermedio.dirNodo;
+                                arbol.Add(intermedio);
 
+                                intermedio.clave.Add(inter.clave[3]);
+                                intermedio.clave.Add(inter.clave[2]);
+
+
+                                intermedio.direccion.Add(inter.direccion[4]);
+                                intermedio.direccion.Add(inter.direccion[3]);
+                                intermedio.direccion.Add(inter.direccion[2]);
+
+                                /* QUITAR CLAVES  2,3 4 DEL INTERMEDIO ANTERIOR*/
+                                //inter.clave.RemoveAt(4);
+                                inter.clave.RemoveAt(3);
+                                inter.clave.RemoveAt(2);
+                                inter.direccion.RemoveAt(4);
+                                inter.direccion.RemoveAt(3);
+                               // inter.direccion.RemoveAt(3);
+
+                                /*Agregar intermedio a raiz*/
+
+                                long dR = arbol.dameRaiz();
+                                Nodo nR = arbol.dameNodo(dR);
+                                nR.direccion.Add(inter.dirNodo);
+                                nR.clave.Add(tempClaves[0]);
+                                nR.direccion.Add(intermedio.dirNodo);
+                            }
+                            
+                        }
                         /*****************************************************************************
                          * RAIZ LLENA
                          * agregar todas las claves de la raiz a temClaves + la nueva clave que se iba a insertar
                          * agregar todas las direcciones de raiz a temDir + la nueva direccion a insertar 
                          *****************************************************************************/
-                        if(lleno == true) //RAIZ llena 
-                        {
-                            int nDato = tempClaves[0];
-                            long dDato = arbol[arbol.Count - 1].dirNodo;
-                            MessageBox.Show("La raiz esta llena!!");
-                            raiz = arbol.dameRaiz();
-                            Nodo nRaiz = arbol.dameNodo(raiz);
-                            tempClaves = new List<int>();
-                            tempDir = new List<long>();
-                            foreach(int n in nRaiz.clave)
-                            {
-                                tempClaves.Add(n);
-                            }
-                            foreach(long l in nRaiz.direccion)
-                            {
-                                tempDir.Add(l);
-
-                            }
-                            tempClaves.Add(nDato);
-                            tempDir.Add(dDato);
-                            arbol.ordenaCinco(tempClaves, tempDir);
-                            /************** LISTO PARA ASIGNAR Y QUITAR CLAVES A LA RAIZ  ************************/
-
-                            /*crear nuevo nodo  */
-                            Nodo intermedio = new Nodo();
-                            intermedio = arbol.creaNodo(intermedio, arbol[arbol.Count - 1].dirNodo + 65);
-                            intermedio.tipo = 'I';
-                            nRaiz.tipo = 'I';
-                            nRaiz.sig = intermedio.dirNodo;
-                            arbol.Add(intermedio);
-
-                            intermedio.clave.Add(tempClaves[3]);
-                            intermedio.clave.Add(tempClaves[4]);
-                            intermedio.direccion.Add(tempDir[3]);
-                            intermedio.direccion.Add(tempDir[4]);
-                            intermedio.direccion.Add(tempDir[5]);
-           
-                            /*Remueve los ultimos 2 elementos del nodo porque se pasaron a uno nuevo*/
-
-                            nRaiz.clave.RemoveAt(3);
-                            nRaiz.clave.RemoveAt(2);
-                            nRaiz.direccion.RemoveAt(4);
-                            nRaiz.direccion.RemoveAt(3);
-                            /*Se añanade a una lista de 5 datos el nuevo a insertar*/
-                       //     tempClaves.Add(nodos[i]);
-                     //       tempDir.Add(direcciones[i]);
-                      //      arbol.ordenaCinco(tempClaves, tempDir);
-
-                            /*Se agregan los ultimos 3 datos al nuevo nodo */
-                            Nodo Cab = new Nodo();
-                            Cab = arbol.creaNodo(Cab, arbol[arbol.Count - 1].dirNodo + 65);
-                            Cab.tipo = 'R';
-                            Cab.clave.Add(tempClaves[2]);
-                            Cab.direccion.Add(nRaiz.dirNodo);
-                            Cab.direccion.Add(intermedio.dirNodo);
-                            arbol.Add(Cab);    
-                            
-
-                        }
-
-
-
+                         
+                     }
+                 }                
+             }            
+             imprimeArbol(arbol);
+            // METODO PARA GUARDAR EN ARCHIVO
+             guardaArbol();
+         }
+         public void guardaArbol()
+         {
+            bw.Close();
+            br.Close();
+            bw = new BinaryWriter(File.Open(comboBox6.Text+".idx",FileMode.Create));
+            bw.BaseStream.Position = 0;
+            for(int i = 0; i < tablaArbol.Rows.Count-1;i++)
+            {
+                for(int j = 0; j < tablaArbol.Columns.Count; j++)
+                {
+                    if(j == 0)
+                    {
+                        bw.Write(Convert.ToInt64(tablaArbol.Rows[i].Cells[j].Value));
                     }
+                    else if(j == 1)
+                    {
+                        bw.Write(Convert.ToChar(tablaArbol.Rows[i].Cells[j].Value));
+                    }
+                    else if(j %2  == 0)
+                    {
+                        bw.Write(Convert.ToInt64(tablaArbol.Rows[i].Cells[j].Value));
+                    }
+                    else if(j %2 != 0)
+                    {
+                        bw.Write(Convert.ToInt32(tablaArbol.Rows[i].Cells[j].Value));
+                    }
+                    
+                    
                 }
-
-
-                }
-
-
-
-                imprimeArbol(arbol);
-
-
-
-
-
-
-
-
-
-
-
-            
-            
+            }
+            bw.Close();
+            br.Close();
 
         }
         private void imprimeArbol(Arbol arbol)
@@ -1899,34 +1944,34 @@ namespace Diccionario_de_Datos
             foreach (Nodo nodo in arbol)
             {
                 k = 0;
-                    tablaArbol.Rows.Add();
-                    for (int j = 0; j < tablaArbol.Columns.Count; j++)
+                tablaArbol.Rows.Add();
+                for (int j = 0; j < tablaArbol.Columns.Count; j++)
+                {
+                    if (j == 0)
                     {
-                        if (j == 0)
-                        {
-                            tablaArbol.Rows[i].Cells[j].Value = nodo.dirNodo;
-                        }
-                        if(j == 1)
-                        {
-                            tablaArbol.Rows[i].Cells[j].Value = nodo.tipo;
-
-                        }
-                        if (j > 1 && j < tablaArbol.Columns.Count - 1 )
-                        {                         
-                            if( k < nodo.direccion.Count)
-                                tablaArbol.Rows[i].Cells[j].Value = nodo.direccion[k];
-                            j++;
-                            if(k < nodo.clave.Count)
-                                tablaArbol.Rows[i].Cells[j].Value = nodo.clave[k];
-                            k++;
-                        }
-                        if (j == tablaArbol.Columns.Count - 1)
-                            tablaArbol.Rows[i].Cells[j].Value = nodo.sig;
-                        
-
-
+                        tablaArbol.Rows[i].Cells[j].Value = nodo.dirNodo;
+                    }
+                    if(j == 1)
+                    {
+                        tablaArbol.Rows[i].Cells[j].Value = nodo.tipo;
 
                     }
+                    if (j > 1 && j < tablaArbol.Columns.Count - 1 )
+                    {                         
+                        if( k < nodo.direccion.Count)
+                        tablaArbol.Rows[i].Cells[j].Value = nodo.direccion[k];
+                        j++;
+                        if(k < nodo.clave.Count)
+                        tablaArbol.Rows[i].Cells[j].Value = nodo.clave[k];
+                        k++;
+                    }
+                    if (j == tablaArbol.Columns.Count - 1)
+                    tablaArbol.Rows[i].Cells[j].Value = nodo.sig;
+                    
+
+
+
+                }
                 
                 i++;
 
@@ -1950,7 +1995,7 @@ namespace Diccionario_de_Datos
                 {
                     iSecundarios.Add(i);
                     if(secundarios[j] == comboSecundario.Text)
-                        poSI = (j + 1) * 1000;
+                    poSI = (j + 1) * 1000;
                     j++;
                 }
             }
@@ -2001,7 +2046,7 @@ namespace Diccionario_de_Datos
                                 aux.direccion.Add(Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value));
                             }
                         }
-                       
+                        
                     }
                     else
                     {
@@ -2066,7 +2111,7 @@ namespace Diccionario_de_Datos
           //  imprimeSecundario(comboBox6.Text);
             
             
-          
+            
 
         }
         public void imprimeSecundario(string indi)
@@ -2079,7 +2124,7 @@ namespace Diccionario_de_Datos
 
             while (br.BaseStream.Position < br.BaseStream.Length)
             {
-               
+             
                 tablaSecundario.Rows.Add(br.ReadInt64(),br.ReadInt32());
 
             }
@@ -2090,7 +2135,7 @@ namespace Diccionario_de_Datos
             br.Close();
             bw.Close();
             Primario p;
-          
+            
             List<Primario> primario = new List<Primario>();
 
             for(int i = 0; i < dataGridView4.Rows.Count-2; i++)
@@ -2160,15 +2205,15 @@ namespace Diccionario_de_Datos
                         br.ReadInt64();
                         DSIGA = br.ReadInt64();
                         if (DSIGA != -1)
-                            br.BaseStream.Position = DSIGA;
+                        br.BaseStream.Position = DSIGA;
                         else
-                            break;
+                        break;
                     }
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
 
             }
             br.Close();
@@ -2205,7 +2250,7 @@ namespace Diccionario_de_Datos
                 {
                     break;
                 }
-                    
+                
                 
             }
             br.Close();
@@ -2249,18 +2294,18 @@ namespace Diccionario_de_Datos
                                 return temp;
                             }
                             if (temp.dameDirSig() != -1)
-                                br.BaseStream.Position = temp.dameDirSig();
+                            br.BaseStream.Position = temp.dameDirSig();
                             else
-                                break;
+                            break;
 
                         }
                     }
 
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
 
             br.Close();
@@ -2306,18 +2351,18 @@ namespace Diccionario_de_Datos
                                 return temp;
                             }
                             if (temp.dameDirSig() != -1)
-                                br.BaseStream.Position = temp.dameDirSig();
+                            br.BaseStream.Position = temp.dameDirSig();
                             else
-                                break;
+                            break;
 
                         }
                     }
                     
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
 
             br.Close();
@@ -2362,9 +2407,9 @@ namespace Diccionario_de_Datos
                                 return temp;
                             }
                             if (temp.dameDirSig() != -1)
-                                br.BaseStream.Position = temp.dameDirSig();
+                            br.BaseStream.Position = temp.dameDirSig();
                             else
-                                break;
+                            break;
 
                         }
 
@@ -2372,9 +2417,9 @@ namespace Diccionario_de_Datos
                     
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
 
             br.Close();
@@ -2418,18 +2463,18 @@ namespace Diccionario_de_Datos
                             primero += longitud;
 
                             if (DSIGA != -1)
-                                br.BaseStream.Position = DSIGA;
+                            br.BaseStream.Position = DSIGA;
                             else
-                                break;
+                            break;
                         }
 
                     }
                     
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             primero += 16;
             
@@ -2442,11 +2487,11 @@ namespace Diccionario_de_Datos
          * nEntidad --> nombre de la Entidad que se modificará
          * DR       --> Dirección del Registro que alfabeticamente será el primero.
          ****************************************************************************/
-        public void ponteRegistro(string nEntidad, long DR)
-        {
+         public void ponteRegistro(string nEntidad, long DR)
+         {
             long DE = 0;
             bw.Close();
-           
+            
             foreach(Entidad e in entidad)
             {
                 if(nEntidad == e.dameNombre())
@@ -2462,12 +2507,12 @@ namespace Diccionario_de_Datos
             imprimeLista(entidad);
             bw.Close();
 
-           
+            
         }
         private long siguienteRegistro(string dat, Atributo aClave, int TAM, string nEntidad,string nClave,long DREGI)
         {
             long DIR = 0;
-           
+            
             long DSIG = -1;
             long sigE = 0;
             long ANT = 0;
@@ -2505,9 +2550,9 @@ namespace Diccionario_de_Datos
                     break;
                 }
                 if (sigE != -1)
-                    br.BaseStream.Position = sigE;
+                br.BaseStream.Position = sigE;
                 else
-                    break;
+                break;
             }
             
             br.Close();
@@ -2543,23 +2588,23 @@ namespace Diccionario_de_Datos
                             case -1:
                                 //MessageBox.Show("nomb" + nomb + "\nClave: " + nClave);
                                 //MessageBox.Show("ANT: " + ANT + "\n DIR: " + DIR);
-                                br.Close();
-                                if (ANT == p)
-                                {
-                                    
-                                    ponteRegistro(comboBox6.Text, DREGI);
-                                    bw.Close();
-                                    return ANT;
-
-                                }
-                                else
-                                {
-                                    registroAnterior(DIR, DREGI, dat, TAM);
-                                    br.Close();
-                                    return ANT;
-                                }
-
+                            br.Close();
+                            if (ANT == p)
+                            {
                                 
+                                ponteRegistro(comboBox6.Text, DREGI);
+                                bw.Close();
+                                return ANT;
+
+                            }
+                            else
+                            {
+                                registroAnterior(DIR, DREGI, dat, TAM);
+                                br.Close();
+                                return ANT;
+                            }
+
+                            
                             break;
                             case 0:
                             break;
@@ -2575,7 +2620,7 @@ namespace Diccionario_de_Datos
                 DSIG = br.ReadInt64();
 
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
                 {
                     registroAnterior(DIR, DREGI, dat, TAM);
@@ -2583,7 +2628,7 @@ namespace Diccionario_de_Datos
 
                     return -1;
                 }
-                    
+                
             }
 
 
@@ -2654,17 +2699,17 @@ namespace Diccionario_de_Datos
                         DSIGA = br.ReadInt64();
                         atri.ponteDirSig(DSIGA);
                         tempAtributo.Add(atri);
-                      
+                        
                         if (DSIGA != -1)
-                            br.BaseStream.Position = DSIGA;
+                        br.BaseStream.Position = DSIGA;
                         else
-                            break;
+                        break;
                     }
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
 
 
             }
@@ -2696,9 +2741,9 @@ namespace Diccionario_de_Datos
             while(br.BaseStream.Position < br.BaseStream.Length)
             {
                 n    = br.ReadString();
-                       br.ReadInt64();
+                br.ReadInt64();
                 DA   = br.ReadInt64();
-                       br.ReadInt64();
+                br.ReadInt64();
                 DSIG = br.ReadInt64();
                 if(n == ent)
                 {
@@ -2718,18 +2763,18 @@ namespace Diccionario_de_Datos
                             atri.ponteDirSig(DSIGA);
                             tempAtributo.Add(atri);
                             if (DSIGA != -1)
-                                br.BaseStream.Position = DSIGA;
+                            br.BaseStream.Position = DSIGA;
                             else
-                                break;
+                            break;
                         }
 
                     }
                     
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
 
 
             }
@@ -2756,7 +2801,7 @@ namespace Diccionario_de_Datos
             br = new BinaryReader(File.Open(dat, FileMode.Open));
             dataGridView4.Rows.Add();
             if (cab != -1)
-                br.BaseStream.Position = cab;
+            br.BaseStream.Position = cab;
             while (br.BaseStream.Position < br.BaseStream.Length)
             {
                 dataGridView4.Rows.Add();
@@ -2785,9 +2830,9 @@ namespace Diccionario_de_Datos
 
                 }
                 if (DSIGR != -1)
-                    br.BaseStream.Position = DSIGR;
+                br.BaseStream.Position = DSIGR;
                 else
-                    break;
+                break;
 
                 
                 i = 0;
@@ -2821,9 +2866,9 @@ namespace Diccionario_de_Datos
                     return DREGISTRO;
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             return DREGISTRO;
         }
@@ -2846,7 +2891,7 @@ namespace Diccionario_de_Datos
                 br.ReadInt64();
                 DSIG = br.ReadInt64();
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 if (n == nEntidad)
                 {
                     br.BaseStream.Position = DA;
@@ -2866,9 +2911,9 @@ namespace Diccionario_de_Datos
                             return tam;
                         }
                         if (DSIGA != -1)
-                            br.BaseStream.Position = DSIGA;
+                        br.BaseStream.Position = DSIGA;
                         else
-                            break;
+                        break;
                         
 
                     }
@@ -2877,12 +2922,12 @@ namespace Diccionario_de_Datos
 
                 }
                 if (DSIG == -1)
-                    break;
+                break;
 
             }
 
             br.Close();
-           
+            
             return 0;
         }
         public char buscaTipo(string nEntidad,string nAtributo)
@@ -2904,7 +2949,7 @@ namespace Diccionario_de_Datos
                 br.ReadInt64();
                 DSIG = br.ReadInt64();
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 if(n == nEntidad)
                 {
                     br.BaseStream.Position = DA;
@@ -2925,19 +2970,19 @@ namespace Diccionario_de_Datos
                             return tipo;
                         }
                         if (DSIGA != -1)
-                            br.BaseStream.Position = DSIGA;
+                        br.BaseStream.Position = DSIGA;
                         else
-                            break;
+                        break;
                         
-                            
+                        
                     }
                     
 
 
                 }
                 if (DSIG == -1)
-                    break;
-                   
+                break;
+                
             }
 
             br.Close();
@@ -3324,9 +3369,9 @@ namespace Diccionario_de_Datos
                         posSecundario = i;
                         iSecundarios.Add(i);
                         if (j < secundarios.Count)
-                            j++;
+                        j++;
                         else
-                            break;
+                        break;
                         
                     }
                 }
@@ -3336,7 +3381,7 @@ namespace Diccionario_de_Datos
             pintaTablaRegistros();
             imprimeRegistro(comboBox6.Text + ".dat");
             if(iPrimario != null)
-                imprimePrimario(comboBox6.Text);
+            imprimePrimario(comboBox6.Text);
             //if (iSecundario != null)
                 //insertaSecundario(comboBox6.Text+=".idx", iSecundarios);
             comboSecundario.Items.Clear();
@@ -3345,7 +3390,8 @@ namespace Diccionario_de_Datos
                 comboSecundario.Items.Add(secun);
             }
             calculaTam(dato);
-           
+            insertaNodo(comboBox6.Text + ".idx", null,0);
+            
         }
         private void pintaTablaRegistros()
         {
@@ -3388,15 +3434,15 @@ namespace Diccionario_de_Datos
                                 break;
                             }
                             else
-                                br.BaseStream.Position = DSIGA;
+                            br.BaseStream.Position = DSIGA;
                         }
                     }
                     
                 }
                 if (DSIG == -1)
-                    break;
+                break;
                 else
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
 
             }
 
@@ -3412,8 +3458,8 @@ namespace Diccionario_de_Datos
          * Reutilizamos los metodos eliminaEntidad y creaEntidad
          ************************************************************************************/
 
-        private void modificaEntidad(object sender, EventArgs e)
-        {
+         private void modificaEntidad(object sender, EventArgs e)
+         {
             string nueva;
             string actual;
             long anterior;
@@ -3427,18 +3473,18 @@ namespace Diccionario_de_Datos
             br.Close();
             List<string> nombres = new List<string>();
             foreach (Entidad i in entidad)
-                nombres.Add(i.dameNombre());
+            nombres.Add(i.dameNombre());
             ModificaEntidad modifica = new ModificaEntidad(nombres);
             if(modifica.ShowDialog() == DialogResult.OK)
             {
                 actual = modifica.dameEntidad();
                 nueva = modifica.dameNombre();
-               
+                
                 if(nueva != "")
                 {
                     while (nueva.Length < 29)
-                        nueva += " ";
-                                     
+                    nueva += " ";
+                    
                     DE = dameDireccionActual(actual);
                     br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
                     cab = br.ReadInt64();
@@ -3469,7 +3515,7 @@ namespace Diccionario_de_Datos
                         bw.BaseStream.Position = 0;
                         bw.Write(DE);
                         cabecera.Text = DE.ToString();
-                           
+                        
                     }
                     //actualizar nodo que apunta a nuevo
                     bw.BaseStream.Position = anterior + 30 + 8 + 8 + 8;
@@ -3534,9 +3580,9 @@ namespace Diccionario_de_Datos
                 DE2 = DE;
 
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             return -1;
 
@@ -3567,9 +3613,9 @@ namespace Diccionario_de_Datos
                 DE2 = DE;
 
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             return -1;
         }
@@ -3604,9 +3650,9 @@ namespace Diccionario_de_Datos
                 DE2 = DE;
 
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             return -1;
         }
@@ -3644,9 +3690,9 @@ namespace Diccionario_de_Datos
                 
 
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             return DE;
         }
@@ -3671,9 +3717,9 @@ namespace Diccionario_de_Datos
                     return DE;
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
 
 
             }
@@ -3743,13 +3789,13 @@ namespace Diccionario_de_Datos
                 bw = new BinaryWriter(File.Open(nombre,FileMode.Create));
                 bw.Close();
             }
-        
+            
             button2.Hide();
             bw.Close();
 
             //br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
             comboBox6.Enabled = true;
-           
+            
         }
 
         private void cargaRegistros(object sender, EventArgs e)
@@ -3810,129 +3856,129 @@ namespace Diccionario_de_Datos
                     break;
                 }
             }
-                    
+            
 
             for(int i = 0; i < dataGridView4.Rows.Count-2; i++)
             {
-                 claves.Add(dataGridView4.Rows[i].Cells[pos+1].Value.ToString());
-            }
-            EliminaRegistro elimina = new EliminaRegistro(claves);
-            if(elimina.ShowDialog() == DialogResult.OK)
-            {
-                cB = elimina.dameClave();
+               claves.Add(dataGridView4.Rows[i].Cells[pos+1].Value.ToString());
+           }
+           EliminaRegistro elimina = new EliminaRegistro(claves);
+           if(elimina.ShowDialog() == DialogResult.OK)
+           {
+            cB = elimina.dameClave();
 
                 /*buscar en datagrid4 el valor que tenga como nombre el Cb */
-                for(int i = 0; i < dataGridView4.Rows.Count-1; i++)
+            for(int i = 0; i < dataGridView4.Rows.Count-1; i++)
+            {
+                if(dataGridView4.Rows[i].Cells[pos+1].Value.ToString() == cB)
                 {
-                    if(dataGridView4.Rows[i].Cells[pos+1].Value.ToString() == cB)
-                    {
-                        direccionRegistro = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
-                        break;
-                    }
+                    direccionRegistro = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                    break;
                 }
-                
+            }
+            
 
-                for (int i = 0; i < dataGridView4.Rows.Count - 2; i++)
+            for (int i = 0; i < dataGridView4.Rows.Count - 2; i++)
+            {
+                if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count-1].Value.ToString() == direccionRegistro.ToString())
                 {
-                    if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count-1].Value.ToString() == direccionRegistro.ToString())
-                    {
-                        DANT = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
-                        break;
-                    }
+                    DANT = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                    break;
                 }
-                
+            }
+            
+            br.Close();
+            bw.Close();
+            br = new BinaryReader(File.Open(dat, FileMode.Open));
+            br.BaseStream.Position = DANT + primero-8;
+            dirA = br.ReadInt64();
+            br.BaseStream.Position = direccionRegistro + primero-8;
+            dirB = br.ReadInt64();
+
+            br.Close();
+            bw = new BinaryWriter(File.Open(dat,FileMode.Open));
+            bw.BaseStream.Position = DANT + primero - 8;
+            bw.Write(dirB);
+            
+            bw.Close();
+            long cab = dameDireccionRegistro(comboBox6.Text);
+            if (cab == direccionRegistro)
+            {
                 br.Close();
                 bw.Close();
-                br = new BinaryReader(File.Open(dat, FileMode.Open));
-                br.BaseStream.Position = DANT + primero-8;
-                dirA = br.ReadInt64();
-                br.BaseStream.Position = direccionRegistro + primero-8;
-                dirB = br.ReadInt64();
 
-                br.Close();
-                bw = new BinaryWriter(File.Open(dat,FileMode.Open));
-                bw.BaseStream.Position = DANT + primero - 8;
-                bw.Write(dirB);
-                
-                bw.Close();
-                long cab = dameDireccionRegistro(comboBox6.Text);
-                if (cab == direccionRegistro)
-                {
-                    br.Close();
-                    bw.Close();
-
-                    ponteRegistro(comboBox6.Text, dirB);
-                }
-                
-                imprimeRegistro(dat);
-                imprimePrimario(comboBox6.Text);
-                
-                
+                ponteRegistro(comboBox6.Text, dirB);
             }
+            
+            imprimeRegistro(dat);
+            imprimePrimario(comboBox6.Text);
+            
+            
         }
-        public long dameApuntadorNodo(string actual, long DR, int clave)
+    }
+    public long dameApuntadorNodo(string actual, long DR, int clave)
+    {
+        int i, j;
+        int compara = 0;
+        long direccion = 0;
+        for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
         {
-            int i, j;
-            int compara = 0;
-            long direccion = 0;
-            for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
+            if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count-1].Value.ToString() == DR.ToString())
             {
-                if (dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count-1].Value.ToString() == DR.ToString())
-                {
-                    direccion = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
-                    return direccion;
-                }
-
-
+                direccion = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                return direccion;
             }
 
-            return -1;
+
         }
-        public long dameSiguienteR(string actual, long DR, int clave)
+
+        return -1;
+    }
+    public long dameSiguienteR(string actual, long DR, int clave)
+    {
+        int i, j;
+        int compara = 0;
+        long direccion = 0;
+        for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
         {
-            int i, j;
-            int compara = 0;
-            long direccion = 0;
-            for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
+
+            compara = actual.CompareTo(dataGridView4.Rows[i].Cells[clave + 1].Value.ToString());
+            if (compara == 0)
             {
-
-                compara = actual.CompareTo(dataGridView4.Rows[i].Cells[clave + 1].Value.ToString());
-                if (compara == 0)
-                {
-                    direccion = Convert.ToInt64(dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count - 1].Value);
-                    return direccion;
-                }
-
-
+                direccion = Convert.ToInt64(dataGridView4.Rows[i].Cells[dataGridView4.Columns.Count - 1].Value);
+                return direccion;
             }
 
-            return -1;
+
         }
-        public long dameDireccionSiguienteAnterior(string actual, long DR, int clave)
+
+        return -1;
+    }
+    public long dameDireccionSiguienteAnterior(string actual, long DR, int clave)
+    {
+        int i, j;
+        int compara = 0;
+        long direccion = 0;
+        for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
         {
-            int i, j;
-            int compara = 0;
-            long direccion = 0;
-            for (i = 0; i < dataGridView4.Rows.Count - 2; i++)
+
+            compara = actual.CompareTo(dataGridView4.Rows[i].Cells[clave + 1].Value.ToString());
+            if (compara == -1)
             {
-
-                compara = actual.CompareTo(dataGridView4.Rows[i].Cells[clave + 1].Value.ToString());
-                if (compara == -1)
-                {
-                    direccion = Convert.ToInt64(dataGridView4.Rows[i - 1].Cells[dataGridView4.Columns.Count-1].Value);
-                    return direccion;
-                }
-
-
+                direccion = Convert.ToInt64(dataGridView4.Rows[i - 1].Cells[dataGridView4.Columns.Count-1].Value);
+                return direccion;
             }
 
-            return -1;
+
         }
+
+        return -1;
+    }
         /********************************************************************************
          *  Metodo encargado de recorrer los registros y encontrar cual apunta al nuevo
          ********************************************************************************/
-        public long dameDireccionAnteriorRegistro(string actual, long DR, int clave)
-        {
+         public long dameDireccionAnteriorRegistro(string actual, long DR, int clave)
+         {
             int i, j;
             int compara = 0;
             long direccion = 0;
@@ -3994,7 +4040,7 @@ namespace Diccionario_de_Datos
 
                     if(dataGridView4.Rows[i].Cells[pos+1].Value.ToString() == n)
                     {
-                       
+                     
                         bw = new BinaryWriter(File.Open(comboBox6.Text+".dat", FileMode.Open));
                         pos2 = (long)dataGridView4.Rows[i].Cells[0].Value; // Se obtiene la dirección del registro a modificar
                         DireccionRegistro = pos2;
@@ -4027,7 +4073,7 @@ namespace Diccionario_de_Datos
                                 bw.BaseStream.Position = pos2; // Se iguala a la posicion para el cambiar el nombre del registro
                                 while (mod.dameRenglon().Rows[0].Cells[j].Value.ToString().Length < tamC-1)
                                 {
-                                        mod.dameRenglon().Rows[0].Cells[j].Value += " ";
+                                    mod.dameRenglon().Rows[0].Cells[j].Value += " ";
                                 }
 
                                 
@@ -4053,7 +4099,7 @@ namespace Diccionario_de_Datos
                         // ACTUALIZA A ==> B
                         DANT = dameDireccionAnteriorRegistro(mod.dameRenglon().Rows[0].Cells[pos].Value.ToString(), DireccionRegistro, pos);
                         //MessageBox.Show("Direccion de A: " + DANT);
-                       
+                        
                         bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
                         bw.BaseStream.Position = DANT + TR - 8;
                         bw.Write(DireccionRegistro);
@@ -4130,8 +4176,8 @@ namespace Diccionario_de_Datos
         /**************************************************************************************************************************
          *  Se crea un nuevo diccionario de datos 
          **************************************************************************************************************************/
-        private void nuevoProyecto(object sender, EventArgs e)
-        {
+         private void nuevoProyecto(object sender, EventArgs e)
+         {
 
             string nombre = " ";
             button1.Enabled = true;
@@ -4142,8 +4188,8 @@ namespace Diccionario_de_Datos
             Archivo archivo = new Archivo(nombre);
 
             AddOwnedForm(archivo);
-    
-           if (archivo.ShowDialog() == DialogResult.OK )
+            
+            if (archivo.ShowDialog() == DialogResult.OK )
             {
                 nombre = archivo.nombre + ".bin";
                 MessageBox.Show("Nombre de archivo " + nombre);
@@ -4188,7 +4234,7 @@ namespace Diccionario_de_Datos
             imprimePrimario(comboBox6.Text);
         }
 
-   
+        
 
         /**************************************************************************************************************************
          * Metodo encargado de eliminar la entidad
@@ -4196,13 +4242,13 @@ namespace Diccionario_de_Datos
          * el nombre cambia a eliminado
          * la entidad anterior apunta al siguiente de la entidad eliminada
          *************************************************************************************************************************/
-        private void eliminaEntidad(object sender, EventArgs e)
-        {
+         private void eliminaEntidad(object sender, EventArgs e)
+         {
             br.Close();
             bw.Close();
             string n = textBox1.Text;
             while (n.Length < 29)
-                n += " ";
+            n += " ";
             long anterior;
             anterior = dameEntidadAnterior(n);
             long siguiente;
@@ -4254,9 +4300,9 @@ namespace Diccionario_de_Datos
                     return DSIG;
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             return -1;
         }
@@ -4283,9 +4329,9 @@ namespace Diccionario_de_Datos
                     break;
                 }
                 if (DSIG != -1)
-                    br.BaseStream.Position = DSIG;
+                br.BaseStream.Position = DSIG;
                 else
-                    break;
+                break;
             }
             br.BaseStream.Position = 0;
             br.BaseStream.Position = br.ReadInt64();
@@ -4302,9 +4348,9 @@ namespace Diccionario_de_Datos
                     return ANT;
                 }
                 if (DSANT != -1)
-                    br.BaseStream.Position = DSANT;
+                br.BaseStream.Position = DSANT;
                 else
-                    break;
+                break;
             }
 
             br.Close();
