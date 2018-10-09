@@ -1591,6 +1591,10 @@ private void creaEntidad(object sender, EventArgs e)
                 
                 ponteRegistro(comboBox6.Text,DR);
             }
+            if(dameDireccionRegistro(comboBox6.Text) == -1)
+            {
+                ponteRegistro(comboBox6.Text, DR);
+            }
             
             bw.Close();
             /*Ahora se leera el archivo para llenar el datagrid*/
@@ -1818,10 +1822,10 @@ private void creaEntidad(object sender, EventArgs e)
                                 Nodo nRaiz = arbol.dameNodo(raiz);
                                 int nDato = tempClaves[2];                        // clave a enviar a raíz
                                 long dDato = arbol[arbol.Count - 1].dirNodo;        // dirección del nuevo nodo
-                                nuevo.clave[0] = actual.clave[1];
-                                nuevo.direccion[0] = actual.direccion[1];
-                                actual.clave[1] =  tempClaves[0];
-                                actual.direccion[1] = tempDir[0];
+                               // nuevo.clave[0] = actual.clave[1];
+                               // nuevo.direccion[0] = actual.direccion[1];
+                               // actual.clave[1] =  tempClaves[0];
+                               // actual.direccion[1] = tempDir[0];
                                 
                                 tempClaves = new List<int>();
                                 tempDir = new List<long>();
@@ -2247,7 +2251,11 @@ private void creaEntidad(object sender, EventArgs e)
             primario = primario.OrderBy(x => x.val).ToList();
             bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
             bw.BaseStream.Position = iPrimario.dameDireccion() + 30 + 1 + 4 + 8 + 5;
-            bw.Write(primario[0].dirVal);
+            if(primario.Count > 0)
+            {
+                bw.Write(primario[0].dirVal);
+            }
+            
             bw.Close();
             imprimeAtributo(atributo);
             bw.Close();
@@ -2607,10 +2615,10 @@ private void creaEntidad(object sender, EventArgs e)
 
             
         }
-        private long siguienteRegistro(string dat, Atributo aClave, int TAM, string nEntidad,string nClave,long DREGI)
+        private long siguienteRegistro(string dat, Atributo aClave, int TAM, string nEntidad, string nClave, long DREGI)
         {
             long DIR = 0;
-            
+
             long DSIG = -1;
             long sigE = 0;
             long ANT = 0;
@@ -2634,100 +2642,108 @@ private void creaEntidad(object sender, EventArgs e)
                 }
             }
             br.Close();
-            br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
             br.BaseStream.Position = br.ReadInt64();
-            while(br.BaseStream.Position < br.BaseStream.Length)
+            while (br.BaseStream.Position < br.BaseStream.Length)
             {
                 n = br.ReadString();
                 br.ReadInt64();
                 br.ReadInt64();
                 DR = br.ReadInt64();
                 sigE = br.ReadInt64();
-                if(n == nEntidad)
+                if (n == nEntidad)
                 {
                     break;
                 }
                 if (sigE != -1)
-                br.BaseStream.Position = sigE;
+                    br.BaseStream.Position = sigE;
                 else
-                break;
+                    break;
             }
-            
+
             br.Close();
             br.Close();
-            br = new BinaryReader(File.Open(dat,FileMode.Open));
-            br.BaseStream.Position = DR; // se obtiene la cabecera del registro
-            p = DR;
-            while(br.BaseStream.Position < br.BaseStream.Length)
+            br = new BinaryReader(File.Open(dat, FileMode.Open));
+            if (DR != -1)
             {
-                ANT = br.ReadInt64();
-                for(int i = 0; i < dataGridView3.Columns.Count; i++)
+                br.BaseStream.Position = DR; // se obtiene la cabecera del registro
+                p = DR;
+                while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    long actual = br.BaseStream.Position;
-                    br.Close();
-                    tipo = buscaTipo(nEntidad,dataGridView3.Columns[i].Name);
+                    ANT = br.ReadInt64();
+                    for (int i = 0; i < dataGridView3.Columns.Count; i++)
+                    {
+                        long actual = br.BaseStream.Position;
+                        br.Close();
+                        tipo = buscaTipo(nEntidad, dataGridView3.Columns[i].Name);
 
-                    br = new BinaryReader(File.Open(dat, FileMode.Open));
-                    br.BaseStream.Position = actual;
-                    if (tipo == 'E')
-                    {
-                        br.ReadInt32();
-                    }
-                    else if(tipo == 'C')
-                    {
-                        nomb = br.ReadString();
-                        
-                    }
-                    if(i == pos)
-                    {
-                        compara = nClave.CompareTo(nomb);
-                        switch(compara)
+                        br = new BinaryReader(File.Open(dat, FileMode.Open));
+                        br.BaseStream.Position = actual;
+                        if (tipo == 'E')
                         {
-                            case -1:
-                                //MessageBox.Show("nomb" + nomb + "\nClave: " + nClave);
-                                //MessageBox.Show("ANT: " + ANT + "\n DIR: " + DIR);
-                            br.Close();
-                            if (ANT == p)
+                            br.ReadInt32();
+                        }
+                        else if (tipo == 'C')
+                        {
+                            nomb = br.ReadString();
+
+                        }
+                        if (i == pos)
+                        {
+                            compara = nClave.CompareTo(nomb);
+                            switch (compara)
                             {
-                                
-                                ponteRegistro(comboBox6.Text, DREGI);
-                                bw.Close();
-                                return ANT;
+                                case -1:
+                                    //MessageBox.Show("nomb" + nomb + "\nClave: " + nClave);
+                                    //MessageBox.Show("ANT: " + ANT + "\n DIR: " + DIR);
+                                    br.Close();
+                                    if (ANT == p)
+                                    {
 
+                                        ponteRegistro(comboBox6.Text, DREGI);
+                                        bw.Close();
+                                        return ANT;
+
+                                    }
+                                    else
+                                    {
+                                        registroAnterior(DIR, DREGI, dat, TAM);
+                                        br.Close();
+                                        return ANT;
+                                    }
+
+
+                                    break;
+                                case 0:
+                                    break;
+                                case 1:
+
+                                    break;
                             }
-                            else
-                            {
-                                registroAnterior(DIR, DREGI, dat, TAM);
-                                br.Close();
-                                return ANT;
-                            }
 
-                            
-                            break;
-                            case 0:
-                            break;
-                            case 1:
-
-                            break;
                         }
 
                     }
-                    
-                }
-                DIR = ANT;
-                DSIG = br.ReadInt64();
+                    DIR = ANT;
+                    DSIG = br.ReadInt64();
 
-                if (DSIG != -1)
-                br.BaseStream.Position = DSIG;
-                else
-                {
-                    registroAnterior(DIR, DREGI, dat, TAM);
-                    br.Close();
+                    if (DSIG != -1)
+                        br.BaseStream.Position = DSIG;
+                    else
+                    {
+                        registroAnterior(DIR, DREGI, dat, TAM);
+                        br.Close();
 
-                    return -1;
+                        return -1;
+                    }
+
                 }
-                
+
+
             }
+               
+            
+            
 
 
 
@@ -2899,46 +2915,52 @@ private void creaEntidad(object sender, EventArgs e)
             br = new BinaryReader(File.Open(dat, FileMode.Open));
             dataGridView4.Rows.Add();
             if (cab != -1)
-            br.BaseStream.Position = cab;
-            while (br.BaseStream.Position < br.BaseStream.Length)
             {
-                dataGridView4.Rows.Add();
-                while (i < tempAtributo.Count+2)
+                br.BaseStream.Position = cab;
+                while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    dataGridView4.Rows[j].Cells[i].Value = br.ReadInt64();
-                    
-                    i++;
-                    foreach (Atributo a in tempAtributo)
+                    dataGridView4.Rows.Add();
+                    while (i < tempAtributo.Count + 2)
                     {
-                        if (a.dameTipo() == 'E')
-                        {
-                            dataGridView4.Rows[j].Cells[i].Value = br.ReadInt32();
+                        dataGridView4.Rows[j].Cells[i].Value = br.ReadInt64();
 
-                        }
-                        else if (a.dameTipo() == 'C')
-                        {
-                            dataGridView4.Rows[j].Cells[i].Value = br.ReadString();
-                        }
-                        
                         i++;
+                        foreach (Atributo a in tempAtributo)
+                        {
+                            if (a.dameTipo() == 'E')
+                            {
+                                dataGridView4.Rows[j].Cells[i].Value = br.ReadInt32();
+
+                            }
+                            else if (a.dameTipo() == 'C')
+                            {
+                                dataGridView4.Rows[j].Cells[i].Value = br.ReadString();
+                            }
+
+                            i++;
+                        }
+                        DSIGR = br.ReadInt64();
+                        dataGridView4.Rows[j].Cells[i].Value = DSIGR;
+                        break;
+
                     }
-                    DSIGR = br.ReadInt64();
-                    dataGridView4.Rows[j].Cells[i].Value  = DSIGR;
-                    break;
+                    if (DSIGR != -1)
+                        br.BaseStream.Position = DSIGR;
+                    else
+                        break;
 
+
+                    i = 0;
+                    j++;
                 }
-                if (DSIGR != -1)
-                br.BaseStream.Position = DSIGR;
-                else
-                break;
 
-                
-                i = 0;
-                j++;
+                br.Close();
+                bw.Close();
+
             }
-            
             br.Close();
             bw.Close();
+
 
 
         }
@@ -3963,7 +3985,7 @@ private void creaEntidad(object sender, EventArgs e)
            EliminaRegistro elimina = new EliminaRegistro(claves);
            if(elimina.ShowDialog() == DialogResult.OK)
            {
-            cB = elimina.dameClave();
+            cB = elimina.dameClave();   // CLAVE DE BUSQUEDA QUE SE VA A ELIMINAR 
 
                 /*buscar en datagrid4 el valor que tenga como nombre el Cb */
             for(int i = 0; i < dataGridView4.Rows.Count-1; i++)
@@ -3974,7 +3996,7 @@ private void creaEntidad(object sender, EventArgs e)
                     break;
                 }
             }
-            
+            // direccionRegistro ----> posición del registro a eliminar
 
             for (int i = 0; i < dataGridView4.Rows.Count - 2; i++)
             {
@@ -4002,11 +4024,14 @@ private void creaEntidad(object sender, EventArgs e)
             long cab = dameDireccionRegistro(comboBox6.Text);
             if (cab == direccionRegistro)
             {
-                br.Close();
-                bw.Close();
-
-                ponteRegistro(comboBox6.Text, dirB);
+                    br.Close();
+                    bw.Close();
+                    ponteRegistro(comboBox6.Text, dirB);
+                    br.Close();
+                    bw.Close();
             }
+            
+           
             
             imprimeRegistro(dat);
             imprimePrimario(comboBox6.Text);
