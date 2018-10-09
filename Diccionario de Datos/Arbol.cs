@@ -347,6 +347,36 @@ namespace Diccionario_de_Datos
             }
             return -1;
         }
+        public void ordenaIntermedio(long dir)
+        {
+
+            Nodo arr = dameNodo(dir);
+            int clave;
+            for (int i = 0; i < arr.clave.Count - 1; i++)
+            {
+                if (arr.clave[i] > arr.clave[i + 1])
+                {
+                    clave = arr.clave[i];
+                    arr.clave[i] = arr.clave[i + 1];
+                    arr.clave[i + 1] = clave;
+
+                    dir = arr.direccion[i + 1];
+                   // if(i+2 < arr.direccion.Count)
+                  //  {
+                        arr.direccion[i + 1] = arr.direccion[i + 2];
+                        arr.direccion[i + 2] = dir;
+                  //  }
+                  //  else
+                  //  {
+                  //      arr.direccion[i + 1] = arr.direccion[i + 1];
+                  //      arr.direccion[i + 1] = dir;
+                  //  }
+                        
+
+                }
+            }
+
+        }
         public void ordenaRaiz()
         {
             Nodo arr = dameNodo(dameRaiz());
@@ -388,6 +418,12 @@ namespace Diccionario_de_Datos
                             np.clave.Add(clave);
                             np.direccion.Add(apuntador);
                             ordenaRaiz();
+                        }
+                        else if(np.tipo == 'I')
+                        {
+                            np.clave.Add(clave);
+                            np.direccion.Add(apuntador);
+                            ordenaIntermedio(direccion);
                         }
                         else
                         {
