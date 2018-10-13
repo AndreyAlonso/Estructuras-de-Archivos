@@ -57,10 +57,15 @@ namespace Diccionario_de_Datos
                 {
                     if (i == 0)
                     {
-                        direccion = -1;// Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
+                        direccion =  Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
                     }
                     else
                         direccion = Convert.ToInt64(dataGridView4.Rows[i - 1].Cells[0].Value);
+                    return direccion;
+                }
+                if(compara == 0) // SI SE REPITE LA CLAVE DE BÚSQUEDA 
+                {
+                    direccion = Convert.ToInt64(dataGridView4.Rows[i - 1].Cells[0].Value);
                     return direccion;
                 }
             }
@@ -83,6 +88,11 @@ namespace Diccionario_de_Datos
                     }
                     else
                         direccion = Convert.ToInt64(dataGridView4.Rows[i - 1].Cells[dataGridView4.Columns.Count-1].Value);
+                    return direccion;
+                }
+                if (compara == 0) // SI SE REPITE LA CLAVE DE BÚSQUEDA 
+                {
+                    direccion = Convert.ToInt64(dataGridView4.Rows[i].Cells[0].Value);
                     return direccion;
                 }
             }

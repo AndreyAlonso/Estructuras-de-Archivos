@@ -946,6 +946,8 @@ private void creaEntidad(object sender, EventArgs e)
             dataGridView2.Rows.Clear();
             br.Close();
             br.Close();
+            br.Close();
+            br.Close();
             br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
             br.BaseStream.Position = br.ReadInt64();
             while(br.BaseStream.Position < br.BaseStream.Length)
@@ -1558,6 +1560,8 @@ private void creaEntidad(object sender, EventArgs e)
                         //DSIGR = dameDireccionSiguienteRegistro(dat, aClave, comboBox6.Text, nRegistro, DR);
                         br.Close();
 
+                        bw.Close();
+                        bw.Close();
                         bw.Close();
                         bw.Close();
                         bw.Close();
@@ -2262,6 +2266,7 @@ private void creaEntidad(object sender, EventArgs e)
             imprimeAtributo(atributo);
             bw.Close();
             br.Close();
+            bw.Close();
             bw = new BinaryWriter(File.Open(indi, FileMode.Create));
             foreach(Primario prim in primario)
             {
@@ -4258,6 +4263,156 @@ private void creaEntidad(object sender, EventArgs e)
                         direccionAnteriorNuevo      = MetodosRegistros.buscaAnteriorNuevo(dataGridView4, mod.dameRenglon().Rows[0].Cells[pos].Value.ToString(), DireccionRegistro, pos);
                         direccionSiguienteNuevo     = MetodosRegistros.buscaSiguienteNuevo(dataGridView4, mod.dameRenglon().Rows[0].Cells[pos].Value.ToString(), DireccionRegistro, pos);
 
+                        
+                        // CASOS PARA LA MODIFICACION
+                        // 1) EL NODO A MODIFICAR ES EL PRIMERO
+                        // 2) EL NODO A MODIFICIAR ES EL ULTIMO
+                        // 3) EL NODO A MODIFICAR ESTA EN CUALQUIER POSICIÓN
+
+                        // CASOS PARA INSERCIÓN DE LOS MODIFICADOS
+                        // 4) EL NODO MODIFICADO QUEDARA EN LA PRIMERA POSICIÓN
+                        // 5) EL NODO MODIFICADO QUEDARA EN LA ULTIMA POSICIÓN
+                        // 6) EL NODO MODIFICADO QUEDARA EN CUALQUIER POSICIÓN
+                        
+                        // CASO ESPECIAL
+                        // NODO NUEVO TIENE MISMA CLAVE DE BÚSQUEDA
+                        if(direccionAnteriorNuevo == DireccionRegistro)
+                        {
+                            bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                           
+                            bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
+                            bw.Write(DireccionRegistro);
+                            bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                            bw.Write(direccionSiguienteNuevo);
+
+                        }
+                        //1) EL NODO A MODIFICAR ES EL PRIMERO
+                        // dameDireccionRegistro()  -> Devuelve la dirección que tiene la entidad en su campo de registro
+                        else if(DireccionRegistro == dameDireccionRegistro(comboBox6.Text))
+                        {
+                            // VERIFICA SI EL NODO YA EXISTE 
+                            if(direccionAnteriorActual == -1)
+                            {
+                                ponteRegistro(comboBox6.Text, direccionSiguienteActual);
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+
+                                bw.BaseStream.Position = direccionAnteriorNuevo + TR - 8;
+                                bw.Write(DireccionRegistro);
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+                            }
+                            // VERIFICAR SI PERTENCE AL CASO 4
+                            else if(direccionAnteriorNuevo == 0)
+                            {
+                                ponteRegistro(comboBox6.Text, DireccionRegistro);
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+                            }
+                            // VERIFICAR SI PERTENECE AL CASO 5
+                            else if(direccionAnteriorNuevo == -1 )
+                            {
+                                direccionFinal = MetodosRegistros.buscaUltimoRegistro(dataGridView4);
+                                ponteRegistro(comboBox6.Text, direccionSiguienteActual);
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.BaseStream.Position = direccionFinal + TR - 8;
+                                bw.Write(DireccionRegistro);
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+
+                            }
+                            // PERTENCE A CASO 6
+                            else
+                            {
+                                ponteRegistro(comboBox6.Text, direccionSiguienteActual);
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.BaseStream.Position = direccionAnteriorNuevo + TR - 8;
+                                bw.Write(DireccionRegistro);
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+                                bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
+                                bw.Write(direccionSiguienteActual);
+
+                            }
+                        }
+                        // 2) EL NODO A MODIFICIAR ES EL ULTIMO
+                        else if(DireccionRegistro == MetodosRegistros.buscaUltimoRegistro(dataGridView4))
+                        {
+                            // VERIFICAR SI PERTENCE AL CASO 4
+                            if (direccionAnteriorNuevo == 0)
+                            {
+                                ponteRegistro(comboBox6.Text, DireccionRegistro);
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+                                bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
+                                bw.Write(direccionSiguienteActual);
+                            }
+                            // VERIFICAR SI PERTENECE AL CASO 5
+                            else if (direccionAnteriorNuevo == -1)
+                            {
+                               // NO SE MODIFICAN LOS APUNTADORES PORQUE YA ES EL ULTIMO REGISTRO
+                            }
+                            // PERTENCE A CASO 6
+                            else
+                            {
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.BaseStream.Position = direccionAnteriorNuevo + TR - 8;
+                                bw.Write(DireccionRegistro);
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+                                bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
+                                bw.Write(direccionSiguienteActual);
+
+                            }
+
+                        }
+                        // 3) EL NODO A MODIFICAR ESTA EN CUALQUIER POSICIÓN
+                        else
+                        {
+                            // VERIFICAR SI PERTENCE AL CASO 4
+                            if (direccionAnteriorNuevo == dameDireccionRegistro(comboBox6.Text))
+                            {
+                                ponteRegistro(comboBox6.Text, DireccionRegistro);
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+                                bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
+                                bw.Write(direccionSiguienteActual);
+                            }
+                            // VERIFICAR SI PERTENECE AL CASO 5
+                            else if (direccionAnteriorNuevo == -1)
+                            {
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                direccionFinal = MetodosRegistros.buscaUltimoRegistro(dataGridView4);
+                                bw.BaseStream.Position = direccionFinal + TR - 8;
+                                bw.Write(DireccionRegistro);
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+                                bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
+                                bw.Write(direccionSiguienteActual);
+                            }
+                            // PERTENCE A CASO 6
+                            else
+                            {
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.BaseStream.Position = direccionAnteriorNuevo + TR - 8;
+                                bw.Write(DireccionRegistro);
+                                bw.BaseStream.Position = DireccionRegistro + TR - 8;
+                                bw.Write(direccionSiguienteNuevo);
+                                bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
+                                bw.Write(direccionSiguienteActual);
+
+                            }
+                        }
+
+
+
+
+
+                        /*
+
+
                         // A) SI NODO A MODIFICAR ES LA RAIZ
                         if(DireccionRegistro == dameDireccionRegistro(comboBox6.Text))
                         {
@@ -4288,7 +4443,7 @@ private void creaEntidad(object sender, EventArgs e)
                             // B) SI EL NODO A MODIFICAR ES  EL ULTIMO
                             if(direccionSiguienteActual == -1)
                             {
-                                if(direccionAnteriorNuevo == -1) // SI SE VA A INSERTAR AL INICIO
+                                if(direccionAnteriorNuevo == 0) // SI SE VA A INSERTAR AL INICIO
                                 {
                                     ponteRegistro(comboBox6.Text, DireccionRegistro);
                                     bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
@@ -4325,10 +4480,10 @@ private void creaEntidad(object sender, EventArgs e)
                                 bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
                                 if (direccionAnteriorNuevo == -1)
                                 {
-                                    ponteRegistro(comboBox6.Text, DireccionRegistro);
-                                  //  direccionFinal = MetodosRegistros.buscaUltimoRegistro(dataGridView4);
-                                  //  bw.BaseStream.Position = direccionFinal + TR - 8;
-                                  //  bw.Write(DireccionRegistro);
+                                   // ponteRegistro(comboBox6.Text, DireccionRegistro);
+                                    direccionFinal = MetodosRegistros.buscaUltimoRegistro(dataGridView4);
+                                    bw.BaseStream.Position = direccionFinal + TR - 8;
+                                    bw.Write(DireccionRegistro);
                                 }
                                 else
                                 {
@@ -4336,15 +4491,18 @@ private void creaEntidad(object sender, EventArgs e)
                                     bw.BaseStream.Position = direccionAnteriorNuevo + TR - 8;
                                     bw.Write(DireccionRegistro);
                                 }
+                                //bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
+                                bw.Close();
+                                bw = new BinaryWriter(File.Open(comboBox6.Text + ".dat", FileMode.Open));
                                 bw.BaseStream.Position = DireccionRegistro + TR - 8;
                                 bw.Write(direccionSiguienteNuevo);
-                                bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
-                                bw.Write(direccionSiguienteActual);
+                               // bw.BaseStream.Position = direccionAnteriorActual + TR - 8;
+                               // bw.Write(direccionSiguienteActual);
                             }
                         }
 
 
-                        
+                        */
                         imprimeRegistro(comboBox6.Text + ".dat");
                         break;
                     }
