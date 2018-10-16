@@ -856,6 +856,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             }
             if (band2 == true)
             {
+                Remove(intermedio);
                 return true;
             }
             else

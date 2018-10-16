@@ -272,20 +272,15 @@ namespace Diccionario_de_Datos
             	enti.ponteDireccionRegistro(-1);                
                 dir = buscaEntidad(enti.dameNombre()); // Se obtiene la dirección de la entidad siguiente
                 enti.ponteDireccionSig(dir);
-                //MessageBox.Show("Valor de dir: " + dir);
-
+               
                 if (posicion == 1) // Actualización de Cabecera
                 {
                 	bw.Seek(0, SeekOrigin.Begin);
                 	cabecera.Text = enti.dameDE().ToString();
                 	Cab = enti.dameDE();
                 	bw.Write(Cab);
-                }
-                //MessageBox.Show("pSig: " + pSig);
-                // entidad[entidad.Count - 1].ponteDireccionSig(pSig);
+                }      
                 bw.Seek((int)bw.BaseStream.Length, SeekOrigin.Begin); //Posiciona al final del Archivo 
-
-             //   bw.Write(enti.dameDE());
                 bw.Write(enti.dameNombre());
                 bw.Write(enti.dameDE());
                 bw.Write(enti.dameDA());
@@ -2101,6 +2096,7 @@ namespace Diccionario_de_Datos
          	br.Close();
          	bw.Close();
          	Secundario s;
+            Atributo iSecundario = new Atributo();
          	int pos = 0;
          	poSI = 0;
          	int j = 0;
@@ -2110,7 +2106,21 @@ namespace Diccionario_de_Datos
          		{
          			iSecundarios.Add(i);
                     if (secundarios[j] == comboSecundario.Text)
+                    {
                         poSI = TAMSEC *j;
+                        iSecundario = dameIndiceSecundario(comboBox6.Text,secundarios[j]);
+                        bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
+                        TAMPRIM = (4 + 8) * 20;
+                        bw.BaseStream.Position = iSecundario.dameDireccion() + 30 + 1 + 4 + 8 + 5;
+                        if (j == 0)
+                            bw.Write(Convert.ToInt64(TAMPRIM)); //bw.Write(primario[0].dirVal);
+                        else
+                            bw.Write(Convert.ToUInt64(TAMSEC * j));
+
+                        bw.Close();
+                        
+                    }
+                        
                     j++;
          		}
          	}
@@ -2273,7 +2283,7 @@ namespace Diccionario_de_Datos
             bw.BaseStream.Position = iPrimario.dameDireccion() + 30 + 1 + 4 + 8 + 5;
          	if(primario.Count > 0)
          	{
-         		bw.Write(primario[0].dirVal);
+                bw.Write(0); //bw.Write(primario[0].dirVal);
          	}
             
          	bw.Close();
@@ -2357,6 +2367,7 @@ namespace Diccionario_de_Datos
 
             br.Close();
             bw.Close();
+            br.Close();
             br.Close();
             br = new BinaryReader(File.Open(indi + ".idx", FileMode.Open));
          	indicePrimario.Rows.Clear();
@@ -2500,7 +2511,64 @@ namespace Diccionario_de_Datos
          	br.Close();
          	return null;
          }
-         private Atributo dameIndicePrimario(string nEntidad)
+        private Atributo dameIndiceSecundario(string nEntidad, string indice)
+        {
+            long DE, DA, DSIG;
+            DE = 0;
+            DA = 0;
+            DSIG = 0;
+            string n = "";
+            Atributo temp = new Atributo();
+            br.Close();
+            bw.Close();
+            br.Close();
+            br = new BinaryReader(File.Open(nArchivo, FileMode.Open));
+            br.BaseStream.Position = br.ReadInt64();
+            while (br.BaseStream.Position < br.BaseStream.Length)
+            {
+                n = br.ReadString();
+                DE = br.ReadInt64();
+                DA = br.ReadInt64();
+                br.ReadInt64();
+                DSIG = br.ReadInt64();
+                if (n == nEntidad)
+                {
+                    if (DA != -1)
+                    {
+                        br.BaseStream.Position = DA;
+                        while (br.BaseStream.Position < br.BaseStream.Length)
+                        {
+                            temp.nombrate(br.ReadString());
+                            temp.ponteTipo(br.ReadChar());
+                            temp.ponteLongitud(br.ReadInt32());
+                            temp.direccionate(br.ReadInt64());
+                            temp.ponteTipoIndice(br.ReadInt32());
+                            temp.ponteDirIndice(br.ReadInt64());
+                            temp.ponteDirSig(br.ReadInt64());
+                            if (temp.dameNombre() == indice)
+                            {
+                                br.Close();
+                                return temp;
+                            }
+                            if (temp.dameDirSig() != -1)
+                                br.BaseStream.Position = temp.dameDirSig();
+                            else
+                                break;
+
+                        }
+                    }
+
+                }
+                if (DSIG != -1)
+                    br.BaseStream.Position = DSIG;
+                else
+                    break;
+            }
+
+            br.Close();
+            return null;
+        }
+        private Atributo dameIndicePrimario(string nEntidad)
          {
          	long DE, DA, DSIG;
          	DE = 0;
@@ -4215,12 +4283,19 @@ namespace Diccionario_de_Datos
             {
                 dNodo = tree.buscaNodoE(clave);
                 tree.eliminaNodo(dNodo, clave, dir);
+                Nodo temp = tree.dameNodo(dNodo);
+                if(temp.clave.Count == 0)
+                {
+                    temp.direccion.Clear();
+                    tree.Remove(temp);
+                    
+                }
             }
             else
             {
                 if (tree.existeIntermedio() == false)
                 {
-                    MessageBox.Show("No hay nodo intermedio");
+                 //  MessageBox.Show("No hay nodo intermedio");
                     dNodo = tree.buscaNodo(clave);
                     modifica = tree.eliminaNodo(dNodo, clave, dir);
                     if(modifica == false)
@@ -4229,7 +4304,7 @@ namespace Diccionario_de_Datos
                     }
                     else
                     {
-                        MessageBox.Show("El arbol se va a fusionar");
+                        //MessageBox.Show("El arbol se va a fusionar");
                         derecha = tree.pideDerecho(tree.dameRaiz(), dNodo);
                         izquierda = tree.pideIzquierdo(tree.dameRaiz(), dNodo);
                         if(derecha != -1)
@@ -4261,7 +4336,11 @@ namespace Diccionario_de_Datos
                                 swap = tree.fusionIzquierda(dNodo, izquierda, tree.dameRaiz());
                                 if(swap == true)
                                 {
-
+                                    Nodo temp = tree.dameNodo(izquierda);
+                                    temp.tipo = 'H';
+                                    temp.sig = -1;
+                                        
+                                   
                                 }
                                 else
                                 {
@@ -4376,8 +4455,9 @@ namespace Diccionario_de_Datos
                     }
                 }
             }
+            
             imprimeArbol(tree);
-
+            guardaArbol();
 
 
         }
@@ -5016,7 +5096,6 @@ namespace Diccionario_de_Datos
          	long anterior;
          	anterior = dameEntidadAnterior(n);
          	long siguiente;
-         	long cab = 0;
          	string nn = " ";
          	siguiente = dameSiguienteEntidad(n);
          	br = new BinaryReader(File.Open(nArchivo,FileMode.Open));
@@ -5024,7 +5103,6 @@ namespace Diccionario_de_Datos
          	nn = br.ReadString();
          	br.Close();
          	bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-         	
          	if(nn == n)
          	{
          		bw.BaseStream.Position = 0;
@@ -5039,8 +5117,6 @@ namespace Diccionario_de_Datos
          	bw.Write(siguiente);
          	bw.Close();
          	imprimeLista(entidad);
-         	
-
          }
          public long dameSiguienteEntidad(string nEntidad)
          {
