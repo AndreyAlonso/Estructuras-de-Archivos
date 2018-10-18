@@ -135,7 +135,7 @@ namespace Diccionario_de_Datos
 
                         else if (i == n.clave.Count - 1)
                         {
-                            return n.direccion[i + 1];
+                            return n.direccion[i]; // i + 1
                         }
 
 
@@ -464,10 +464,10 @@ namespace Diccionario_de_Datos
                     }
         }
 
-    
-#region ELIMINA CLAVES
-// ALGORITMOS PARA LA ELIMINACIÓN
-public bool eliminaNodo(long dNodo, int clave, long dClave)
+
+        #region ELIMINA CLAVES
+        // ALGORITMOS PARA LA ELIMINACIÓN
+        public bool eliminaNodo(long dNodo, int clave, long dClave)
         {
             bool band = false;
             int pos = 0;
@@ -504,7 +504,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             int i = 0;
             foreach (Nodo aux in this)
             {
-                if(aux.dirNodo == dir)
+                if (aux.dirNodo == dir)
                 {
                     foreach (int cont in aux.clave)
                     {
@@ -516,7 +516,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
                         i++;
                     }
                 }
-                
+
             }
             return 0;
         }
@@ -590,7 +590,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
                 }
                 else
                 {
-                     return this[0].dirNodo;
+                    return this[0].dirNodo;
                 }
             }
 
@@ -601,19 +601,19 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
         public long dameNodoIntermedio(long dir)
         {
             long direccion = -1;
-            foreach(Nodo aux in this)
+            foreach (Nodo aux in this)
             {
-                if(aux.tipo == 'I')
+                if (aux.tipo == 'I')
                 {
-                    foreach(long ap in aux.direccion)
+                    foreach (long ap in aux.direccion)
                     {
-                        if(ap == dir)
+                        if (ap == dir)
                         {
                             direccion = aux.dirNodo;
                             return direccion;
                         }
                     }
-                   
+
                 }
             }
             return direccion;
@@ -622,9 +622,9 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
         {
             long dInterDer = -1;
             Nodo nRaiz = dameNodo(dameRaiz());
-            for(int i = 0; i < nRaiz.direccion.Count-1; i++)
+            for (int i = 0; i < nRaiz.direccion.Count - 1; i++)
             {
-                if(nRaiz.direccion[i] == inter)
+                if (nRaiz.direccion[i] == inter)
                 {
                     dInterDer = nRaiz.direccion[i + 1];
                     return dInterDer;
@@ -637,9 +637,9 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
         {
             long dInterIzq = -1;
             Nodo nRaiz = dameNodo(dameRaiz());
-            for(int i = 0; i < nRaiz.direccion.Count; i++)
+            for (int i = 0; i < nRaiz.direccion.Count; i++)
             {
-                if(nRaiz.direccion[i] == inter)
+                if (nRaiz.direccion[i] == inter)
                 {
                     dInterIzq = nRaiz.direccion[i - 1];
                     return dInterIzq;
@@ -655,7 +655,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             {
                 if (inter.direccion[i] == dn)
                 {
-                    if(i == 0)
+                    if (i == 0)
                     {
                         dIzq = inter.direccion[i];
                         return dIzq;
@@ -665,7 +665,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
                         dIzq = inter.direccion[i - 1];
                         return dIzq;
                     }
-                    
+
                 }
             }
             return dIzq;
@@ -674,7 +674,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
         {
             long derecho = -1;
             Nodo inter = dameNodo(dInter);
-            for (int i = 0; i < inter.direccion.Count-1; i++)
+            for (int i = 0; i < inter.direccion.Count - 1; i++)
             {
                 if (inter.direccion[i] == dn)
                 {
@@ -689,11 +689,11 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             long direccion = -1;
             Nodo derecho = new Nodo();
             Nodo inter = dameNodo(dInter);
-            for(int i = 0; i < inter.direccion.Count-1; i++)
+            for (int i = 0; i < inter.direccion.Count - 1; i++)
             {
-                if( inter.direccion[i] == dn)
+                if (inter.direccion[i] == dn)
                 {
-                    if( dameNodo( inter.direccion[i+1] ).clave.Count > 2 )
+                    if (dameNodo(inter.direccion[i + 1]).clave.Count > 2)
                     {
                         direccion = inter.direccion[i + 1];
                         return direccion;
@@ -701,7 +701,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
                 }
             }
 
-            return direccion;   
+            return direccion;
         }
         public long pideIzquierdo(long dInter, long dn)
         {
@@ -712,7 +712,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             {
                 if (inter.direccion[i] == dn)
                 {
-                    if(i != 0)
+                    if (i != 0)
                     {
                         if (dameNodo(inter.direccion[i - 1]).clave.Count > 2)
                         {
@@ -720,7 +720,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
                             return direccion;
                         }
                     }
-                    
+
                 }
             }
 
@@ -806,7 +806,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             nIzquierda.clave.Add(intermedio.clave[0]);
             nIzquierda.direccion.Add(intermedio.direccion[0]);
             nIzquierda.direccion.Add(intermedio.direccion[1]);
-            if(nIzquierda.clave.Count == 4)
+            if (nIzquierda.clave.Count == 4)
             {
                 nIzquierda.sig = nIzquierda.direccion[nIzquierda.direccion.Count - 1];
             }
@@ -818,7 +818,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             // ELIMINA DE RAIZ
             //ordenaCinco(tempClaves, tempDir);
             bool band2 = eliminaRaizIzquierdo(inter, izquierda);
-            if(band2 == true)
+            if (band2 == true)
             {
                 Nodo R = dameNodo(dameRaiz());
                 this.Remove(R);
@@ -831,7 +831,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             }
 
 
-            
+
         }
         public bool fusionIzquierda(long actual, long izquierda, long inter)
         {
@@ -847,10 +847,10 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             // ELIMINA LOS DATOS DEL NODO DERECHO
             nActual.clave.RemoveAt(0);
             nActual.direccion.RemoveAt(0);
-           // nActual.direccion.RemoveAt(0);
+            // nActual.direccion.RemoveAt(0);
             //elimina del nodo intermedio
             bool band2 = eliminaIntermedio(inter, actual);
-            if(nActual.clave.Count == 0)
+            if (nActual.clave.Count == 0)
             {
                 this.Remove(nActual);
             }
@@ -870,7 +870,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             Nodo dDerecha = dameNodo(derecha);
             Nodo intermedio = dameNodo(inter);
             long izquierda, der;
-            for(int i = 0; i < dDerecha.clave.Count; i++)
+            for (int i = 0; i < dDerecha.clave.Count; i++)
             {
                 agregaDato(actual, dDerecha.clave[i], dDerecha.direccion[i]);
             }
@@ -887,15 +887,15 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             }
             else
                 return false;
-            
+
         }
-        public bool eliminaRaizIzquierdo(long inter,long izquierdo)
+        public bool eliminaRaizIzquierdo(long inter, long izquierdo)
         {
             Nodo nRaiz = dameNodo(dameRaiz());
             int c = 0;
-            foreach(long cont in nRaiz.direccion)
+            foreach (long cont in nRaiz.direccion)
             {
-                if(cont == inter)
+                if (cont == inter)
                 {
                     nRaiz.clave.RemoveAt(c - 1);
                     nRaiz.direccion.RemoveAt(c);
@@ -905,6 +905,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             }
             if (nRaiz.clave.Count == 0)
             {
+                Remove(nRaiz);
                 return true;
             }
             else
@@ -918,7 +919,7 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             {
                 if (cont == derecha)
                 {
-                    if(c == 0)
+                    if (c == 0)
                     {
                         intermedio.clave.RemoveAt(c);
                         intermedio.direccion.RemoveAt(c);
@@ -930,11 +931,11 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
                         intermedio.direccion.RemoveAt(c);
                         break;
                     }
-                    
+
                 }
                 c++;
             }
-            
+
             if (intermedio.clave.Count < 2)
             {
                 return true;
@@ -942,6 +943,55 @@ public bool eliminaNodo(long dNodo, int clave, long dClave)
             else
                 return false;
 
+        }
+        public void eliminaVacios()
+        {
+            foreach(Nodo np in this)
+            {
+                if(np.clave.Count == 0)
+                {
+                    Remove(np);
+                    break;
+                }
+            }
+        }
+        public void eliminaCeros()
+        {
+
+            foreach (Nodo np in this)
+            {
+                np.clave = np.clave.Distinct().ToList();
+                np.direccion = np.direccion.Distinct().ToList();
+               
+                foreach(long i in np.direccion)
+                {
+                    if ( i == 0 )
+                    {
+                        if(np.direccion[0] != 0)
+                        {
+                            np.direccion.Remove(i);
+                            break;
+                        }
+                           
+                    }
+               }
+                    
+                foreach (int i in np.clave)
+                {
+                    if (i == 0)
+                    {
+                        np.clave.Remove(i);
+                        break;
+                    }
+                }
+
+               if(np.direccion[np.direccion.Count-1] == np.sig)
+                {
+                    np.direccion.RemoveAt(np.direccion.Count-1);
+                }
+                
+            }
+            
         }
 
         #endregion
