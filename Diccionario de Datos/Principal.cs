@@ -861,9 +861,28 @@ namespace Diccionario_de_Datos
          	renglon = 0;
          	dataGridView4.Columns.Add("Dirección del Registro", "Dirección del Registro");
          	nuevoAtributo = true;
-         	imprimeAtributo(atributo);
+         	
+            Atributo iArbol = dameIndiceArbol(comboBox6.Text);
+            if(iArbol != null)
+            {
+                if (tree.Count > 0)
+                {
+                    if (tree.dameRaiz() != -1)
+                    {
+                        actualizaRaiz(tree.dameRaiz(), iArbol);
+                    }
 
-         	string n;
+                    else
+                    {
+                        actualizaRaiz(tree[0].dirNodo, iArbol);
+                    }
+                }
+                else
+                    actualizaRaiz(Convert.ToInt64(-1), iArbol);
+                
+            }
+            imprimeAtributo(atributo);
+            string n;
          	string nombre;
          	long DSIG = 0;
          	
@@ -1460,6 +1479,7 @@ namespace Diccionario_de_Datos
          	{
          		if(iSecundario != null)
          		{
+                    if( j < secundarios.Count)
          			if (dataGridView3.Columns[i].Name == secundarios[j]) /* Encuentra la columna para realizar el ordenamiento*/
          			{
                         pos2.Add(i);// = i;
@@ -1583,6 +1603,8 @@ namespace Diccionario_de_Datos
 
                     bw.Close();
                     bw.Close();
+                    bw.Close();
+                    bw.Close();
                     bw = new BinaryWriter(File.Open(comboBox6.Text+".dat",FileMode.Open)); 
                     bw.BaseStream.Position = bw.BaseStream.Length - 8-primero;
                     DSIGR = DR;
@@ -1618,7 +1640,14 @@ namespace Diccionario_de_Datos
             }
 
             if (iArbol != null)
-            insertaNodo(comboBox6.Text + ".idx", iArbol, posArbol);
+            {
+                br.Close();
+                bw.Close();
+                insertaNodo(comboBox6.Text + ".idx", iArbol, posArbol);
+                br.Close();
+                bw.Close();
+            }
+            
             //if(iSecundario != null)
             //insertaSecundario(indi, iSecundarios);
             bw.Close();
@@ -1673,26 +1702,34 @@ namespace Diccionario_de_Datos
         // METODO ENCARGADO DE ACTUALIZAR LA RAIZ EN EL ARBOL
         private void actualizaRaiz(long raiz, Atributo iArbol)
         {
+
+            bw.Close();
+
+            bw.Close();
+            bw.Close();
+            bw.Close();
+            bw.Close();
             bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
             bw.BaseStream.Position = iArbol.dameDireccion() + 30 + 1 + 4 + 8 + 5;
             bw.Write(Convert.ToInt64(raiz));
             bw.Close();
+            br.Close();
         }
         private void insertaNodo(string arch, Atributo iArbol, int posArbol)
         {
-        	br.Close();
-        	bw.Close();
-        	bool lleno = false;
-        	bool existeIntermedio = false;
-        	List<int> nodos = new List<int>();
-        	List<int> direcciones = new List<int>();
+            br.Close();
+            bw.Close();
+            bool lleno = false;
+            bool existeIntermedio = false;
+            List<int> nodos = new List<int>();
+            List<int> direcciones = new List<int>();
             List<int> tempClaves;// = new List<int>();
             List<long> tempDir;
-            
+
             for (int i = 0; i < dataGridView4.Rows.Count - 2; i++)
             {
-            	nodos.Add(Convert.ToInt32(dataGridView4.Rows[i].Cells[posArbol + 1].Value));
-            	direcciones.Add(Convert.ToInt32(dataGridView4.Rows[i].Cells[0].Value));
+                nodos.Add(Convert.ToInt32(dataGridView4.Rows[i].Cells[posArbol + 1].Value));
+                direcciones.Add(Convert.ToInt32(dataGridView4.Rows[i].Cells[0].Value));
             }
             /* AQUI LA LISTA YA FUNCIONA DE ENTEROS */
             //  bw = new BinaryWriter(File.Open(comboBox6.Text + ".idx", FileMode.Open));
@@ -1700,35 +1737,35 @@ namespace Diccionario_de_Datos
             Arbol arbol = new Arbol();
             Nodo anterior = new Nodo();
             if (direcciones[0] == 0)
-            direcciones[0] = 1;
+                direcciones[0] = 1;
             Nodo nuevo;// = new Nodo();
             long dirRaiz = 0;
             nuevo = new Nodo();
             for (int i = 0; i < nodos.Count; i++)
             {
-            	dirRaiz = arbol.dameRaiz();
-            	if (dirRaiz == -1)
-            	{
-            		if (lleno == false)
-            		{
-            			if (arbol.Count == 0)
-            			{
+                dirRaiz = arbol.dameRaiz();
+                if (dirRaiz == -1)
+                {
+                    if (lleno == false)
+                    {
+                        if (arbol.Count == 0) // CUANDO EL ARBOL YA ESTÁ VACIO
+                        {
 
-            				nuevo = arbol.creaNodo(nuevo, dameTamArchivo());
-            				arbol.Add(nuevo);
-            				lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i], direcciones[i]);
-            			}
-            			else
-            			{
-            				lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i], direcciones[i]);
-            				anterior = nuevo;
-            			}
-            		}
-            		if (lleno == true)
-            		{
+                            nuevo = arbol.creaNodo(nuevo, dameTamArchivo());
+                            arbol.Add(nuevo);
+                            lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i], direcciones[i]);
+                        }
+                        else
+                        {
+                            lleno = arbol.agregaDato(nuevo.dirNodo, nodos[i], direcciones[i]);
+                            anterior = nuevo;
+                        }
+                    }
+                    if (lleno == true) // El nodo se llena y se procede a crear la raiz
+                    {
 
-            			nuevo = new Nodo();
-                        nuevo = arbol.creaNodo(nuevo, dameTamArchivo()); //se asigna dirección al nodo
+                        nuevo = new Nodo();
+                        nuevo = arbol.creaNodo(nuevo, arbol[arbol.Count - 1].dirNodo + 65); //se asigna dirección al nodo
                         anterior.sig = nuevo.dirNodo;                                   //se apunta el anterior al siguiente
                         arbol.Add(nuevo);
                         tempClaves = new List<int>();
@@ -1737,9 +1774,9 @@ namespace Diccionario_de_Datos
 
                         for (int aux = 2; aux < anterior.clave.Count; aux++)
                         {
-                        	tempClaves.Add(anterior.clave[aux]);
+                            tempClaves.Add(anterior.clave[aux]);
 
-                        	tempDir.Add(anterior.direccion[aux]);
+                            tempDir.Add(anterior.direccion[aux]);
 
                         }
 
@@ -1755,7 +1792,7 @@ namespace Diccionario_de_Datos
                         /*Se agregan los ultimos 3 datos al nuevo nodo */
                         for (int aux = 0; aux < tempClaves.Count; aux++)
                         {
-                        	lleno = arbol.agregaDato(nuevo.dirNodo, tempClaves[aux], tempDir[aux]);
+                            lleno = arbol.agregaDato(nuevo.dirNodo, tempClaves[aux], tempDir[aux]);
                         }
                         /*Crear nodo raiz */
                         anterior = nuevo;
@@ -1776,15 +1813,15 @@ namespace Diccionario_de_Datos
                     long dir = arbol.buscaNodo(nodos[i]);                   // funcion que te dice en que nodo se insertara la clave
                     long raiz = arbol.dameRaiz();                           // Dirección de raiz    
                     Nodo actual = arbol.dameNodo(dir);                      // Nodo que se va a modificar
-                    
+
                     lleno = arbol.agregaDato(dir, nodos[i], direcciones[i]);  // NODO LLENO
-                    
+
                     if (lleno == true)  // se crea nuevo nodo y se agrega a raiz
                     {
-                    	long dirAnt;
-                    	dirAnt = actual.dirNodo;
-                    	nuevo = new Nodo();
-                        nuevo = arbol.creaNodo(nuevo, arbol[arbol.Count-1].dirNodo + 65);         //se asigna dirección al nodo
+                        long dirAnt;
+                        dirAnt = actual.dirNodo;
+                        nuevo = new Nodo();
+                        nuevo = arbol.creaNodo(nuevo, arbol[arbol.Count - 1].dirNodo + 65);         //se asigna dirección al nodo
                         nuevo.sig = actual.sig;
                         actual.sig = nuevo.dirNodo;                         // se apunta el anterior al siguiente
                         arbol.Add(nuevo);
@@ -1792,14 +1829,14 @@ namespace Diccionario_de_Datos
                         tempDir = new List<long>();
                         for (int aux = 0; aux < actual.clave.Count; aux++)
                         {
-                        	tempClaves.Add(actual.clave[aux]);
-                        	tempDir.Add(actual.direccion[aux]);
+                            tempClaves.Add(actual.clave[aux]);
+                            tempDir.Add(actual.direccion[aux]);
                         }
                         /*Remueve los ultimos 2 elementos del nodo porque se pasaron a uno nuevo*/
-                        
+
                         /*Se añanade a una lista de 5 datos el nuevo a insertar*/
                         tempClaves.Add(nodos[i]);
-                        
+
                         tempDir.Add(direcciones[i]);
                         arbol.ordenaCinco(tempClaves, tempDir);
                         actual.clave.Clear();
@@ -1808,15 +1845,16 @@ namespace Diccionario_de_Datos
                         arbol.agregaDato(actual.dirNodo, tempClaves[1], tempDir[1]);
 
 
-                       // actual.clave.Add(tempClaves[1]);
-                       // actual.clave.RemoveAt(3);
-                       // actual.clave.RemoveAt(2);
+                        // actual.clave.Add(tempClaves[1]);
+                        // actual.clave.RemoveAt(3);
+                        // actual.clave.RemoveAt(2);
                         //actual.direccion.RemoveAt(3);
-                       // actual.direccion.RemoveAt(2);
-                        
+                        // actual.direccion.RemoveAt(2);
+
                         /*Se agregan los ultimos 3 datos al nuevo nodo */
-                        for (int aux = 2; aux < tempClaves.Count; aux++){
-                        	lleno = arbol.agregaDato(nuevo.dirNodo, tempClaves[aux], tempDir[aux]);
+                        for (int aux = 2; aux < tempClaves.Count; aux++)
+                        {
+                            lleno = arbol.agregaDato(nuevo.dirNodo, tempClaves[aux], tempDir[aux]);
                         }
                         /**************************************************************************************************************************/
                         /**************************************************************************************************************************/
@@ -1828,43 +1866,45 @@ namespace Diccionario_de_Datos
                         /**************************************************************************************************************************/
                         actualizaRaiz(arbol.dameRaiz(), iArbol);
                         existeIntermedio = arbol.existeIntermedio();
-                        if(existeIntermedio == false)
+                        if (existeIntermedio == false)
                         {
-                            lleno = arbol.agregaDato(raiz, tempClaves[2], arbol[arbol.Count-1].dirNodo); // 0 PORQUE ES EL VALOR CENTRAL, QUE VA A RAIZ
-                            if(arbol.dameNodo(arbol.dameRaiz()).clave.Count == 4)
+                            lleno = arbol.agregaDato(raiz, tempClaves[2], arbol[arbol.Count - 1].dirNodo); // 0 PORQUE ES EL VALOR CENTRAL, QUE VA A RAIZ
+                            if (arbol.dameNodo(arbol.dameRaiz()).clave.Count == 4)
                             {
-                            	Nodo rtemp = new Nodo();
-                            	rtemp = arbol.dameNodo(arbol.dameRaiz());
-                            	rtemp.sig = rtemp.direccion[4];
+                                Nodo rtemp = new Nodo();
+                                rtemp = arbol.dameNodo(arbol.dameRaiz());
+                                rtemp.sig = rtemp.direccion[4];
                             }
                             arbol.ordenaRaiz();
-                            
+
                             if (lleno == true) //RAIZ llena 
                             {
-                                  //tempClaves[2] es el valor que se iba a enviar a la raiz
-                            	raiz = arbol.dameRaiz();
-                            	Nodo nRaiz = arbol.dameNodo(raiz);
+                                //tempClaves[2] es el valor que se iba a enviar a la raiz
+                                raiz = arbol.dameRaiz();
+                                Nodo nRaiz = arbol.dameNodo(raiz);
                                 int nDato = tempClaves[2];                        // clave a enviar a raíz
                                 long dDato = arbol[arbol.Count - 1].dirNodo;        // dirección del nuevo nodo
-                               // nuevo.clave[0] = actual.clave[1];
-                               // nuevo.direccion[0] = actual.direccion[1];
-                               // actual.clave[1] =  tempClaves[0];
-                               // actual.direccion[1] = tempDir[0];
-                                
+                                                                                    // nuevo.clave[0] = actual.clave[1];
+                                                                                    // nuevo.direccion[0] = actual.direccion[1];
+                                                                                    // actual.clave[1] =  tempClaves[0];
+                                                                                    // actual.direccion[1] = tempDir[0];
+
                                 tempClaves = new List<int>();
                                 tempDir = new List<long>();
-                                
-                                foreach (int n in nRaiz.clave){
-                                	tempClaves.Add(n);
+
+                                foreach (int n in nRaiz.clave)
+                                {
+                                    tempClaves.Add(n);
                                 }
-                                foreach (long l in nRaiz.direccion){
-                                	tempDir.Add(l);
+                                foreach (long l in nRaiz.direccion)
+                                {
+                                    tempDir.Add(l);
                                 }
-                                
+
                                 tempClaves.Add(nDato);
                                 tempDir.Add(dDato);
                                 arbol.ordenaCinco(tempClaves, tempDir);
-                                
+
                                 /************** LISTO PARA ASIGNAR Y QUITAR CLAVES A LA RAIZ  ************************/
                                 /*crear nuevo nodo  */
                                 Nodo intermedio = new Nodo();
@@ -1879,7 +1919,7 @@ namespace Diccionario_de_Datos
                                 intermedio.direccion.Add(tempDir[3]);
                                 intermedio.direccion.Add(tempDir[4]);
                                 intermedio.direccion.Add(tempDir[5]);
-                                
+
                                 arbol.ordenaIntermedio(intermedio.dirNodo);
                                 /*Remueve los ultimos 2 elementos del nodo porque se pasaron a uno nuevo*/
 
@@ -1904,116 +1944,116 @@ namespace Diccionario_de_Datos
 
                         if (existeIntermedio == true) // Si existe intermedio
                         {
-                           // MessageBox.Show("Creacion de nodo intermedio");
-                        	long dirIntermedio = arbol.dameIntermedio(nuevo.clave[0]);
+                            // MessageBox.Show("Creacion de nodo intermedio");
+                            long dirIntermedio = arbol.dameIntermedio(nuevo.clave[0]);
 
-                        	Nodo inter;
-                        	int temp;
-                        	long temp2;
-                        	Nodo este = arbol.dameNodo(dirIntermedio);
-                        	
-                        	lleno = arbol.agregaDato(dirIntermedio,tempClaves[0], arbol[arbol.Count - 1].dirNodo);
-                        	
-                        	temp = este.clave[0];
-                        	este.clave[0] = este.clave[1];
-                        	este.clave[1] = temp;
+                            Nodo inter;
+                            int temp;
+                            long temp2;
+                            Nodo este = arbol.dameNodo(dirIntermedio);
 
-                        	temp2 = este.direccion[1];
-                        	este.direccion[1] = este.direccion[2];
-                        	este.direccion[2] = temp2;
-                        	arbol.ordenaIntermedio(este.dirNodo);
-                        	if(este.clave.Count == 4)
-                        	{
-                        		este.sig = este.direccion[4];
-                        	}
-                        	
+                            lleno = arbol.agregaDato(dirIntermedio, tempClaves[0], arbol[arbol.Count - 1].dirNodo);
+
+                            temp = este.clave[0];
+                            este.clave[0] = este.clave[1];
+                            este.clave[1] = temp;
+
+                            temp2 = este.direccion[1];
+                            este.direccion[1] = este.direccion[2];
+                            este.direccion[2] = temp2;
+                            arbol.ordenaIntermedio(este.dirNodo);
+                            if (este.clave.Count == 4)
+                            {
+                                este.sig = este.direccion[4];
+                            }
+
                             /// SI EL NODO INTERMEDIO SE LLENA, SE CREA OTRO Y SE PASA LA DIRECCION A LA RAIZ
                             /// 
 
-                        	if (lleno == true)
-                        	{
-                        		int nDato = este.clave[2];
-                        		long dDato = este.dirNodo;
-                        		
+                            if (lleno == true)
+                            {
+                                int nDato = este.clave[2];
+                                long dDato = este.dirNodo;
+
                                 //int nDato = actual.clave[1];                        // clave a enviar a raíz
-                               // long dDato = arbol[arbol.Count - 1].dirNodo;        // dirección del nuevo nodo
+                                // long dDato = arbol[arbol.Count - 1].dirNodo;        // dirección del nuevo nodo
                                 //nuevo.clave[0] = actual.clave[1];
                                 //nuevo.direccion[0] = actual.direccion[1];
                                 //actual.clave[1] = tempClaves[0];
                                 //actual.direccion[1] = tempDir[0];
-                        		
-                        		
 
 
-                        		raiz = arbol.dameRaiz();
-                        		Nodo nRaiz = arbol.dameNodo(raiz);
-                        		tempClaves = new List<int>();
-                        		tempDir = new List<long>();
-                        		foreach (int c in este.clave)
-                        		tempClaves.Add(c);
-                        		foreach (long l in este.direccion)
-                        		tempDir.Add(l);
+
+
+                                raiz = arbol.dameRaiz();
+                                Nodo nRaiz = arbol.dameNodo(raiz);
+                                tempClaves = new List<int>();
+                                tempDir = new List<long>();
+                                foreach (int c in este.clave)
+                                    tempClaves.Add(c);
+                                foreach (long l in este.direccion)
+                                    tempDir.Add(l);
 
 
                                 //tempClaves.Add(nDato);
-                        		tempDir.Add(dDato);
-                        		arbol.ordenaCinco(tempClaves, tempDir);
+                                tempDir.Add(dDato);
+                                arbol.ordenaCinco(tempClaves, tempDir);
                                 /************** LISTO PARA ASIGNAR Y QUITAR CLAVES A LA RAIZ  ************************/
 
 
-                        		inter = arbol.dameNodo(dirIntermedio);
-                        		
+                                inter = arbol.dameNodo(dirIntermedio);
+
                                 /*crear nuevo nodo  */
-                        		Nodo intermedio = new Nodo();
+                                Nodo intermedio = new Nodo();
 
-                        		intermedio = arbol.creaNodo(intermedio, arbol[arbol.Count - 1].dirNodo + 65);
-                        		intermedio.tipo = 'I';
-                        		inter.sig = intermedio.dirNodo;
-                        		arbol.Add(intermedio);
+                                intermedio = arbol.creaNodo(intermedio, arbol[arbol.Count - 1].dirNodo + 65);
+                                intermedio.tipo = 'I';
+                                inter.sig = intermedio.dirNodo;
+                                arbol.Add(intermedio);
 
-                        		intermedio.clave.Add(tempClaves[3]);
-                               // long dirAux = arbol.buscaNodo(nuevo.clave[0]);
-                        		intermedio.clave.Add(nuevo.clave[0]);
+                                intermedio.clave.Add(tempClaves[3]);
+                                // long dirAux = arbol.buscaNodo(nuevo.clave[0]);
+                                intermedio.clave.Add(nuevo.clave[0]);
                                 //intermedio.clave.Add(tempClaves[1]);
                                 //intermedio.clave.Add(tempClaves[2]);
                                 //intermedio.clave.Add(tempClaves[3]);
-                        		
 
 
-                        		intermedio.direccion.Add(tempDir[5]);
-                        		intermedio.direccion.Add(tempDir[4]);
-                        		intermedio.direccion.Add(nuevo.dirNodo);
-                               // intermedio.direccion.Add(este.direccion[3]);
+
+                                intermedio.direccion.Add(tempDir[5]);
+                                intermedio.direccion.Add(tempDir[4]);
+                                intermedio.direccion.Add(nuevo.dirNodo);
+                                // intermedio.direccion.Add(este.direccion[3]);
                                 //intermedio.direccion.Add(tempDir[3]);
-                               // intermedio.direccion.Add(tempDir[4]);
+                                // intermedio.direccion.Add(tempDir[4]);
 
-                        		arbol.ordenaIntermedio(intermedio.dirNodo);
+                                arbol.ordenaIntermedio(intermedio.dirNodo);
                                 //intermedio.direccion.Add(inter.direccion[3]);
                                 // intermedio.direccion.Add(inter.direccion[2]);
 
                                 /* QUITAR CLAVES  2,3 4 DEL INTERMEDIO ANTERIOR*/
-                               // inter.clave.RemoveAt(4);
-                        		inter.clave.RemoveAt(3);
-                        		inter.clave.RemoveAt(2);
-                        		inter.direccion.RemoveAt(4);
-                        		inter.direccion.RemoveAt(3);
+                                // inter.clave.RemoveAt(4);
+                                inter.clave.RemoveAt(3);
+                                inter.clave.RemoveAt(2);
+                                inter.direccion.RemoveAt(4);
+                                inter.direccion.RemoveAt(3);
                                 //inter.direccion.RemoveAt(2);
                                 // inter.direccion.RemoveAt(3);
 
                                 /*Agregar intermedio a raiz*/
 
-                        		long dR = arbol.dameRaiz();
-                        		Nodo nR = arbol.dameNodo(dR);
-                        		if(nR.clave.Count < 4)
-                        		{
+                                long dR = arbol.dameRaiz();
+                                Nodo nR = arbol.dameNodo(dR);
+                                if (nR.clave.Count < 4)
+                                {
                                     //nR.direccion.Add(inter.dirNodo);
-                        			nR.clave.Add(tempClaves[2]);
-                        			nR.direccion.Add(intermedio.dirNodo);
-                        			arbol.ordenaRaiz();
-                        		}
-                        		
-                        	}
-                        	
+                                    nR.clave.Add(tempClaves[2]);
+                                    nR.direccion.Add(intermedio.dirNodo);
+                                    arbol.ordenaRaiz();
+                                }
+
+                            }
+
                         }
                         /*****************************************************************************
                          * RAIZ LLENA
@@ -2022,11 +2062,11 @@ namespace Diccionario_de_Datos
                          *****************************************************************************/
                         actualizaRaiz(arbol.dameRaiz(), iArbol);
                     }
-                 }                
-             }
-            
-             tree = arbol;
-            if(arbol.dameRaiz() == -1)
+                }
+            }
+
+            tree = arbol;
+            if (arbol.dameRaiz() == -1)
                 actualizaRaiz(arbol[0].dirNodo, iArbol);
             else
                 actualizaRaiz(arbol.dameRaiz(), iArbol);
@@ -2034,9 +2074,9 @@ namespace Diccionario_de_Datos
             // METODO PARA GUARDAR EN ARCHIVO
             guardaArbol();
             //saveTree();
-         }
+        }
 
-         public void saveTree()
+        public void saveTree()
          {
             bw.Close();
             br.Close();
@@ -2060,8 +2100,15 @@ namespace Diccionario_de_Datos
          {
          	bw.Close();
          	br.Close();
-         	bw = new BinaryWriter(File.Open(comboBox6.Text+".idx",FileMode.Create));
-         	bw.BaseStream.Position = 0;
+            Atributo iSecundario = dameIndiceSecundario(comboBox6.Text);
+            
+            bw = new BinaryWriter(File.Open(comboBox6.Text+".idx",FileMode.Create));
+            if (iSecundario != null)
+                imprimeSecundario(comboBox6.Text);
+
+            bw.Close();
+            bw = new BinaryWriter(File.Open(comboBox6.Text + ".idx", FileMode.Open));
+            bw.BaseStream.Position = TAMSEC;
          	for(int i = 0; i < tablaArbol.Rows.Count-1;i++)
          	{
          		for(int j = 0; j < tablaArbol.Columns.Count; j++)
@@ -2102,33 +2149,38 @@ namespace Diccionario_de_Datos
           {
                 foreach (Nodo nodo in arbol)
                 {
-                    k = 0;
-                    tablaArbol.Rows.Add();
-                    for (int j = 0; j < tablaArbol.Columns.Count; j++)
+                    if(nodo.dirNodo != -1)
                     {
-                        if (j == 0)
+                        k = 0;
+                        tablaArbol.Rows.Add();
+                        for (int j = 0; j < tablaArbol.Columns.Count; j++)
                         {
-                            tablaArbol.Rows[i].Cells[j].Value = nodo.dirNodo;
-                        }
-                        if (j == 1)
-                        {
-                            tablaArbol.Rows[i].Cells[j].Value = nodo.tipo;
+                            if (j == 0)
+                            {
+                                tablaArbol.Rows[i].Cells[j].Value = nodo.dirNodo;
+                            }
+                            if (j == 1)
+                            {
+                                tablaArbol.Rows[i].Cells[j].Value = nodo.tipo;
 
+                            }
+                            if (j > 1 && j < tablaArbol.Columns.Count - 1)
+                            {
+                                if (k < nodo.direccion.Count)
+                                    tablaArbol.Rows[i].Cells[j].Value = nodo.direccion[k];
+                                j++;
+                                if (k < nodo.clave.Count)
+                                    tablaArbol.Rows[i].Cells[j].Value = nodo.clave[k];
+                                k++;
+                            }
+                            if (j == tablaArbol.Columns.Count - 1)
+                                tablaArbol.Rows[i].Cells[j].Value = nodo.sig;
                         }
-                        if (j > 1 && j < tablaArbol.Columns.Count - 1)
-                        {
-                            if (k < nodo.direccion.Count)
-                                tablaArbol.Rows[i].Cells[j].Value = nodo.direccion[k];
-                            j++;
-                            if (k < nodo.clave.Count)
-                                tablaArbol.Rows[i].Cells[j].Value = nodo.clave[k];
-                            k++;
-                        }
-                        if (j == tablaArbol.Columns.Count - 1)
-                            tablaArbol.Rows[i].Cells[j].Value = nodo.sig;
+
+                        i++;
+
                     }
-
-                    i++;
+                    
 
                 }
                 tree = arbol;
@@ -2144,11 +2196,13 @@ namespace Diccionario_de_Datos
       bw.Close();
       Secundario s;
       Atributo iSecundario = new Atributo();
+            Atributo iPrimario = dameIndicePrimario(comboBox6.Text);
       int pos = 0;
       poSI = 0;
       int j = 0;
       for (int i = 0; i < dataGridView3.Columns.Count; i++)
       {
+          if(j < secundarios.Count)
          if(dataGridView3.Columns[i].Name == secundarios[j])
          {
             iSecundarios.Add(i);
@@ -2157,9 +2211,13 @@ namespace Diccionario_de_Datos
                 poSI = TAMSEC *j;
                 iSecundario = dameIndiceSecundario(comboBox6.Text,secundarios[j]);
                 bw = new BinaryWriter(File.Open(nArchivo, FileMode.Open));
-                TAMPRIM = (4 + 8) * 20;
+                            if (iPrimario != null)
+                                TAMPRIM = (4 + 8) * 20;
+                            else
+                                TAMPRIM = 0;
                 bw.BaseStream.Position = iSecundario.dameDireccion() + 30 + 1 + 4 + 8 + 5;
                 if (j == 0)
+
                             bw.Write(Convert.ToInt64(TAMPRIM)); //bw.Write(primario[0].dirVal);
                             else
                             bw.Write(Convert.ToUInt64(TAMSEC * j));
@@ -2288,11 +2346,14 @@ u++;
 }
         public long dameTamArchivo()
         {
+            Atributo iSecundario = dameIndiceSecundario(comboBox6.Text);
             long dir = 0;
             bw.Close();
             br.Close();
             br = new BinaryReader(File.Open(comboBox6.Text+".idx",FileMode.Open));
-            dir = br.BaseStream.Length;
+            dir = 0;
+            if (iSecundario != null)
+                dir = TAMSEC;
             bw.Close();
             br.Close();
             return dir;
@@ -3684,6 +3745,7 @@ primero += 16;
          {
              if (iSecundario != null)
              {
+                if(j < secundarios.Count)
                 if (dataGridView3.Columns[i].Name == secundarios[j]) /* Encuentra la columna para realizar el ordenamiento*/
                 {
                    posSecundario = i;
@@ -3711,7 +3773,11 @@ primero += 16;
      }
      calculaTam(dato);
      if (iArbol != null)
-     button12_Click(this, null);
+        {
+                //button12_Click(this, null);
+                imprimeArbol(tree);
+            }
+        
          	    //insertaNodo(comboBox6.Text + ".idx", null,0);
 
  }
@@ -4323,6 +4389,8 @@ if(elimina.ShowDialog() == DialogResult.OK)
                 if(iArbol != null)
                 {
                     eliminaNodo(claveA, direccionRegistro);
+                    imprimeArbol(tree);
+                    guardaArbol();
                    // button12_Click(this, null);
 
                 }
@@ -4355,13 +4423,15 @@ if(elimina.ShowDialog() == DialogResult.OK)
                 Nodo temp = tree.dameNodo(dNodo);
                 if(temp.clave.Count == 0)
                 {
-                    temp.direccion.Clear();
+               //     temp.dirNodo = -1;
+               //     guardaArbol();
+               //     temp.direccion.Clear();
                     tree.Remove(temp);
                 }
             }
             else
             {
-                if (tree.existeIntermedio() == false)
+                if (tree.existeIntermedio() == false)   // RAIZ CON NODOS HOJA
                 {
                  //  MessageBox.Show("No hay nodo intermedio");
                     dNodo = tree.buscaNodo(clave);
@@ -4377,11 +4447,29 @@ if(elimina.ShowDialog() == DialogResult.OK)
                         izquierda = tree.pideIzquierdo(tree.dameRaiz(), dNodo);
                         if(derecha != -1)
                         {
+                            // ******************************************************************************************** ACTUALIZACION 2:00 AM
+                            der = tree.dameNodo(derecha);
+                            int cl = der.clave[0];
+                            tree.agregaDato(dNodo,der.clave[0],der.direccion[0]);
+                            
+                            tree.actualizaRaizDerecho(derecha);
+                            der.clave.RemoveAt(0);
+                            der.direccion.RemoveAt(0);
+                            imprimeArbol(tree);
+                            guardaArbol();
+                        
 
                         }
                         else if(izquierda != -1)
                         {
-
+                            izq = tree.dameNodo(izquierda);
+                            int cl = izq.clave[izq.clave.Count - 1];
+                            tree.agregaDato(dNodo, izq.clave[izq.clave.Count - 1], izq.direccion[izq.direccion.Count - 1]);
+                            tree.actualizaRaizIzquierdo(izquierda);
+                            izq.clave.RemoveAt(izq.clave.Count - 1);
+                            izq.direccion.RemoveAt(izq.clave.Count - 1);
+                            imprimeArbol(tree);
+                            guardaArbol();
                         }
                         else
                         {
@@ -4392,7 +4480,18 @@ if(elimina.ShowDialog() == DialogResult.OK)
                                 swap = tree.fusionDerecha(dNodo, derecha, tree.dameRaiz());
                                 if(swap == true)
                                 {
-
+                                    Nodo temp = tree.dameNodo(derecha);
+                                    temp.tipo = 'H';
+                                    temp.sig = -1;
+                                    Nodo nRaiz = tree.dameNodo(tree.dameRaiz());
+                                    if (nRaiz.clave.Count == 0)
+                                    {
+                                      //  nRaiz.dirNodo = -1;
+                                       // guardaArbol();
+                                        tree.Remove(nRaiz);
+                                      //  guardaArbol();
+                                    }
+                                        
                                 }
                                 else
                                 {
@@ -4427,7 +4526,7 @@ if(elimina.ShowDialog() == DialogResult.OK)
                 {
                    // MessageBox.Show("Si hay nodo intermedio");
 
-                    dNodo = tree.buscaNodo(clave);
+                    dNodo = tree.buscaNodoE(clave);
                     modifica = tree.eliminaNodo(dNodo, clave, dir);
                     if (modifica == false)
                     {
@@ -4443,6 +4542,15 @@ if(elimina.ShowDialog() == DialogResult.OK)
                         izquierda = tree.pideIzquierdo(dIntermedio,dNodo);
                         if(derecha != -1)
                         {
+                           
+                            der = tree.dameNodo(derecha);
+                            int cl = der.clave[0];
+                            tree.agregaDato(dNodo, der.clave[0], der.direccion[0]);
+                            der.clave.RemoveAt(0);
+                            der.direccion.RemoveAt(0);
+                            Intermedio.clave.RemoveAt(0);
+                            Intermedio.clave.Add(cl);
+                            Intermedio.clave.Sort();
 
                         }
                         else if(izquierda != -1)
@@ -4486,7 +4594,7 @@ if(elimina.ShowDialog() == DialogResult.OK)
                                         derecha = tree.existeIntermedioDerecho(dIntermedio);
                                         if(derecha != -1)
                                         {
-
+                                            
                                         }
                                         else if(izquierda != -1)
                                         {
@@ -4497,9 +4605,14 @@ if(elimina.ShowDialog() == DialogResult.OK)
 
 
                                                 Intermedio = tree.dameNodo(izquierda);
-                                                int d = 0;
+                                              
                                                 Intermedio.tipo = 'R';
-                                                
+                                                Intermedio.sig = -1;
+                                                //Intermedio.sig = Intermedio.direccion[Intermedio.direccion.Count - 1];
+                                                //Intermedio.direccion.Add(Intermedio.sig);
+                                                imprimeArbol(tree);
+                                               
+                                                guardaArbol();
 
                                             }
                                             else
@@ -4526,15 +4639,22 @@ if(elimina.ShowDialog() == DialogResult.OK)
             }
 
             // saveTree();
+            imprimeArbol(tree);
+            guardaArbol();
             if (tree.dameRaiz() == -1)
             {
-                actualizaRaiz(tree[0].dirNodo, iArbol);
+                
+                if (tree.Count > 0)
+                    actualizaRaiz(tree[0].dirNodo, iArbol);
+                else
+                    actualizaRaiz(Convert.ToInt64(-1), iArbol);
             }
             else
                 actualizaRaiz(arbol.dameRaiz(), iArbol);
             tree.eliminaVacios();
+          
             imprimeArbol(tree);
-            guardaArbol();
+            
             
             
             
@@ -5125,12 +5245,36 @@ if(elimina.ShowDialog() == DialogResult.OK)
 
             bw.Close();
             br.Close();
+            
             Atributo iArbol = dameIndiceArbol(comboBox6.Text);
+            if(iArbol != null)
+            {
+                if(tree != null)
+                {
+                    if (tree.Count > 0)
+                    {
+                        if (tree.dameRaiz() != -1)
+                        {
+                            actualizaRaiz(tree.dameRaiz(), iArbol);
+                        }
+
+                        else
+                        {
+                            actualizaRaiz(tree[0].dirNodo, iArbol);
+                        }
+                    }
+                }
+                
+                
+            }
+           
+            
             if (tree != null)
                 tree.Clear();
             else
                 tree = new Arbol();
             br = new BinaryReader(File.Open(comboBox6.Text + ".idx", FileMode.Open));
+            br.BaseStream.Position = TAMSEC;
             int i = 0;
             int j = 0;
             while (br.BaseStream.Position < br.BaseStream.Length)
@@ -5155,8 +5299,8 @@ if(elimina.ShowDialog() == DialogResult.OK)
 
             }
             tree.eliminaCeros();
-            actualizaRaiz(tree.dameRaiz(), iArbol);
-            imprimeArbol(tree);
+          //  actualizaRaiz(tree.dameRaiz(), iArbol);
+           // imprimeArbol(tree);
             /*
 
             bw.Close();

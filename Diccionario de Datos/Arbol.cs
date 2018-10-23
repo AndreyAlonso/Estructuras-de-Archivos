@@ -133,9 +133,22 @@ namespace Diccionario_de_Datos
                             return n.direccion[i];
                         }
 
-                        else if (i == n.clave.Count - 1)
+                        else if (i == n.clave.Count - 1) // if (i == n.clave.Count - 1) 
                         {
-                            return n.direccion[i]; // i + 1
+                            if (i == n.direccion.Count - 1) // (i == n.direccion.Count)
+                            {
+                             //   n.sig = n.direccion[n.direccion.Count - 1];
+                                return n.direccion[i+1]; // i 
+                            }
+                                
+                            else
+                                try
+                                {
+                                    return n.direccion[i + 1];// n.direccion[i + 1];
+                                }
+                                catch { return n.sig; }//n.sig;
+                                //return n.sig;
+                            //return n.direccion[i+1]; // i 
                         }
 
 
@@ -171,10 +184,13 @@ namespace Diccionario_de_Datos
 
                                 return inter2.direccion[i];
                             }
-
-                            else if (i == inter2.clave.Count - 1)
+                            
+                            else if (i == n.clave.Count - 1)
                             {
-                                return inter2.direccion[i + 1];
+                                if (i == n.direccion.Count - 1)
+                                    return n.direccion[i]; // i 
+                                else
+                                    return n.direccion[i + 1];
                             }
 
 
@@ -467,6 +483,32 @@ namespace Diccionario_de_Datos
 
         #region ELIMINA CLAVES
         // ALGORITMOS PARA LA ELIMINACIÓN
+        public void actualizaRaizDerecho(long derecho)
+        {
+            Nodo der = dameNodo(derecho);
+            Nodo nRaiz = dameNodo(dameRaiz());
+            for(int i =0; i < nRaiz.direccion.Count; i++)
+            {
+                if(nRaiz.direccion[i+1] == derecho)
+                {
+                    nRaiz.clave[i] = der.clave[i+1];
+                    break;
+                }
+            }
+        }
+        public void actualizaRaizIzquierdo(long izquierda)
+        {
+            Nodo izq = dameNodo(izquierda);
+            Nodo nRaiz = dameNodo(dameRaiz());
+            for(int i = 0; i < nRaiz.direccion.Count; i++)
+            {
+                if(nRaiz.direccion[i] == izquierda)
+                {
+                    nRaiz.clave[i] = izq.clave[izq.clave.Count-1];
+                    break;
+                }
+            }
+        }
         public bool eliminaNodo(long dNodo, int clave, long dClave)
         {
             bool band = false;
@@ -541,7 +583,10 @@ namespace Diccionario_de_Datos
 
                         else if (i == n.clave.Count - 1)
                         {
-                            return n.direccion[i + 1];
+                            if (i == n.direccion.Count-1)
+                                return n.direccion[i]; // i 
+                            else
+                                return n.direccion[i + 1];
                         }
 
 
@@ -588,14 +633,143 @@ namespace Diccionario_de_Datos
                     }
 
                 }
-                else
-                {
-                    return this[0].dirNodo;
-                }
             }
 
-
+            /*
+            bool intermedio = false;
+            intermedio = existeIntermedio();
+            List<int> ClavesIntermedio = new List<int>();
+            List<long> DirIntermedio = new List<long>();
+            int total = totalIntermedio();
+            int cont = 0;
+            long dirInter = 0;
+            Nodo inter, inter2 = new Nodo();
+            if (dameRaiz() == -1)
+            {
+                return -1;
+            }
+            else if(intermedio == false && dameRaiz() != -1 )  // Hay raiz pero no hay intermedio
+            {
+                foreach (Nodo n in this)
+                {
+                    if (n.tipo == 'R')
+                    {
+                        for (int i = 0; i < n.clave.Count; i++)
+                        {
+                            if (clave < n.clave[i])
+                            {
+                                return n.direccion[i];
+                            }
+                            else if (i == n.clave.Count - 1)
+                            {
+                                return n.direccion[i + 1];
+                            }
+                        }
+                    }
+                }
+            }
+            else if(intermedio == true && dameRaiz() != -1 )
+            {
+                foreach (Nodo n in this)
+                {
+                    if (n.tipo == 'R')
+                    {
+                        for (int i = 0; i < n.clave.Count; i++)
+                        {
+                            if (clave < n.clave[i])
+                            {
+                                dirInter = n.direccion[i];
+                                inter = dameNodo(dirInter);
+                                for (int j = 0; j < inter.clave.Count; j++)
+                                {
+                                    if (clave < inter.clave[j])
+                                    {
+                                        return inter.direccion[j];
+                                    }
+                                    else if (j == inter.clave.Count - 1)
+                                    {
+                                        return inter.direccion[j+1];
+                                    }
+                                }
+                            }
+                            else if (i == n.clave.Count - 1)
+                            {
+                                dirInter = n.direccion[i + 1];
+                                inter = dameNodo(dirInter);
+                                for (int j = 0; j < inter.clave.Count; j++)
+                                {
+                                    if (clave < inter.clave[j])
+                                    {
+                                        return inter.direccion[j];
+                                    }
+                                    else if (j == inter.clave.Count - 1)
+                                    {
+                                        return inter.direccion[j + 1];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            /*
+            foreach(Nodo n in this)
+            {
+                if(intermedio == false  && n.tipo == 'R' )
+                {
+                    for(int i = 0; i < n.clave.Count; i++)
+                    {
+                        if (clave < n.clave[i])
+                        {
+                            return n.direccion[i];
+                        }
+                        
+                        else if(i == n.clave.Count-1)
+                        {
+                            return n.direccion[i + 1];
+                        }
+                        
+                    }
+                }
+                else if (intermedio == true && n.tipo == 'I')
+                {
+                    inter = dameNodo(dameRaiz());  // Nodo Raiz donde se busca el nodo intermedio
+                    cont++;
+                    for(int i = 0; i < inter.clave.Count; i++)
+                    {
+                        if(clave < inter.clave[i])
+                        {
+                            //inter2 = inter;
+                            inter2 = dameNodo(inter.direccion[i]);
+                           // break;
+                        }
+                        else if (i == inter.clave.Count)
+                        {
+                            inter2 = dameNodo(inter.direccion[i + 1]);
+                           // break;
+                        }    
+                    }
+                    if(inter2.clave.Count > 0)
+                    {
+                        for (int i = 0; i < inter2.clave.Count; i++)
+                        {
+                            if (clave < inter2.clave[i])
+                            {
+                                return inter2.direccion[i];
+                            }
+                            else if (i == inter2.clave.Count-1)
+                            {
+                                return inter2.direccion[i+1];
+                            }
+                        }
+                    }
+                    
+                }
+            }
             return -1;
+            */
+
+            return 0;
         }
 
         public long dameNodoIntermedio(long dir)
